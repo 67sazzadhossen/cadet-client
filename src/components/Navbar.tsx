@@ -13,18 +13,48 @@ const Navbar = () => {
 
   const navItems = [
     { name: "Home", link: "/" },
-    { name: "Academic Info", link: "/academic-info" },
-    { name: "Exam Result", link: "/exam-result" },
+    {
+      name: "Academic Info",
+      subItems: [
+        { name: "Notice Board", link: "/academic-info/notice" },
+        { name: "Class Routine", link: "/academic-info/class-routine" },
+        { name: "Teacher Info", link: "/academic-info/teachers" },
+      ],
+    },
+    {
+      name: "Exam Result",
+      subItems: [
+        { name: "PSC Result", link: "/exam-result/psc" },
+        { name: "JSC Result", link: "/exam-result/jsc" },
+        { name: "SSC Result", link: "/exam-result/ssc" },
+      ],
+    },
     { name: "Download", link: "/download" },
     { name: "Gallery", link: "/gallery" },
-    { name: "Online Activity", link: "/online-activity" },
-    { name: "About Us", link: "/about-us" },
+    {
+      name: "Online Activity",
+      subItems: [
+        { name: "Online Class", link: "/online-activity/class" },
+        { name: "Assignment", link: "/online-activity/assignment" },
+      ],
+    },
+    {
+      name: "About Us",
+      subItems: [
+        { name: "Our Teachers", link: "/about-us/teachers" },
+        { name: "Mission & Vision", link: "/about-us/mission&vision" },
+        {
+          name: "Chairman/President List",
+          link: "/about-us/chairman/president-list",
+        },
+      ],
+    },
     { name: "Scholarship", link: "/scholarship" },
     { name: "Login", link: "/login" },
   ];
 
   return (
-    <div className="px-3 py-1 md:py-2 flex justify-between items-center relative overflow-hidden">
+    <div className="px-3 py-1 md:py-2 flex justify-between items-center relative overflow-visible">
       {/* logo */}
       <div className="flex items-center gap-2 ">
         <Image
@@ -49,7 +79,7 @@ const Navbar = () => {
         {/* address */}
         <div className="flex items-center gap-6 font-semibold text-sm text-red-800 ">
           <div className="flex gap-1 items-center ">
-            <BiLocationPlus size={20} /> F-224, Joorpukur Road, Gazipur-1700{" "}
+            <BiLocationPlus size={20} /> F-224, Joorpukur Road, Gazipur-1700
           </div>
           <div className="flex gap-1 items-center ">
             <MdEmail size={20} />
@@ -62,19 +92,41 @@ const Navbar = () => {
         <div className="w-3/4 h-[0.5px] bg-blue-800 mb-2"></div>
 
         {/* Navlinks */}
-        <ul className="flex gap-10 items-center whitespace-nowrap text-sm uppercase font-bold text-blue-900">
+        <ul className="flex gap-10 items-center whitespace-nowrap text-sm uppercase font-bold text-blue-900 relative z-[100]">
           {navItems.map((item, idx) => (
-            <li key={idx}>
-              <Link
-                className={`${
-                  item.link === "/login"
-                    ? "bg-blue-900 text-white px-6 py-2 rounded-2xl hover:bg-red-800 duration-300"
-                    : "hover:text-red-800 duration-300"
-                }`}
-                href={item.link}
-              >
-                {item.name}
-              </Link>
+            <li key={idx} className="relative group z-[100]">
+              {/* parent item */}
+              {item.subItems ? (
+                <div className="cursor-pointer flex items-center hover:text-red-800 duration-300">
+                  {item.name}
+                  <span className="font-extrabold text-xl ml-2 -mt-1">+</span>
+
+                  {/* dropdown */}
+                  <ul className="absolute left-0 top-full mt-2 bg-white shadow-lg rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[200] min-w-[180px]">
+                    {item.subItems.map((sub, i) => (
+                      <li key={i}>
+                        <Link
+                          href={sub.link}
+                          className="block px-4 py-2 text-blue-900 hover:bg-blue-900 hover:text-white duration-200"
+                        >
+                          {sub.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <Link
+                  className={`${
+                    item.link === "/login"
+                      ? "bg-blue-900 text-white px-6 py-2 rounded-2xl hover:bg-red-800 duration-300"
+                      : "hover:text-red-800 duration-300"
+                  }`}
+                  href={item.link}
+                >
+                  {item.name}
+                </Link>
+              )}
             </li>
           ))}
         </ul>
@@ -88,12 +140,11 @@ const Navbar = () => {
         {menuOpen ? <MdClose /> : <MdMenu />}
       </div>
 
-      {/* Mobile dropdown menu with slide animation */}
+      {/* Mobile dropdown menu */}
       <div
         className={`fixed top-0 right-0 h-full w-3/4 max-w-sm bg-white shadow-lg z-50 transform transition-transform duration-500 ease-in-out 
         ${menuOpen ? "translate-x-0" : "translate-x-full"}`}
       >
-        {/* Close button inside menu */}
         <div className="flex justify-end p-4">
           <MdClose
             size={28}
@@ -104,24 +155,45 @@ const Navbar = () => {
 
         <ul className="flex flex-col items-center gap-6 mt-4 text-base uppercase font-bold text-blue-900">
           {navItems.map((item, idx) => (
-            <li key={idx}>
-              <Link
-                href={item.link}
-                className={`block text-center ${
-                  item.link === "/login"
-                    ? "bg-blue-900 text-white px-6 py-2 rounded-2xl hover:bg-red-800 duration-300"
-                    : "hover:text-red-800 duration-300"
-                }`}
-                onClick={() => setMenuOpen(false)}
-              >
-                {item.name}
-              </Link>
+            <li key={idx} className="text-center">
+              {item.subItems ? (
+                <details className="w-full">
+                  <summary className="cursor-pointer hover:text-red-800 py-2">
+                    {item.name}
+                  </summary>
+                  <ul className="flex flex-col gap-2 mt-2">
+                    {item.subItems.map((sub, i) => (
+                      <li key={i}>
+                        <Link
+                          href={sub.link}
+                          className="block text-blue-900 hover:text-red-800 duration-200"
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          {sub.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              ) : (
+                <Link
+                  href={item.link}
+                  className={`block text-center ${
+                    item.link === "/login"
+                      ? "bg-blue-900 text-white px-6 py-2 rounded-2xl hover:bg-red-800 duration-300"
+                      : "hover:text-red-800 duration-300"
+                  }`}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              )}
             </li>
           ))}
         </ul>
       </div>
 
-      {/* Overlay with fade transition */}
+      {/* Overlay */}
       <div
         className={`fixed inset-0 bg-black/40 z-40 lg:hidden transition-opacity duration-500 ease-in-out ${
           menuOpen ? "opacity-100 visible" : "opacity-0 invisible"
