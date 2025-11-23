@@ -1,4 +1,4 @@
-import AllTeachers from "@/pages/AllTeachers";
+import AllTeachers from "@/pages/Admin/AllTeachers/AllTeachers";
 import React from "react";
 
 const page = () => {
