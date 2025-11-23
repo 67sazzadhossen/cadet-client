@@ -4,12 +4,17 @@ import { ReactNode } from "react";
 
 const layout = ({ children }: { children: ReactNode }) => {
   return (
-    <div>
-      <nav>
+    <div className="relative">
+      {/* Navbar with proper z-index */}
+      <div className="sticky top-0 z-40">
         <Navbar />
-      </nav>
-      <div className="min-h-screen bg-gray-100">{children}</div>
-      <footer>
+      </div>
+
+      {/* Main content - behind navbar during mobile menu */}
+      <div className="relative z-10 min-h-screen bg-gray-100">{children}</div>
+
+      {/* Footer */}
+      <footer className="relative z-10">
         <Footer />
       </footer>
     </div>
