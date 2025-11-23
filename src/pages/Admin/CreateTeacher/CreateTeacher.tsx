@@ -6,8 +6,8 @@ import {
   useCreateTeacherMutation,
   useGetTeachersQuery,
 } from "@/redux/features/teachers/teacherApi";
-import { TTeacherForm } from "./CreateTeacher.type";
-import { TBloodGroup } from "@/types/index.type";
+
+import { TBloodGroup, TTeacherForm } from "@/types/index.type";
 
 const CreateTeacher = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -27,7 +27,6 @@ const CreateTeacher = () => {
         bengaliName: "মোঃ সাইফুল ইসলাম",
         englishName: "Md Saiful Islam",
       },
-      image: "",
       contact: {
         email: "saifufadfl.islam@school.edu",
         mobile: "01712345678",
@@ -537,3 +536,8 @@ const CreateTeacher = () => {
 };
 
 export default CreateTeacher;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}

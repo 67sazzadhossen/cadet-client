@@ -59,3 +59,8 @@ const AllTeachers = () => {
 };
 
 export default AllTeachers;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}

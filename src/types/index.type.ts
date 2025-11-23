@@ -81,3 +81,30 @@ export type TMutationTrigger = TypedMutationTrigger<
   any,
   any
 >;
+
+// src/pages/Admin/CreateTeacher/CreateTeacher.type.ts
+export type TTeacherForm = {
+  id: string;
+  name: {
+    bengaliName: string;
+    englishName: string;
+  };
+  image: FileList | string;
+  contact: {
+    email: string;
+    mobile: string;
+    whatsapp?: string;
+  };
+  dateOfBirth: string;
+  designation: string;
+  subjects: string[];
+  qualification: string;
+  bloodGroup: string;
+  joiningDate: string;
+  address: {
+    address: string;
+    district: string;
+  };
+};
+
+// Empty default export add করুন

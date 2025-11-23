@@ -17,3 +17,8 @@ const Profile = () => {
 };
 
 export default Profile;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}

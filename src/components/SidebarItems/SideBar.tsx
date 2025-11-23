@@ -48,7 +48,15 @@ const SideBar = () => {
     <ul className="menu w-full grow space-y-3 ">
       {/* List item */}
 
-      <Image src={logo} width={60} height={80} alt="logo" className="mx-auto" />
+      <Link href={"/"}>
+        <Image
+          src={logo}
+          width={60}
+          height={80}
+          alt="logo"
+          className="mx-auto"
+        />
+      </Link>
       <div className="divider -my-2 mb-5"></div>
       {sidebarItems.map((item: TSidebar, idx) => (
         <li key={idx}>

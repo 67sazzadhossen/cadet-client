@@ -1,5 +1,6 @@
 "use client";
 
+export const dynamic = "force-dynamic";
 import React, { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useLoginMutation } from "@/redux/features/auth/authApi";
@@ -8,7 +9,6 @@ import { logout, setUser } from "@/redux/features/auth/authSlice";
 import { verifyToken } from "@/utils/verifyToken";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useGetMeQuery } from "@/redux/features/user/userApi";
-import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 
 type LoginFormInputs = {
   id: string;
@@ -246,3 +246,8 @@ const Login = () => {
 };
 
 export default Login;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}
