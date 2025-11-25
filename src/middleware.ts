@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 
 export const middleware = async (request: NextRequest) => {
   const refreshToken = request.cookies.get("refreshToken")?.value;
+  console.log(refreshToken);
 
   // যদি refreshToken না থাকে就直接 login এ redirect
   if (!refreshToken) {

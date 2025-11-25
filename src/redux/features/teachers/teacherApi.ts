@@ -20,6 +20,12 @@ const teacherApi = baseApi.injectEndpoints({
         url: `/teachers/${id}`,
       }),
     }),
+    getSingleTeacherForPublic: builder.query({
+      query: (id) => ({
+        method: "GET",
+        url: `/teachers/public/${id}`,
+      }),
+    }),
   }),
 });
 
@@ -27,4 +33,5 @@ export const {
   useCreateTeacherMutation,
   useGetTeachersQuery,
   useDeleteTeacherByIdMutation,
+  useGetSingleTeacherForPublicQuery,
 } = teacherApi;
