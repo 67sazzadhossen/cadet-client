@@ -11,7 +11,7 @@ export const middleware = async (request: NextRequest) => {
 
   try {
     const response = await fetch(
-      "http://localhost:5000/api/v1/auth/verify-refresh-token",
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/verify-refresh-token`,
       {
         method: "POST",
         headers: {
@@ -41,7 +41,7 @@ async function handleLogout(request: NextRequest) {
   try {
     // Backend logout call করুন
     const logoutResponse = await fetch(
-      "http://localhost:5000/api/v1/auth/logout",
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/logout`,
       {
         method: "POST",
         headers: {
