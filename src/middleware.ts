@@ -1,18 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 
 export const middleware = async (request: NextRequest) => {
-  const url = request.nextUrl;
-
-  // Step 1: Redirect www to non-www (বা vice versa)
-  if (url.hostname.startsWith("www.")) {
-    const nonWwwUrl = new URL(url);
-    nonWwwUrl.hostname = nonWwwUrl.hostname.replace("www.", "");
-    return NextResponse.redirect(nonWwwUrl);
-  }
-
-  // Step 2: Then check authentication
   const refreshToken = request.cookies.get("refreshToken")?.value;
-  console.log("🔄 Middleware - Host:", url.hostname);
   console.log("🔄 Middleware - Refresh Token:", refreshToken);
 
   console.log("refresh token in vercel : ", refreshToken);
