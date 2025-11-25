@@ -9,8 +9,10 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store";
 import { logout, setUser } from "../features/auth/authSlice";
 
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:5000/api/v1",
+  baseUrl: `${backendUrl}/api/v1`,
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
@@ -32,7 +34,7 @@ const baseQueryWithRefreshtoken: BaseQueryFn<
   //   console.log(result.error.data.message);
   // }
   if (result?.error?.status === 401 || result?.error?.status === 500) {
-    const res = await fetch("http://localhost:5000/api/v1/auth/refresh-token", {
+    const res = await fetch(`${backendUrl}/api/v1/auth/refresh-token`, {
       method: "POST",
       credentials: "include",
     });
