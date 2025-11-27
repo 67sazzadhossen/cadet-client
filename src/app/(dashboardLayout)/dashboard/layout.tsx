@@ -1,3 +1,4 @@
+import PrivateRoute from "@/components/privateRoute/PrivateRoute";
 import SideBar from "@/components/SidebarItems/SideBar";
 import React from "react";
 
@@ -35,7 +36,9 @@ const layout = ({ children }: { children: React.ReactNode }) => {
             </div>
           </nav>
           {/* Page content here */}
-          <div className="p-4">{children}</div>
+          <div className="p-4">
+            <PrivateRoute>{children}</PrivateRoute>
+          </div>
         </div>
 
         <div className="drawer-side is-drawer-close:overflow-visible">

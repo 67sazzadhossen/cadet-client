@@ -18,7 +18,7 @@ type LoginFormInputs = {
 const Login = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams?.get("redirect") || "/";
+  const redirect = searchParams?.get("redirect") || "/dashboard";
   const dispatch = useDispatch();
   const { refetch } = useGetMeQuery(undefined);
 
