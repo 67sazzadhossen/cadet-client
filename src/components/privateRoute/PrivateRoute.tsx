@@ -2,14 +2,12 @@
 
 import { selectCurrentUser } from "@/redux/features/auth/authSlice";
 import { useAppSelector } from "@/redux/hook";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { ReactNode, useEffect } from "react";
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const currentUser = useAppSelector(selectCurrentUser);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirectUrl = searchParams?.get("redirect");
 
   useEffect(() => {
     if (!currentUser) {
