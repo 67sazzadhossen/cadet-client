@@ -2,7 +2,7 @@ import { baseApi } from "@/redux/api/baseApi";
 const teacherApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createTeacher: builder.mutation({
-      query: (teacherInfo: FormData) => ({
+      query: (teacherInfo) => ({
         method: "POST",
         url: "/users/create-teacher",
         body: teacherInfo,

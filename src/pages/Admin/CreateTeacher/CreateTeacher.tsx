@@ -6,20 +6,23 @@ import {
   useCreateTeacherMutation,
   useGetTeachersQuery,
 } from "@/redux/features/teachers/teacherApi";
-
 import { TBloodGroup, TTeacherForm } from "@/types/index.type";
+import { useCloudinaryUpload } from "@/utils/useCloudinaryUpload";
 
 const CreateTeacher = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const { refetch } = useGetTeachersQuery(undefined);
   const [createTeacher, { isLoading }] = useCreateTeacherMutation();
+  const { uploadToCloudinary, loading: imageUploading } = useCloudinaryUpload();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
+    setValue,
   } = useForm<TTeacherForm>({
     defaultValues: {
       id: "T-100221",
@@ -28,7 +31,7 @@ const CreateTeacher = () => {
         englishName: "Md Saiful Islam",
       },
       contact: {
-        email: "saifufadfl.islam@school.edu",
+        email: "saiful.islam@school.edu",
         mobile: "01712345678",
         whatsapp: "01712345678",
       },
@@ -54,17 +57,33 @@ const CreateTeacher = () => {
     "AB-",
     "O+",
     "O-",
-    "unknown",
   ];
 
+  // Handle image preview
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const onSubmit = async (data: TTeacherForm) => {
-    setLoading(true);
-
     try {
-      // Create FormData object
-      const formData = new FormData();
+      let imageData = { url: "", publicId: "" };
 
-      // Append all teacher data as JSON string
+      // Upload image to Cloudinary if exists
+      const imageFile = (data.image as any)?.[0];
+      if (imageFile) {
+        imageData = await uploadToCloudinary(imageFile);
+        console.log("📸 Image uploaded:", imageData);
+      }
+
+      // Prepare teacher data WITHOUT the image file object
       const teacherData = {
         id: data.id,
         name: data.name,
@@ -76,20 +95,19 @@ const CreateTeacher = () => {
         bloodGroup: data.bloodGroup,
         joiningDate: data.joiningDate,
         address: data.address,
+        // Only include image URL and publicId, not the file object
+        image: imageData.url
+          ? {
+              url: imageData.url,
+              publicId: imageData.publicId,
+            }
+          : undefined,
       };
 
-      // Append image file
-      if (data.image) {
-        formData.append("file", data.image[0]);
-      }
+      console.log("📤 Sending teacher data:", teacherData);
 
-      formData.append("data", JSON.stringify(teacherData));
-
-      console.log("Form Data:", Object.fromEntries(formData));
-      console.log("Teacher Data:", teacherData);
-
-      // Send FormData to backend
-      const res = await createTeacher(formData);
+      // Send data to your API
+      const res = await createTeacher(teacherData);
 
       // Handle response
       if ("data" in res && res.data) {
@@ -97,6 +115,7 @@ const CreateTeacher = () => {
         refetch();
         alert("Teacher created successfully!");
         reset();
+        setImagePreview(null);
       } else if ("error" in res && res.error) {
         const error = res.error as any;
         const errorMessage = error?.data?.message || "Failed to create teacher";
@@ -105,9 +124,17 @@ const CreateTeacher = () => {
     } catch (err: any) {
       console.log("❌ Unexpected error:", err);
       alert("An unexpected error occurred!");
-    } finally {
-      setLoading(false);
     }
+  };
+
+  // Handle subjects input (convert string to array)
+  const handleSubjectsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const subjectsArray = e.target.value
+      .split(",")
+      .map((sub) => sub.trim())
+      .filter((sub) => sub);
+
+    setValue("subjects", subjectsArray);
   };
 
   return (
@@ -121,7 +148,6 @@ const CreateTeacher = () => {
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
-          encType="multipart/form-data"
         >
           {/* ========== BASIC INFORMATION ========== */}
           <div className="col-span-2">
@@ -356,19 +382,10 @@ const CreateTeacher = () => {
             <input
               {...register("subjects", {
                 required: "Subjects are required",
-                validate: (value) =>
-                  Array.isArray(value) ||
-                  "Enter subjects as comma separated values",
               })}
+              onChange={handleSubjectsChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               placeholder="Mathematics, Physics"
-              onChange={(e) => {
-                const subjectsArray = e.target.value
-                  .split(",")
-                  .map((sub) => sub.trim())
-                  .filter((sub) => sub);
-                // You might need to handle array fields differently with react-hook-form
-              }}
             />
             {errors.subjects && (
               <p className="text-red-500 text-sm mt-1">
@@ -471,36 +488,50 @@ const CreateTeacher = () => {
 
           <div className="col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Profile Image *
+              Profile Image
             </label>
+
+            {/* Image Preview */}
+            {imagePreview && (
+              <div className="mb-4">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-32 h-32 object-cover rounded-lg border"
+                />
+              </div>
+            )}
+
             <input
               type="file"
               accept="image/*"
-              {...register("image", { required: "Profile image is required" })}
+              {...register("image")}
+              onChange={handleImageChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
-            {errors.image && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.image.message}
-              </p>
-            )}
+            <p className="text-sm text-gray-500 mt-1">
+              Supported formats: JPEG, PNG, WebP. Max size: 5MB
+            </p>
           </div>
 
           {/* ========== SUBMIT BUTTON ========== */}
           <div className="col-span-2 mt-8 flex gap-4">
             <button
               type="button"
-              onClick={() => reset()}
+              onClick={() => {
+                reset();
+                setImagePreview(null);
+              }}
               className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
             >
               Reset Form
             </button>
             <button
               type="submit"
-              disabled={loading || isLoading}
+              disabled={isLoading || imageUploading}
               className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors font-medium"
             >
-              {loading || isLoading ? (
+              {isLoading || imageUploading ? (
                 <span className="flex items-center justify-center">
                   <svg
                     className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
@@ -522,7 +553,9 @@ const CreateTeacher = () => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Creating Teacher...
+                  {imageUploading
+                    ? "Uploading Image..."
+                    : "Creating Teacher..."}
                 </span>
               ) : (
                 "Create Teacher"
@@ -536,8 +569,3 @@ const CreateTeacher = () => {
 };
 
 export default CreateTeacher;
-export async function getServerSideProps() {
-  return {
-    props: {}, // Page will render only on client
-  };
-}
