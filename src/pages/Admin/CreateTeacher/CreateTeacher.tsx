@@ -569,3 +569,8 @@ const CreateTeacher = () => {
 };
 
 export default CreateTeacher;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}
