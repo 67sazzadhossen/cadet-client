@@ -340,6 +340,7 @@ const CreateForm = ({
                 <option value="">Select Designation</option>
                 {route === "create-admin" ? (
                   <>
+                    <option value="Director">Director</option>
                     <option value="Administrator">Administrator</option>
                     <option value="Principal">Principal</option>
                     <option value="Vice Principal">Vice Principal</option>
