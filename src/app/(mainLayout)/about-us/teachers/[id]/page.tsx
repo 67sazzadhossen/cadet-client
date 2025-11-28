@@ -1,12 +1,11 @@
-import TeacherProfile from "@/pages/Teacher/TeacherProfile";
+import PublicProfilePage from "@/pages/PublicPages/PublicProfilePage";
 
 const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
 
-  console.log(id);
   return (
     <div>
-      <TeacherProfile teacherId={id} />
+      <PublicProfilePage id={id} />
     </div>
   );
 };

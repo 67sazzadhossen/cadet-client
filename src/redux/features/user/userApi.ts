@@ -7,7 +7,13 @@ const userApi = baseApi.injectEndpoints({
         url: "/users/me",
       }),
     }),
+    getPublicUser: builder.query({
+      query: (id: string) => ({
+        method: "GET",
+        url: `/users/${id}`,
+      }),
+    }),
   }),
 });
 
-export const { useGetMeQuery } = userApi;
+export const { useGetMeQuery, useGetPublicUserQuery } = userApi;
