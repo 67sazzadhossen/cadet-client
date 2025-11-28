@@ -17,6 +17,7 @@ import Link from "next/link";
 import { TCurrentUser } from "@/types/index.type";
 import { useGetMeQuery } from "@/redux/features/user/userApi";
 import Image from "next/image";
+import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 
 // Mock data for the dashboard
 const statsData = [
@@ -136,6 +137,10 @@ const DashboardHome = () => {
   const { data, isLoading } = useGetMeQuery(undefined);
   const currentUserData: TCurrentUser = data?.data?.data;
   console.log(currentUserData);
+
+  if (isLoading) {
+    return <LoadingAnimation />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
