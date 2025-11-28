@@ -262,15 +262,6 @@ const CreateForm = ({
     setValue("subjects", subjectsArray);
   };
 
-  // Clear specific field errors when user starts typing
-  const handleInputChange = (field: string) => {
-    clearErrors(field as any);
-  };
-
-  if (propsLoading || isLoading || imageUploading) {
-    return <LoadingAnimation />;
-  }
-
   return (
     <div className="relative">
       {/* Toast Notification */}
@@ -309,9 +300,7 @@ const CreateForm = ({
               </label>
               <input
                 {...register("id", {
-                  required: ` ID is required`,
-
-                  onChange: () => handleInputChange("id"),
+                  required: `ID is required`,
                 })}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                   errors.id ? "border-red-300" : "border-gray-300"
@@ -491,7 +480,6 @@ const CreateForm = ({
                     value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                     message: "Invalid email address format",
                   },
-                  onChange: () => handleInputChange("contact.email"),
                 })}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                   errors.contact?.email ? "border-red-300" : "border-gray-300"
