@@ -62,6 +62,7 @@ export type TTeacher = {
   dateOfBirth: string;
   designation: string;
   subjects: string[];
+  gender: "male" | "female" | "other";
   qualification: string;
   joiningDate: string;
   bloodGroup: TBloodGroup;

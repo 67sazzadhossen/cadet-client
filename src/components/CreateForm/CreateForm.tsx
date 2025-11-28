@@ -8,6 +8,7 @@ import { useCreateAdminMutation } from "@/redux/features/admin/adminApi";
 import { TAdmin, TTeacher } from "@/types/index.type";
 import { useCloudinaryUpload } from "@/utils/useCloudinaryUpload";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
+import { useCreateTeacherMutation } from "@/redux/features/teachers/teacherApi";
 
 // Beautiful Toast Component
 const Toast = ({
@@ -74,7 +75,9 @@ const CreateForm = ({
   } | null>(null);
 
   const { uploadToCloudinary, loading: imageUploading } = useCloudinaryUpload();
-  const [createAdmin, { isLoading }] = useCreateAdminMutation();
+  const [createAdmin, { isLoading: adminLoading }] = useCreateAdminMutation();
+  const [createTeacher, { isLoading: teacherLoading }] =
+    useCreateTeacherMutation();
 
   const {
     register,
@@ -83,7 +86,6 @@ const CreateForm = ({
     reset,
     setValue,
     setError,
-    clearErrors,
   } = useForm<TAdmin | TTeacher>();
 
   // Show toast message
@@ -203,13 +205,68 @@ const CreateForm = ({
             showToast(errorMessage, "error");
           }
         }
-      } else {
-        // Handle teacher creation similarly
-        // Add your teacher creation logic here
-        showToast("Teacher created successfully! 🎉", "success");
-        reset();
-        setImagePreview(null);
-        refetch();
+      }
+
+      // Create teacher based on route
+      if (route === "create-teacher") {
+        const teacherData = {
+          ...data,
+          image: imageData.url
+            ? { url: imageData.url, publicId: imageData.publicId }
+            : undefined,
+        };
+
+        const res = await createTeacher(teacherData as TTeacher);
+
+        // Handle response
+        if ("data" in res && res.data) {
+          console.log("✅ Teacher created successfully:", res.data);
+          showToast("Teacher created successfully! 🎉", "success");
+          reset();
+          setImagePreview(null);
+          refetch();
+        } else if ("error" in res && res.error) {
+          const error = res.error as any;
+
+          // Handle specific error cases
+          if (error?.data?.errorSources) {
+            const errorSources = error.data.errorSources;
+
+            // Check for duplicate key errors
+            const duplicateIdError = errorSources.find(
+              (err: any) =>
+                err.message?.includes("id") || err.path?.includes("id")
+            );
+            const duplicateEmailError = errorSources.find(
+              (err: any) =>
+                err.message?.includes("email") || err.path?.includes("email")
+            );
+
+            if (duplicateIdError) {
+              showToast(
+                "This ID is already taken. Please use a different ID.",
+                "error"
+              );
+              setError("id", { message: "This ID is already registered" });
+            } else if (duplicateEmailError) {
+              showToast(
+                "This email is already registered. Please use a different email.",
+                "error"
+              );
+              setError("contact.email", {
+                message: "This email is already registered",
+              });
+            } else {
+              const errorMessage =
+                error?.data?.message || "Failed to create teacher";
+              showToast(errorMessage, "error");
+            }
+          } else {
+            const errorMessage =
+              error?.data?.message || "Failed to create teacher";
+            showToast(errorMessage, "error");
+          }
+        }
       }
     } catch (err: any) {
       console.log("❌ Unexpected error:", err);
@@ -258,6 +315,9 @@ const CreateForm = ({
     setValue("subjects", subjectsArray);
   };
 
+  if (adminLoading || teacherLoading) {
+    return <LoadingAnimation />;
+  }
   return (
     <div className="relative">
       {/* Toast Notification */}
@@ -696,10 +756,10 @@ const CreateForm = ({
               </button>
               <button
                 type="submit"
-                disabled={propsLoading || imageUploading || isLoading}
+                disabled={propsLoading || imageUploading}
                 className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors font-medium"
               >
-                {propsLoading || imageUploading || isLoading ? (
+                {propsLoading || imageUploading ? (
                   <span className="flex items-center justify-center">
                     <svg
                       className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"

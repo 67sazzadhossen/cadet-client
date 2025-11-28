@@ -116,7 +116,7 @@ const quickActions = [
   {
     title: "Add Teacher",
     icon: UserCheck,
-    link: "/teachers/create",
+    link: "/dashboard/create-teacher",
     color: "bg-green-100 text-green-600",
   },
   {
