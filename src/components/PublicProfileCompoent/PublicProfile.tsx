@@ -2,7 +2,28 @@ import React from "react";
 
 import Image from "next/image";
 import { MdCastForEducation } from "react-icons/md";
-import { TPublicUser } from "@/pages/PublicPages/PublicProfile.types";
+export type TPublicUser = {
+  name: {
+    bengaliName: string;
+    englishName: string;
+  };
+  image: {
+    url: string;
+  };
+  designation: string;
+  dateOfBirth: string;
+  contact: {
+    email: string;
+    mobile?: string;
+    whatsapp?: string;
+  };
+  address?: {
+    address: string;
+    district: string;
+  };
+  bloodGroup: string;
+  qualification: string;
+};
 
 const PublicProfile = ({ userData }: { userData: TPublicUser }) => {
   const calculateAge = (dateOfBirth: string) => {
