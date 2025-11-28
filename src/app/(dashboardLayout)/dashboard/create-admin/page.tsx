@@ -1,10 +1,10 @@
-import DashboardHome from "@/pages/Dashboard/DashboardHome/DashboardHome";
+import CreateAdmin from "@/pages/Admin/CreateAdmin/CreateAdmin";
 import React from "react";
 
 const page = () => {
   return (
     <div>
-      <DashboardHome />
+      <CreateAdmin />
     </div>
   );
 };

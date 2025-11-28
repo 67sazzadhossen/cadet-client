@@ -21,7 +21,6 @@ const CreateTeacher = () => {
     handleSubmit,
     formState: { errors },
     reset,
-    watch,
     setValue,
   } = useForm<TTeacherForm>({
     defaultValues: {

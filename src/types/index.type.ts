@@ -38,23 +38,18 @@ export type TBloodGroup =
   | "unknown";
 
 export type TAdmin = {
-  // Basic Information
-  user: Types.ObjectId;
   id: string;
   name: TName;
   image: TImage;
-  designation: string;
-  dateOfBirth: string; // or Date if you prefer
-  gender: "male" | "female" | "other";
   contact: TContact;
+  dateOfBirth: string;
+  designation: string;
+  qualification: string;
+  gender: "male" | "female" | "other";
   bloodGroup: TBloodGroup;
   address: TAddress;
-
-  // System Fields
-  _id: Types.ObjectId;
-  createdAt: string; // or Date
-  updatedAt: string; // or Date
-  __v: number;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type TTeacher = {
@@ -71,6 +66,8 @@ export type TTeacher = {
   joiningDate: string;
   bloodGroup: TBloodGroup;
   address: TAddress;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type TCurrentUser = TAdmin;
