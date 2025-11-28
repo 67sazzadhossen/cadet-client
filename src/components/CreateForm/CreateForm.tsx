@@ -94,15 +94,11 @@ const CreateForm = ({
     setToast({ message, type });
   };
 
-  // Handle ID uniqueness validation
-  const validateUniqueId = async (id: string) => {
-    // You can add API call here to check if ID exists
-    // For now, we'll simulate with a simple pattern
-    if (route === "create-admin" && !id.startsWith("A-")) {
-      return "Admin ID must start with 'A-'";
-    }
-    if (route !== "create-admin" && !id.startsWith("T-")) {
-      return "Teacher ID must start with 'T-'";
+  // Handle ID validation - only numbers allowed
+  const validateId = (id: string) => {
+    const numberRegex = /^\d+$/;
+    if (!numberRegex.test(id)) {
+      return "ID must contain only numbers";
     }
     return true;
   };
@@ -122,8 +118,8 @@ const CreateForm = ({
     try {
       console.log("Form data:", data);
 
-      // Validate unique ID and Email
-      const idValidation = await validateUniqueId(data.id);
+      // Validate ID and Email
+      const idValidation = validateId(data.id);
       const emailValidation = await validateUniqueEmail(data.contact.email);
 
       if (idValidation !== true) {
@@ -296,16 +292,19 @@ const CreateForm = ({
             {/* ID Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                ID NO
+                ID NO *
               </label>
               <input
                 {...register("id", {
-                  required: `ID is required`,
+                  required: "ID is required",
+                  validate: validateId,
                 })}
                 className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                   errors.id ? "border-red-300" : "border-gray-300"
                 }`}
-                placeholder="ID NO"
+                placeholder="Enter numbers only (e.g., 12345)"
+                inputMode="numeric"
+                pattern="[0-9]*"
               />
               {errors.id && (
                 <p className="text-red-500 text-sm mt-1 flex items-center">
