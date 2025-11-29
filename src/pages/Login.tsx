@@ -20,7 +20,9 @@ const Login = () => {
   const searchParams = useSearchParams();
   const redirect = searchParams?.get("redirect") || "/dashboard";
   const dispatch = useDispatch();
-  const { refetch } = useGetMeQuery(undefined);
+  const { data, refetch } = useGetMeQuery(undefined);
+
+  const needsPasswordChanged = data?.data?.data?.user?.needsPasswordChanged;
 
   const {
     register,
@@ -43,6 +45,7 @@ const Login = () => {
           setUser({
             user: user,
             accessToken: res.data.data.accessToken,
+            needsPasswordChanged,
           })
         );
 

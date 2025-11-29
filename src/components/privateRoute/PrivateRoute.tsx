@@ -1,12 +1,16 @@
 "use client";
 
-import { selectCurrentUser } from "@/redux/features/auth/authSlice";
+import {
+  needsPasswordChanged,
+  selectCurrentUser,
+} from "@/redux/features/auth/authSlice";
 import { useAppSelector } from "@/redux/hook";
 import { useRouter } from "next/navigation";
 import React, { ReactNode, useEffect } from "react";
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const currentUser = useAppSelector(selectCurrentUser);
+  const changePassword = useAppSelector(needsPasswordChanged);
   const router = useRouter();
 
   useEffect(() => {
@@ -19,7 +23,10 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
         router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
       }
     }
-  }, [currentUser, router]);
+    if (changePassword === true) {
+      router.push("/dashboard/change-password");
+    }
+  }, [currentUser, router, changePassword]);
 
   // Show loading state or nothing while checking authentication
   if (!currentUser) {
