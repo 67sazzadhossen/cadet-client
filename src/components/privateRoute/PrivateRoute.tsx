@@ -21,7 +21,7 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
       return; // Early return to prevent further execution
     }
 
-    if (!currentUser) {
+    if (!currentUser && !data) {
       // Get the current path to redirect back after login
       let currentPath = window.location.pathname + window.location.search;
 
@@ -38,11 +38,9 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
         router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
       }
     }
-  }, [currentUser, router, needsPasswordChanged]);
+  }, [currentUser, router, needsPasswordChanged, data]);
 
-  if (isLoading) {
-    return <LoadingAnimation />;
-  }
+  console.log(data);
 
   // Show loading state or nothing while checking authentication
   if (!currentUser) {
