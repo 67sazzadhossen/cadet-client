@@ -1,32 +1,48 @@
 "use client";
 
-import {
-  needsPasswordChanged,
-  selectCurrentUser,
-} from "@/redux/features/auth/authSlice";
+import { selectCurrentUser } from "@/redux/features/auth/authSlice";
+import { useGetMeQuery } from "@/redux/features/user/userApi";
 import { useAppSelector } from "@/redux/hook";
+import { TCurrentUser } from "@/types/index.type";
 import { useRouter } from "next/navigation";
 import React, { ReactNode, useEffect } from "react";
+import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const currentUser = useAppSelector(selectCurrentUser);
-  const changePassword = useAppSelector(needsPasswordChanged);
   const router = useRouter();
+  const { data, isLoading } = useGetMeQuery(undefined);
+  const currentUserData: TCurrentUser = data?.data?.data;
+  const needsPasswordChanged = currentUserData?.user?.needsPasswordChanged;
 
   useEffect(() => {
+    if (needsPasswordChanged === true) {
+      router.push("/dashboard/change-password");
+      return; // Early return to prevent further execution
+    }
+
     if (!currentUser) {
       // Get the current path to redirect back after login
-      const currentPath = window.location.pathname + window.location.search;
+      let currentPath = window.location.pathname + window.location.search;
+
+      // Remove change-password from redirect URL if present
+      if (currentPath.includes("/dashboard/change-password")) {
+        currentPath = currentPath.replace(
+          "/dashboard/change-password",
+          "/dashboard"
+        );
+      }
 
       // Only redirect to login if we're not already on login page
       if (!currentPath.includes("/login")) {
         router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
       }
     }
-    if (changePassword === true) {
-      router.push("/dashboard/change-password");
-    }
-  }, [currentUser, router, changePassword]);
+  }, [currentUser, router, needsPasswordChanged]);
+
+  if (isLoading) {
+    return <LoadingAnimation />;
+  }
 
   // Show loading state or nothing while checking authentication
   if (!currentUser) {
@@ -41,3 +57,8 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
 };
 
 export default PrivateRoute;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}

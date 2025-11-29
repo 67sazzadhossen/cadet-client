@@ -4,6 +4,7 @@ import { useChangeYourPasswordMutation } from "@/redux/features/auth/authApi";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
+import HandleLogout from "@/utils/handleLogout";
 
 type TChangePassword = {
   oldPassword: string;
@@ -30,6 +31,7 @@ const ChangePasswordPage = () => {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const handleLogout = HandleLogout();
 
   const newPassword = watch("newPassword");
 
@@ -47,11 +49,8 @@ const ChangePasswordPage = () => {
       // Success handling
       if (res?.success) {
         setSuccessMessage("Password changed successfully!");
-
-        // Redirect after 2 seconds
-        setTimeout(() => {
-          router.push(redirect);
-        }, 2000);
+        router.push("/dashboard/profile");
+        handleLogout();
       } else {
         // Handle API error response
         setErrorMessage(
