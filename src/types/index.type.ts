@@ -50,11 +50,16 @@ export type TAdmin = {
   address: TAddress;
   createdAt: string;
   updatedAt: string;
+  user: {
+    needsPasswordChanged: boolean;
+  };
 };
 
 export type TTeacher = {
   _id: Types.ObjectId;
-  user: Types.ObjectId;
+  user: {
+    needsPasswordChanged: boolean;
+  };
   id: string;
   name: TName;
   image: TImage;
@@ -71,7 +76,7 @@ export type TTeacher = {
   updatedAt: string;
 };
 
-export type TCurrentUser = TAdmin;
+export type TCurrentUser = TAdmin | TTeacher;
 export type TMutationTrigger = TypedMutationTrigger<
   {
     id: string;

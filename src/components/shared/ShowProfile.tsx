@@ -16,6 +16,7 @@ import {
 import { FaTransgender } from "react-icons/fa";
 import { HiOutlineDocumentText } from "react-icons/hi";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
+import Link from "next/link";
 
 const ShowProfile = ({
   data,
@@ -313,16 +314,19 @@ const ShowProfile = ({
               </div>
             </button>
 
-            <button className="bg-gray-50 hover:bg-gray-100 border border-gray-300 text-gray-900 p-6 rounded-2xl transition-all duration-300 group hover:shadow-md">
+            <Link
+              href={"/dashboard/change-password"}
+              className="bg-gray-50 hover:bg-gray-100 border border-gray-300 text-gray-900 p-6 rounded-2xl transition-all duration-300 group hover:shadow-md"
+            >
               <div className="flex flex-col items-center gap-3">
                 <div className="bg-white p-3 rounded-full border border-gray-300 group-hover:border-gray-400 transition-colors">
                   <MdOutlineSecurity size={24} className="text-gray-700" />
                 </div>
                 <div className="font-medium tracking-wide text-sm">
-                  SECURITY
+                  CHANGE PASSWORD
                 </div>
               </div>
-            </button>
+            </Link>
 
             <button className="bg-gray-50 hover:bg-gray-100 border border-gray-300 text-gray-900 p-6 rounded-2xl transition-all duration-300 group hover:shadow-md">
               <div className="flex flex-col items-center gap-3">

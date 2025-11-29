@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BarChart3,
   Users,
@@ -18,6 +18,7 @@ import { TCurrentUser } from "@/types/index.type";
 import { useGetMeQuery } from "@/redux/features/user/userApi";
 import Image from "next/image";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
+import { useRouter } from "next/navigation";
 
 // Mock data for the dashboard
 const statsData = [
@@ -136,9 +137,17 @@ const quickActions = [
 const DashboardHome = () => {
   const { data, isLoading } = useGetMeQuery(undefined);
   const currentUserData: TCurrentUser = data?.data?.data;
-  console.log(currentUserData);
+  const needsPasswordChanged = currentUserData?.user?.needsPasswordChanged;
+  const router = useRouter();
+  console.log(needsPasswordChanged);
 
   const [isSearchOpen, setIsSearchOpen] = React.useState(false);
+  useEffect(() => {
+    if (needsPasswordChanged) {
+      console.log(needsPasswordChanged);
+      router.push("/dashboard/change-password");
+    }
+  }, [needsPasswordChanged, router]);
 
   if (isLoading) {
     return <LoadingAnimation />;

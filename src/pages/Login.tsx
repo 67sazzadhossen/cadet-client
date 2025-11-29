@@ -52,6 +52,9 @@ const Login = () => {
           document.cookie = `refreshToken=${res.data.data.refreshToken}; path=/; max-age=604800`; // 7 days
         }
         refetch();
+        // if (needsPasswordChanged === true) {
+        //   router.push("/dashboard/change-password");
+        // }
         router.push(redirect);
       }
     } catch (error: any) {
