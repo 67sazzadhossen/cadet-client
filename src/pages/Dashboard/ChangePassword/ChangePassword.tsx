@@ -3,8 +3,7 @@
 import { useChangeYourPasswordMutation } from "@/redux/features/auth/authApi";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useRouter, useSearchParams } from "next/navigation";
-import HandleLogout from "@/utils/handleLogout";
+import HandleLogout from "@/utils/HandleLogout";
 
 type TChangePassword = {
   oldPassword: string;
@@ -13,10 +12,6 @@ type TChangePassword = {
 };
 
 const ChangePasswordPage = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirect = searchParams?.get("redirect") || "/dashboard";
-
   const {
     register,
     handleSubmit,
@@ -49,7 +44,6 @@ const ChangePasswordPage = () => {
       // Success handling
       if (res?.success) {
         setSuccessMessage("Password changed successfully!");
-        router.push("/dashboard/profile");
         handleLogout();
       } else {
         // Handle API error response
