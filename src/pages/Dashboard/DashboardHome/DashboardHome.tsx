@@ -143,7 +143,7 @@ const DashboardHome = () => {
 
   const [isSearchOpen, setIsSearchOpen] = React.useState(false);
   useEffect(() => {
-    if (needsPasswordChanged) {
+    if (needsPasswordChanged === true) {
       console.log(needsPasswordChanged);
       router.push("/dashboard/change-password");
     }
