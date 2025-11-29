@@ -6,12 +6,11 @@ import { useAppSelector } from "@/redux/hook";
 import { TCurrentUser } from "@/types/index.type";
 import { useRouter } from "next/navigation";
 import React, { ReactNode, useEffect } from "react";
-import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const currentUser = useAppSelector(selectCurrentUser);
   const router = useRouter();
-  const { data, isLoading } = useGetMeQuery(undefined);
+  const { data } = useGetMeQuery(undefined);
   const currentUserData: TCurrentUser = data?.data?.data;
   const needsPasswordChanged = currentUserData?.user?.needsPasswordChanged;
 
