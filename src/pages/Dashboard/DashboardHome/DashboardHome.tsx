@@ -136,8 +136,6 @@ const quickActions = [
 const DashboardHome = () => {
   const { data, isLoading } = useGetMeQuery(undefined);
   const currentUserData: TCurrentUser = data?.data?.data;
-  const needsPasswordChanged = currentUserData?.user?.needsPasswordChanged;
-  console.log(needsPasswordChanged);
 
   const [isSearchOpen, setIsSearchOpen] = React.useState(false);
 

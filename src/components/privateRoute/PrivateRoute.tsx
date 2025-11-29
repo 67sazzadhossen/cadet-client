@@ -39,8 +39,6 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
     }
   }, [currentUser, router, needsPasswordChanged, data]);
 
-  console.log(data);
-
   // Show loading state or nothing while checking authentication
   if (!currentUser) {
     return (

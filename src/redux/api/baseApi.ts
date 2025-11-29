@@ -16,7 +16,7 @@ const baseQuery = fetchBaseQuery({
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
-    console.log("token in vercel", token);
+
     if (token) {
       headers.set("authorization", token);
     }
@@ -29,7 +29,6 @@ const baseQueryWithRefreshtoken: BaseQueryFn<
   BaseQueryApi,
   DefinitionType
 > = async (args, api, extraOptions): Promise<any> => {
-  console.log("sending refresh token");
   let result = await baseQuery(args, api, extraOptions);
   // if (result.error?.status === 404) {
   //   console.log(result.error.data.message);

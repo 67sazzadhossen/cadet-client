@@ -52,6 +52,7 @@ export type TAdmin = {
   updatedAt: string;
   user: {
     needsPasswordChanged: boolean;
+    role: string;
   };
 };
 
@@ -59,6 +60,7 @@ export type TTeacher = {
   _id: Types.ObjectId;
   user: {
     needsPasswordChanged: boolean;
+    role: string;
   };
   id: string;
   name: TName;
@@ -74,6 +76,37 @@ export type TTeacher = {
   address: TAddress;
   createdAt: string;
   updatedAt: string;
+};
+
+export type TUpdateProfile = {
+  name: {
+    englishName: string;
+    bengaliName: string;
+  };
+  contact: {
+    email: string;
+    mobile: string;
+    whatsapp: string;
+  };
+  dateOfBirth: string;
+  qualification: string;
+  subjects: string[];
+  joiningDate: string;
+  gender: "male" | "female" | "other";
+  bloodGroup:
+    | "A+"
+    | "A-"
+    | "B+"
+    | "B-"
+    | "AB+"
+    | "AB-"
+    | "O+"
+    | "O-"
+    | "unknown";
+  address: {
+    address: string;
+    district: string;
+  };
 };
 
 export type TCurrentUser = TAdmin | TTeacher;

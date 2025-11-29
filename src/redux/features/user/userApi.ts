@@ -1,4 +1,5 @@
 import { baseApi } from "@/redux/api/baseApi";
+import { TUpdateProfile } from "@/types/index.type";
 const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getMe: builder.query({
@@ -13,7 +14,15 @@ const userApi = baseApi.injectEndpoints({
         url: `/users/${id}`,
       }),
     }),
+    updateMe: builder.mutation({
+      query: (payload: TUpdateProfile) => ({
+        method: "PATCH",
+        url: `/users/update-me`,
+        body: payload,
+      }),
+    }),
   }),
 });
 
-export const { useGetMeQuery, useGetPublicUserQuery } = userApi;
+export const { useGetMeQuery, useGetPublicUserQuery, useUpdateMeMutation } =
+  userApi;

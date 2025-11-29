@@ -12,6 +12,8 @@ import {
   MdCalendarToday,
   MdWork,
   MdOutlineSecurity,
+  MdSchool,
+  MdSubject,
 } from "react-icons/md";
 import { FaTransgender } from "react-icons/fa";
 import { HiOutlineDocumentText } from "react-icons/hi";
@@ -71,6 +73,9 @@ const ShowProfile = ({
     return age;
   };
 
+  // Check if it's a teacher (has subjects and joiningDate)
+  const isTeacher = "subjects" in data && "joiningDate" in data;
+
   return (
     <div className="min-h-screen  px-1 font-sans">
       <div className="mx-auto">
@@ -78,11 +83,6 @@ const ShowProfile = ({
         <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden mb-8">
           {/* Header Section */}
           <div className="bg-gradient-to-r from-gray-100 to-gray-300 h-24 relative">
-            {/* <div className=" h-full flex flex-col justify-center items-center">
-              <h1 className="text-lg -mt-8 md:text-5xl uppercase font-bold text-center ">
-                gazipurshaheen cadet <br /> academy Mymensingh
-              </h1>
-            </div> */}
             <div className="absolute -bottom-20 left-12">
               <div className="relative">
                 <div className="w-40 h-40 rounded-full border-4 border-white shadow-2xl overflow-hidden bg-gray-200">
@@ -98,12 +98,14 @@ const ShowProfile = ({
               </div>
             </div>
 
-            <div className="absolute bottom-2 right-2">
-              <button className="btn btn-sm">
-                <MdEdit size={18} />
-                <span className="hidden md:inline"> EDIT PROFILE</span>
-              </button>
-            </div>
+            <Link href={"/dashboard/edit-profile"}>
+              <div className="absolute bottom-2 right-2">
+                <button className="btn btn-sm">
+                  <MdEdit size={18} />
+                  <span className="hidden md:inline"> EDIT PROFILE</span>
+                </button>
+              </div>
+            </Link>
           </div>
 
           {/* Profile Info Section */}
@@ -129,6 +131,14 @@ const ShowProfile = ({
                     <span className="bg-gray-100 text-gray-800 px-4 py-2 rounded-full text-sm font-medium tracking-wide border border-gray-300">
                       EMPLOYEE ID: {data.id}
                     </span>
+                    {isTeacher && (
+                      <span className="bg-gray-100 text-gray-800 px-4 py-2 rounded-full text-sm font-medium tracking-wide border border-gray-300">
+                        <span className="flex items-center gap-2">
+                          <MdSchool className="text-gray-600" />
+                          Teacher
+                        </span>
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -166,29 +176,6 @@ const ShowProfile = ({
                         </p>
                       </div>
                     </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium text-gray-900 tracking-wide border-b border-gray-300 pb-2">
-                      ADDRESS
-                    </h3>
-
-                    <div className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-xl transition-all duration-200 border border-gray-200">
-                      <div className="bg-gray-100 p-3 rounded-full border border-gray-300">
-                        <MdLocationOn className="text-gray-700 text-xl" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500 tracking-wide uppercase">
-                          Location
-                        </p>
-                        <p className="font-medium text-gray-900">
-                          {data.address.address}
-                        </p>
-                        <p className="text-sm text-gray-600 mt-1">
-                          {data.address.district}
-                        </p>
-                      </div>
-                    </div>
 
                     <div className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-xl transition-all duration-200 border border-gray-200">
                       <div className="bg-gray-100 p-3 rounded-full border border-gray-300">
@@ -203,6 +190,62 @@ const ShowProfile = ({
                         </p>
                       </div>
                     </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium text-gray-900 tracking-wide border-b border-gray-300 pb-2">
+                      ADDRESS & QUALIFICATION
+                    </h3>
+
+                    <div className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-xl transition-all duration-200 border border-gray-200">
+                      <div className="bg-gray-100 p-3 rounded-full border border-gray-300">
+                        <MdLocationOn className="text-gray-700 text-xl" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 tracking-wide uppercase">
+                          Address
+                        </p>
+                        <p className="font-medium text-gray-900">
+                          {data.address.address}
+                        </p>
+                        <p className="text-sm text-gray-600 mt-1">
+                          District: {data.address.district}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-xl transition-all duration-200 border border-gray-200">
+                      <div className="bg-gray-100 p-3 rounded-full border border-gray-300">
+                        <MdSchool className="text-gray-700 text-xl" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-500 tracking-wide uppercase">
+                          Qualification
+                        </p>
+                        <p className="font-medium text-gray-900">
+                          {data.qualification}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Teacher Specific Information */}
+                    {isTeacher && (
+                      <div className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-xl transition-all duration-200 border border-gray-200">
+                        <div className="bg-gray-100 p-3 rounded-full border border-gray-300">
+                          <MdSubject className="text-gray-700 text-xl" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500 tracking-wide uppercase">
+                            Subjects
+                          </p>
+                          <p className="font-medium text-gray-900">
+                            {Array.isArray(data.subjects)
+                              ? data.subjects.join(", ")
+                              : data.subjects}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -255,6 +298,21 @@ const ShowProfile = ({
                         {data.bloodGroup}
                       </span>
                     </div>
+
+                    {/* Teacher Joining Date */}
+                    {isTeacher && (
+                      <div className="flex items-center justify-between py-3 border-b border-gray-200">
+                        <div className="flex items-center gap-3">
+                          <MdCalendarToday className="text-gray-600" />
+                          <span className="text-sm text-gray-600 tracking-wide">
+                            Joining Date
+                          </span>
+                        </div>
+                        <span className="font-medium text-gray-900">
+                          {formatDate(data.joiningDate || "")}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -283,10 +341,26 @@ const ShowProfile = ({
                     </div>
                     <div className="flex justify-between items-center py-2">
                       <span className="text-sm text-gray-600 tracking-wide">
-                        Status
+                        Password Status
                       </span>
-                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium tracking-wide border border-green-200">
-                        ACTIVE
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium tracking-wide border ${
+                          data.user.needsPasswordChanged
+                            ? "bg-yellow-100 text-yellow-800 border-yellow-200"
+                            : "bg-green-100 text-green-800 border-green-200"
+                        }`}
+                      >
+                        {data.user.needsPasswordChanged
+                          ? "NEEDS UPDATE"
+                          : "SECURE"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-sm text-gray-600 tracking-wide">
+                        Role
+                      </span>
+                      <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium tracking-wide border border-blue-200 capitalize">
+                        {data.user.role}
                       </span>
                     </div>
                   </div>
@@ -303,7 +377,10 @@ const ShowProfile = ({
           </h2>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button className="bg-gray-50 hover:bg-gray-100 border border-gray-300 text-gray-900 p-6 rounded-2xl transition-all duration-300 group hover:shadow-md">
+            <Link
+              href={"/dashboard/edit-profile"}
+              className="bg-gray-50 hover:bg-gray-100 border border-gray-300 text-gray-900 p-6 rounded-2xl transition-all duration-300 group hover:shadow-md"
+            >
               <div className="flex flex-col items-center gap-3">
                 <div className="bg-white p-3 rounded-full border border-gray-300 group-hover:border-gray-400 transition-colors">
                   <MdEdit size={24} className="text-gray-700" />
@@ -312,7 +389,7 @@ const ShowProfile = ({
                   EDIT PROFILE
                 </div>
               </div>
-            </button>
+            </Link>
 
             <Link
               href={"/dashboard/change-password"}
