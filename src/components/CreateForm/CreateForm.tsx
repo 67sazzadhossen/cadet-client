@@ -86,7 +86,30 @@ const CreateForm = ({
     reset,
     setValue,
     setError,
-  } = useForm<TAdmin | TTeacher>();
+  } = useForm<TAdmin | TTeacher>({
+    defaultValues: {
+      designation: "Assistant Teacher",
+      name: {
+        bengaliName: "বাংলা নাম",
+        englishName: "English Name",
+      },
+      dateOfBirth: "1999-04-06",
+      bloodGroup: "O+",
+      gender: "male",
+      contact: {
+        email: "a@gmail.com",
+        mobile: "017000000000",
+        whatsapp: "017000000000",
+      },
+      address: {
+        address: "fdafdasf",
+        district: "Mymensingh",
+      },
+      subjects: ["Bangla"],
+      qualification: "Qualification",
+      joiningDate: "2025-05-05",
+    },
+  });
 
   // Show toast message
   const showToast = (

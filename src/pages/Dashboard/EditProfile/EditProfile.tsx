@@ -455,7 +455,7 @@ const EditProfile = () => {
             <button
               type="submit"
               disabled={updateLoading}
-              className="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-semibold text-lg shadow-md hover:shadow-lg transition-shadow"
+              className="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-semibold text-lg shadow-md hover:shadow-lg "
             >
               {updateLoading ? (
                 <div className="flex items-center gap-2">
