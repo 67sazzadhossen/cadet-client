@@ -153,7 +153,7 @@ const Navbar = () => {
     <>
       {/* Main Navbar */}
       <nav
-        className={`w-full transition-all duration-500 fixed top-0 left-0 z-50 ${
+        className={`w-full transition-all duration-500 top-0 left-0 z-50 ${
           scrolled
             ? "bg-white/95 backdrop-blur-lg shadow-lg border-b border-gray-100"
             : "bg-white/90 backdrop-blur-md border-b border-gray-100"
@@ -188,7 +188,7 @@ const Navbar = () => {
         </div>
 
         {/* Main Navigation */}
-        <div className="w-full py-3 px-4 sm:px-6 lg:px-8">
+        <div className="w-full py-3 px-4 sm:px-6 lg:px-8 ">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex-shrink-0">
@@ -466,9 +466,6 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
-
-      {/* Spacer for fixed navbar */}
-      <div className="h-16 sm:h-20"></div>
 
       {/* Mobile Menu Overlay & Sidebar */}
       <AnimatePresence>
