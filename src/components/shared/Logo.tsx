@@ -8,7 +8,7 @@ const Logo = () => {
     <Link href={"/"} className="flex items-center gap-3 group cursor-pointer">
       {/* Main Logo - Fixed */}
       <div className="relative">
-        <div className="w-16 h-16 ">
+        <div className="w-12 h-12 ">
           <Image
             src={logo}
             alt="Gazipur Shaheen Cadet Academy Logo"

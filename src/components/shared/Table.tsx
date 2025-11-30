@@ -93,7 +93,7 @@ const Table = ({
                       </div>
                       <div>
                         <div className="font-bold">{user.name.englishName}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-500 uppercase">
                           {user.name.bengaliName}
                         </div>
                       </div>

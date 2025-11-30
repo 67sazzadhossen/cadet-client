@@ -114,10 +114,10 @@ const ShowProfile = ({
               {/* Left Column - Basic Info */}
               <div className="lg:col-span-2">
                 <div className="mb-8">
-                  <h1 className="text-4xl font-light tracking-tight text-gray-900 mb-2">
+                  <h1 className="text-4xl uppercase font-bold tracking-tight text-gray-900 mb-2">
                     {data.name.englishName}
                   </h1>
-                  <p className="text-xl text-gray-600 mb-6 font-light tracking-wide">
+                  <p className="text-xl text-gray-600 mb-6 font-semibold tracking-wide">
                     {data.name.bengaliName}
                   </p>
 
