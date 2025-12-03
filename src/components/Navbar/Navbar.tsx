@@ -153,14 +153,14 @@ const Navbar = () => {
     <>
       {/* Main Navbar */}
       <nav
-        className={`w-full transition-all duration-500 top-0 left-0 z-50 ${
+        className={`w-full transition-all duration-500 top-0 left-0  z-50 ${
           scrolled
             ? "bg-white/95 backdrop-blur-lg shadow-lg border-b border-gray-100"
-            : "bg-white/90 backdrop-blur-md border-b border-gray-100"
+            : "bg-white/90 backdrop-blur-md "
         }`}
       >
         {/* Top Info Bar - Hidden on mobile */}
-        <div className="hidden sm:block bg-gradient-to-r from-blue-900 to-blue-800 text-white py-2">
+        <div className="hidden sm:block bg-gradient-to-br from-gray-900 to-blue-900 text-white py-2">
           <div className="w-full px-4">
             <div className="flex flex-col md:flex-row justify-between items-center gap-2 text-sm">
               <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
@@ -188,7 +188,7 @@ const Navbar = () => {
         </div>
 
         {/* Main Navigation */}
-        <div className="w-full py-3 px-4 sm:px-6 lg:px-8 ">
+        <div className="w-full py-2 px-4 sm:px-6 lg:px-8 ">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex-shrink-0">
