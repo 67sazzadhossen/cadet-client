@@ -263,6 +263,47 @@ const Footer = () => {
           </div>
         </div>
       </div>
+
+      {/* Floating Action Button */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <div className="flex flex-col space-y-3">
+          {/* WhatsApp */}
+          <Link
+            href="https://wa.me/880123456789"
+            className="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center text-white shadow-lg hover:shadow-green-500/50 transform hover:scale-110 transition-all duration-300 group"
+            aria-label="Contact on WhatsApp"
+          >
+            <SiWhatsapp className="text-2xl" />
+            <span className="absolute -top-8 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Chat with us
+            </span>
+          </Link>
+
+          {/* Back to Top */}
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="w-14 h-14 bg-cyan-500 rounded-full flex items-center justify-center text-white shadow-lg hover:shadow-cyan-500/50 transform hover:scale-110 transition-all duration-300 group"
+            aria-label="Back to top"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 10l7-7m0 0l7 7m-7-7v18"
+              />
+            </svg>
+            <span className="absolute -top-8 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Back to top
+            </span>
+          </button>
+        </div>
+      </div>
     </footer>
   );
 };
