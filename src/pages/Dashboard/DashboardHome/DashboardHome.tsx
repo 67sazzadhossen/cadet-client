@@ -138,6 +138,7 @@ const DashboardHome = () => {
   const currentUserData: TCurrentUser = data?.data?.data;
 
   const [isSearchOpen, setIsSearchOpen] = React.useState(false);
+  console.log(currentUserData);
 
   if (isLoading) {
     return <LoadingAnimation />;
@@ -204,17 +205,17 @@ const DashboardHome = () => {
             <div className="flex items-center space-x-2 sm:space-x-3">
               <Image
                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
-                src={currentUserData.image.url}
-                alt={currentUserData.name.englishName}
+                src={currentUserData?.image.url}
+                alt={currentUserData?.name.englishName}
                 height={40}
                 width={40}
               />
               <div className="hidden sm:block">
                 <p className="font-medium text-gray-900 text-sm sm:text-base">
-                  {currentUserData.name.englishName}
+                  {currentUserData?.name.englishName}
                 </p>
                 <p className="text-xs sm:text-sm text-gray-500">
-                  {currentUserData.designation}
+                  {currentUserData?.designation}
                 </p>
               </div>
             </div>

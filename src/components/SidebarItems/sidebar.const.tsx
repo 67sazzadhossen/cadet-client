@@ -62,6 +62,10 @@ export const adminPaths = [
     icon: <FaRectangleList />,
   },
   {
+    name: "Create Student",
+    icon: <IoCreate />,
+  },
+  {
     name: "Create Teacher",
     icon: <IoCreate />,
   },

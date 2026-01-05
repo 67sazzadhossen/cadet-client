@@ -14,7 +14,17 @@ const studentApi = baseApi.injectEndpoints({
         url: "/students",
       }),
     }),
+    getLastStudent: builder.query({
+      query: (payload) => ({
+        method: "GET",
+        url: `/students/last-student/${payload}`,
+      }),
+    }),
   }),
 });
 
-export const { useCreateStudentMutation, useGetStudentQuery } = studentApi;
+export const {
+  useCreateStudentMutation,
+  useGetStudentQuery,
+  useGetLastStudentQuery,
+} = studentApi;

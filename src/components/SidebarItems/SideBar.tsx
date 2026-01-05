@@ -49,13 +49,7 @@ const SideBar = () => {
       {/* List item */}
 
       <Link href={"/"}>
-        <Image
-          src={logo}
-          width={60}
-          height={80}
-          alt="logo"
-          className="mx-auto"
-        />
+        <Image src={logo} width={40} height={80} alt="logo" className="" />
       </Link>
       <div className="divider -my-2 mb-5"></div>
       {sidebarItems.map((item: TSidebar, idx) => (
