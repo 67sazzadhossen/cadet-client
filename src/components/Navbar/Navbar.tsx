@@ -20,6 +20,12 @@ import Logo from "../shared/Logo";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import HandleLogout from "@/utils/HandleLogout";
 
+interface NavItem {
+  name: string;
+  link?: string;
+  subItems?: Array<{ name: string; link: string }>;
+}
+
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileDropdown, setProfileDropdown] = useState(false);
@@ -64,7 +70,7 @@ const Navbar = () => {
   }, []);
 
   // Nav items
-  const baseNavItems = [
+  const baseNavItems: NavItem[] = [
     { name: "Home", link: "/" },
     {
       name: "Academic Info",
@@ -106,6 +112,10 @@ const Navbar = () => {
   ];
 
   const navItems = currentUser ? baseNavItems : [...baseNavItems];
+
+  // Tablet: Show 3 items + More dropdown
+  const tabletVisibleItems = navItems.slice(0, 3);
+  const tabletHiddenItems = navItems.slice(3);
 
   const profileItems = [
     { name: "Dashboard", link: "/dashboard", icon: <MdDashboard size={18} /> },
@@ -149,14 +159,93 @@ const Navbar = () => {
     },
   };
 
+  // Nav item component
+  const DesktopNavItem = ({
+    item,
+    index,
+  }: {
+    item: NavItem;
+    index: number;
+  }) => (
+    <div key={index} className="relative group shrink-0">
+      {item.subItems ? (
+        <>
+          <button className="flex items-center gap-1 px-3 py-2 text-gray-700 hover:text-blue-700 font-medium transition-all duration-300 group-hover:bg-blue-50 rounded-lg text-[15px]">
+            {item.name}
+            <MdKeyboardArrowDown
+              size={16}
+              className="transition-transform duration-300 group-hover:rotate-180 shrink-0"
+            />
+          </button>
+          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-50">
+            <div className="p-2">
+              {item.subItems.map((sub, i) => (
+                <Link
+                  key={i}
+                  href={sub.link}
+                  className="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all duration-200 font-medium text-sm"
+                >
+                  {sub.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <Link
+          href={item.link || "#"}
+          className="px-3 py-2 text-gray-700 hover:text-blue-700 font-medium transition-all duration-300 hover:bg-blue-50 rounded-lg text-[15px]"
+        >
+          {item.name}
+        </Link>
+      )}
+    </div>
+  );
+
+  const TabletNavItem = ({ item, index }: { item: NavItem; index: number }) => (
+    <div key={index} className="relative group shrink-0">
+      {item.subItems ? (
+        <>
+          <button className="flex items-center gap-1 px-2 py-2 text-gray-700 hover:text-blue-700 font-medium transition-all duration-300 group-hover:bg-blue-50 rounded-lg text-xs">
+            {item.name}
+            <MdKeyboardArrowDown
+              size={14}
+              className="transition-transform duration-300 group-hover:rotate-180 shrink-0"
+            />
+          </button>
+          <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-50">
+            <div className="p-2">
+              {item.subItems.map((sub, i) => (
+                <Link
+                  key={i}
+                  href={sub.link}
+                  className="flex items-center px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all duration-200 font-medium text-xs"
+                >
+                  {sub.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <Link
+          href={item.link || "#"}
+          className="px-2 py-2 text-gray-700 hover:text-blue-700 font-medium transition-all duration-300 hover:bg-blue-50 rounded-lg text-xs"
+        >
+          {item.name}
+        </Link>
+      )}
+    </div>
+  );
+
   return (
     <>
       {/* Main Navbar */}
       <nav
-        className={`w-full transition-all duration-500 top-0 left-0  z-50 ${
+        className={`w-full transition-all duration-500 top-0 left-0 z-50 ${
           scrolled
             ? "bg-white/95 backdrop-blur-lg shadow-lg border-b border-gray-100"
-            : "bg-white/90 backdrop-blur-md "
+            : "bg-white/90 backdrop-blur-md"
         }`}
       >
         {/* Top Info Bar - Hidden on mobile */}
@@ -188,273 +277,226 @@ const Navbar = () => {
         </div>
 
         {/* Main Navigation */}
-        <div className="w-full py-2 px-4 sm:px-6 lg:px-8 ">
+        <div className="w-full py-2 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex-shrink-0">
               <Logo />
             </div>
 
-            {/* Desktop Navigation - All items in one row */}
+            {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center justify-end flex-1">
-              <div className="flex items-center space-x-1">
-                {navItems.map((item, idx) => (
-                  <div key={idx} className="relative group">
-                    {item.subItems ? (
-                      <>
-                        <button className="flex items-center gap-1 px-4 py-2 text-gray-700 hover:text-blue-700 font-medium transition-all duration-300 group-hover:bg-blue-50 rounded-lg whitespace-nowrap text-[15px]">
-                          {item.name}
-                          <MdKeyboardArrowDown
-                            size={16}
-                            className="transition-transform duration-300 group-hover:rotate-180"
+              <div className="flex items-center justify-end w-full gap-4">
+                {/* Desktop Nav Items */}
+                <div className="flex items-center justify-end space-x-1 flex-1">
+                  {navItems.map((item, idx) => (
+                    <DesktopNavItem key={idx} item={item} index={idx} />
+                  ))}
+                </div>
+
+                {/* Desktop Auth Section */}
+                <div className="flex items-center space-x-4 border-l border-gray-200 pl-6 shrink-0">
+                  {currentUser ? (
+                    <div className="relative">
+                      <button
+                        onClick={() => setProfileDropdown(!profileDropdown)}
+                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-all duration-300"
+                      >
+                        {isLoading ? (
+                          <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse"></div>
+                        ) : currentUserData?.image ? (
+                          <Image
+                            src={currentUserData.image.url}
+                            alt="Profile"
+                            width={32}
+                            height={32}
+                            className="w-8 h-8 rounded-full object-cover border-2 border-blue-600"
                           />
-                        </button>
-                        <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-50">
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 flex items-center justify-center text-white font-bold text-sm">
+                            {currentUserData?.name?.englishName?.charAt(0) ||
+                              "U"}
+                          </div>
+                        )}
+                        <span className="text-gray-700 font-medium text-sm hidden xl:block">
+                          {currentUserData?.name?.englishName || "User"}
+                        </span>
+                      </button>
+
+                      {profileDropdown && (
+                        <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-2xl border border-gray-100 z-50">
                           <div className="p-2">
-                            {item.subItems.map((sub, i) => (
-                              <Link
-                                key={i}
-                                href={sub.link}
-                                className="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all duration-200 font-medium text-sm"
-                              >
-                                {sub.name}
-                              </Link>
-                            ))}
+                            <Link
+                              href={"/dashboard"}
+                              className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all duration-200 font-medium text-sm"
+                              onClick={() => setProfileDropdown(false)}
+                            >
+                              <MdDashboard size={18} />
+                              Dashboard
+                            </Link>
+                            <button
+                              className="flex items-center gap-3 px-4 py-3 w-full text-gray-700 hover:bg-red-50 hover:text-red-700 rounded-lg transition-all duration-200 font-medium text-sm"
+                              onClick={() => {
+                                setProfileDropdown(false);
+                                handleLogout();
+                              }}
+                            >
+                              <MdLogout size={18} />
+                              Logout
+                            </button>
                           </div>
                         </div>
-                      </>
-                    ) : (
-                      <Link
-                        href={item.link}
-                        className="px-4 py-2 text-gray-700 hover:text-blue-700 font-medium transition-all duration-300 hover:bg-blue-50 rounded-lg whitespace-nowrap text-[15px]"
-                      >
-                        {item.name}
-                      </Link>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Auth Section - Right beside nav items */}
-              <div className="flex items-center space-x-4 ml-6 pl-6 border-l border-gray-200">
-                {currentUser ? (
-                  <div className="relative">
-                    <button
-                      onClick={() => setProfileDropdown(!profileDropdown)}
-                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-all duration-300"
-                    >
-                      {isLoading ? (
-                        <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse"></div>
-                      ) : currentUserData?.image ? (
-                        <Image
-                          src={currentUserData.image.url}
-                          alt="Profile"
-                          width={32}
-                          height={32}
-                          className="w-8 h-8 rounded-full object-cover border-2 border-blue-600"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 flex items-center justify-center text-white font-bold text-sm">
-                          {currentUserData?.name?.englishName?.charAt(0) || "U"}
-                        </div>
                       )}
-                      <span className="text-gray-700 font-medium text-sm hidden xl:block">
-                        {currentUserData?.name?.englishName || "User"}
-                      </span>
-                    </button>
-
-                    {profileDropdown && (
-                      <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-2xl border border-gray-100 z-50">
-                        <div className="p-2">
-                          <Link
-                            href={"/dashboard"}
-                            className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all duration-200 font-medium text-sm"
-                            onClick={() => setProfileDropdown(false)}
-                          >
-                            <MdDashboard size={18} />
-                            Dashboard
-                          </Link>
-                          <button
-                            className="flex items-center gap-3 px-4 py-3  w-full text-gray-700 hover:bg-red-700 hover:text-white rounded-lg transition-all duration-200 font-medium text-sm"
-                            onClick={() => {
-                              setProfileDropdown(false);
-                              handleLogout();
-                            }}
-                          >
-                            <MdLogout size={18} />
-                            Logout
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <Link
-                    href="/login"
-                    className="px-6 py-2 bg-blue-900 text-white rounded-lg font-medium hover:bg-blue-800 transition-colors duration-300 text-[15px] whitespace-nowrap"
-                  >
-                    Login
-                  </Link>
-                )}
+                    </div>
+                  ) : (
+                    <Link
+                      href="/login"
+                      className="px-6 py-2 bg-blue-900 text-white rounded-lg font-medium hover:bg-blue-800 transition-colors duration-300 text-[15px] whitespace-nowrap shrink-0"
+                    >
+                      Login
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
 
-            {/* Tablet Navigation - Nav items and auth together */}
+            {/* Tablet Navigation - Fixed to show items and auth side by side */}
             <div className="hidden md:flex lg:hidden items-center justify-end flex-1">
-              <div className="flex items-center space-x-2">
-                {navItems.slice(0, 3).map((item, idx) => (
-                  <div key={idx} className="relative group">
-                    {item.subItems ? (
-                      <>
-                        <button className="flex items-center gap-1 px-2 py-2 text-gray-700 hover:text-blue-700 font-medium transition-all duration-300 group-hover:bg-blue-50 rounded-lg whitespace-nowrap text-xs">
-                          {item.name}
-                          <MdKeyboardArrowDown
-                            size={14}
-                            className="transition-transform duration-300 group-hover:rotate-180"
-                          />
-                        </button>
-                        <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-50">
-                          <div className="p-2">
-                            {item.subItems.map((sub, i) => (
-                              <Link
-                                key={i}
-                                href={sub.link}
-                                className="flex items-center px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all duration-200 font-medium text-xs"
-                              >
-                                {sub.name}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <Link
-                        href={item.link}
-                        className="px-2 py-2 text-gray-700 hover:text-blue-700 font-medium transition-all duration-300 hover:bg-blue-50 rounded-lg whitespace-nowrap text-xs"
-                      >
-                        {item.name}
-                      </Link>
-                    )}
-                  </div>
-                ))}
+              <div className="flex items-center justify-end w-full gap-2">
+                {/* Tablet Nav Items */}
+                <div className="flex items-center justify-end space-x-1 overflow-hidden">
+                  {tabletVisibleItems.map((item, idx) => (
+                    <TabletNavItem key={idx} item={item} index={idx} />
+                  ))}
 
-                {/* More dropdown for tablet */}
-                <div className="relative group">
-                  <button className="flex items-center gap-1 px-2 py-2 text-gray-700 hover:text-blue-700 font-medium transition-all duration-300 group-hover:bg-blue-50 rounded-lg whitespace-nowrap text-xs">
-                    More
-                    <MdKeyboardArrowDown
-                      size={14}
-                      className="transition-transform duration-300 group-hover:rotate-180"
-                    />
-                  </button>
-                  <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-50">
-                    <div className="p-2">
-                      {navItems.slice(3).map((item, i) => (
-                        <div key={i}>
-                          {item.subItems ? (
-                            <div className="relative group/sub">
-                              <button className="flex items-center justify-between w-full px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all duration-200 font-medium text-xs">
-                                {item.name}
-                                <MdKeyboardArrowDown
-                                  size={12}
-                                  className="transition-transform duration-300 group-hover/sub:rotate-180"
-                                />
-                              </button>
-                              <div className="absolute left-full top-0 ml-1 w-48 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-300">
-                                <div className="p-2">
-                                  {item.subItems.map((sub, j) => (
-                                    <Link
-                                      key={j}
-                                      href={sub.link}
-                                      className="flex items-center px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all duration-200 font-medium text-xs"
-                                    >
-                                      {sub.name}
-                                    </Link>
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
-                          ) : (
-                            <Link
-                              href={item.link}
-                              className="flex items-center px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all duration-200 font-medium text-xs"
-                            >
-                              {item.name}
-                            </Link>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Tablet Auth Section - Right beside nav items */}
-              <div className="flex items-center space-x-3 ml-4 pl-4 border-l border-gray-200">
-                {currentUser ? (
-                  <div className="relative">
-                    <button
-                      onClick={() => setProfileDropdown(!profileDropdown)}
-                      className="flex items-center gap-2 p-1 rounded-lg hover:bg-gray-50 transition-all duration-300"
-                    >
-                      {isLoading ? (
-                        <div className="w-7 h-7 rounded-full bg-gray-200 animate-pulse"></div>
-                      ) : currentUserData?.image ? (
-                        <Image
-                          src={currentUserData.image.url}
-                          alt="Profile"
-                          width={28}
-                          height={28}
-                          className="w-7 h-7 rounded-full object-cover border-2 border-blue-600"
+                  {/* More dropdown for remaining items */}
+                  {tabletHiddenItems.length > 0 && (
+                    <div className="relative group shrink-0">
+                      <button className="flex items-center gap-1 px-2 py-2 text-gray-700 hover:text-blue-700 font-medium transition-all duration-300 group-hover:bg-blue-50 rounded-lg text-xs">
+                        More
+                        <MdKeyboardArrowDown
+                          size={14}
+                          className="transition-transform duration-300 group-hover:rotate-180"
                         />
-                      ) : (
-                        <div className="w-7 h-7 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 flex items-center justify-center text-white font-bold text-xs">
-                          {currentUserData?.name?.englishName?.charAt(0) || "U"}
-                        </div>
-                      )}
-                    </button>
-
-                    {profileDropdown && (
-                      <div className="absolute right-0 top-full mt-2 w-40 bg-white rounded-xl shadow-2xl border border-gray-100 z-50">
-                        <div className="p-2">
-                          <div className="px-3 py-2 border-b border-gray-100 mb-1">
-                            <p className="text-xs font-medium text-gray-900">
-                              {currentUserData?.name?.englishName || "User"}
-                            </p>
-                            <p className="text-xs text-gray-500 truncate">
-                              {currentUserData?.contact.email || ""}
-                            </p>
-                          </div>
-                          {profileItems.map((item, index) => (
-                            <Link
-                              key={index}
-                              href={item.link}
-                              className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all duration-200 font-medium text-xs"
-                              onClick={() => setProfileDropdown(false)}
-                            >
-                              {item.icon}
-                              {item.name}
-                            </Link>
+                      </button>
+                      <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-50">
+                        <div className="p-2 space-y-1">
+                          {tabletHiddenItems.map((item, i) => (
+                            <div key={i}>
+                              {item.subItems ? (
+                                <div className="relative group/sub">
+                                  <button className="flex items-center justify-between w-full px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all duration-200 font-medium text-xs">
+                                    {item.name}
+                                    <MdKeyboardArrowDown
+                                      size={12}
+                                      className="transition-transform duration-300 group-hover/sub:rotate-180"
+                                    />
+                                  </button>
+                                  <div className="absolute left-full top-0 ml-1 w-48 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-300">
+                                    <div className="p-2">
+                                      {item.subItems.map((sub, j) => (
+                                        <Link
+                                          key={j}
+                                          href={sub.link}
+                                          className="flex items-center px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all duration-200 font-medium text-xs"
+                                        >
+                                          {sub.name}
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <Link
+                                  href={item.link || "#"}
+                                  className="flex items-center px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all duration-200 font-medium text-xs"
+                                >
+                                  {item.name}
+                                </Link>
+                              )}
+                            </div>
                           ))}
                         </div>
                       </div>
-                    )}
-                  </div>
-                ) : (
-                  <Link
-                    href="/login"
-                    className="px-4 py-1.5 bg-blue-900 text-white rounded-lg font-medium hover:bg-blue-800 transition-colors duration-300 text-xs whitespace-nowrap"
-                  >
-                    Login
-                  </Link>
-                )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Tablet Auth Section - Now side by side with nav items */}
+                <div className="flex items-center space-x-2 border-l border-gray-200 pl-3 shrink-0 ">
+                  {currentUser ? (
+                    <div className="relative">
+                      <button
+                        onClick={() => setProfileDropdown(!profileDropdown)}
+                        className="flex items-center gap-1 p-1.5 rounded-lg hover:bg-gray-50 transition-all duration-300"
+                      >
+                        {isLoading ? (
+                          <div className="w-7 h-7 rounded-full bg-gray-200 animate-pulse"></div>
+                        ) : currentUserData?.image ? (
+                          <Image
+                            src={currentUserData.image.url}
+                            alt="Profile"
+                            width={28}
+                            height={28}
+                            className="w-7 h-7 rounded-full object-cover border-2 border-blue-600"
+                          />
+                        ) : (
+                          <div className="w-7 h-7 rounded-full bg-gradient-to-r from-blue-600 to-blue-700 flex items-center justify-center text-white font-bold text-xs">
+                            {currentUserData?.name?.englishName?.charAt(0) ||
+                              "U"}
+                          </div>
+                        )}
+                      </button>
+
+                      {profileDropdown && (
+                        <div className="absolute right-0 top-full mt-2 w-40 bg-white rounded-xl shadow-2xl border border-gray-100 z-50">
+                          <div className="p-2">
+                            <div className="px-3 py-2 border-b border-gray-100 mb-1">
+                              <p className="text-xs font-medium text-gray-900">
+                                {currentUserData?.name?.englishName || "User"}
+                              </p>
+                              <p className="text-xs text-gray-500 truncate">
+                                {currentUserData?.contact?.email || ""}
+                              </p>
+                            </div>
+                            <Link
+                              href={"/dashboard"}
+                              className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all duration-200 font-medium text-xs"
+                              onClick={() => setProfileDropdown(false)}
+                            >
+                              <MdDashboard size={14} />
+                              Dashboard
+                            </Link>
+                            <button
+                              className="flex items-center gap-2 px-3 py-2 w-full text-gray-700 hover:bg-red-50 hover:text-red-700 rounded-lg transition-all duration-200 font-medium text-xs"
+                              onClick={() => {
+                                setProfileDropdown(false);
+                                handleLogout();
+                              }}
+                            >
+                              <MdLogout size={14} />
+                              Logout
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <Link
+                      href="/login"
+                      className="px-4 py-1.5 bg-blue-900 text-white rounded-lg font-medium hover:bg-blue-800 transition-colors duration-300 text-xs whitespace-nowrap shrink-0"
+                    >
+                      Login
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-300"
+              className="md:hidden p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-300 shrink-0"
               aria-label="Toggle menu"
             >
               {menuOpen ? (
@@ -563,7 +605,7 @@ const Navbar = () => {
                           </details>
                         ) : (
                           <Link
-                            href={item.link}
+                            href={item.link || "#"}
                             className="flex items-center p-4 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all duration-300 font-medium"
                             onClick={() => setMenuOpen(false)}
                           >

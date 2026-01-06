@@ -1487,3 +1487,8 @@ const CreateStudent = () => {
 };
 
 export default CreateStudent;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}

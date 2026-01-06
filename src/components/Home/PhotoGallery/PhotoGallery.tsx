@@ -57,7 +57,7 @@ const PhotoGallery = () => {
   ];
 
   return (
-    <div className="my-16 py-8 bg-gradient-to-b from-white to-gray-50">
+    <div className="my-16 py-8 bg-gradient-to-b from-white to-gray-50 overflow-x-hidden">
       {/* হেডিং */}
       <div className="text-center mb-12 px-4">
         <h1 className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent  py-8 bg-gradient-to-br from-gray-900 to-blue-900">

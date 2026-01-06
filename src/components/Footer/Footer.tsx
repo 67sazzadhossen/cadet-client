@@ -223,7 +223,7 @@ const Footer = () => {
             </div>
 
             {/* Social Links */}
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-wrap items-center space-x-4">
               {socialLinks.map((social, index) => {
                 const Icon = social.icon;
                 return (
@@ -240,7 +240,7 @@ const Footer = () => {
             </div>
 
             {/* Additional Links */}
-            <div className="flex items-center space-x-6 text-sm text-gray-400">
+            <div className="flex flex-wrap items-center space-x-6 text-sm text-gray-400">
               <Link
                 href="/privacy-policy"
                 className="hover:text-cyan-400 transition-colors"

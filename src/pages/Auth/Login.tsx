@@ -10,17 +10,9 @@ import { verifyToken } from "@/utils/verifyToken";
 import { useRouter, useSearchParams } from "next/navigation";
 import logo from "@/assets/logo.png";
 
-import {
-  FaEye,
-  FaEyeSlash,
-  FaGraduationCap,
-  FaSchool,
-  FaUser,
-  FaLock,
-  FaShieldAlt,
-} from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaUser, FaLock, FaShieldAlt } from "react-icons/fa";
 import { useGetMeQuery } from "@/redux/features/user/userApi";
-import Logo from "@/components/shared/Logo";
+
 import Link from "next/link";
 import Image from "next/image";
 
@@ -601,3 +593,8 @@ const Login = () => {
 };
 
 export default Login;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}
