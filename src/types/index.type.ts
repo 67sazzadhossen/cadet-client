@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TypedMutationTrigger } from "@reduxjs/toolkit/query/react";
 import { Types } from "mongoose";
 
@@ -78,6 +79,72 @@ export type TTeacher = {
   updatedAt: string;
 };
 
+export type SiblingType = {
+  name?: string;
+  class?: string;
+  institution?: string;
+  _id?: string;
+};
+
+// Guardian related types
+type GuardianPersonType = {
+  name?: string;
+  occupation?: string;
+  phone?: string;
+  email?: string;
+  nid?: string;
+  _id?: string;
+};
+
+export type GuardianType = {
+  father?: GuardianPersonType;
+  mother?: GuardianPersonType;
+  localGuardian?: GuardianPersonType;
+  _id?: string;
+};
+
+export type TStudent = {
+  _id: string;
+  id: string;
+  user: {
+    needsPasswordChanged: boolean;
+    role: string;
+    status: string;
+  };
+
+  // Personal Information
+  name: TName;
+  dateOfBirth: string;
+  birthCertificateNo: string;
+  nationality: string;
+  religion: string;
+
+  // Contact Information
+  email: string;
+  WhatsappNumber: string;
+
+  // Academic Information
+  admissionClass: string;
+  currentClass: string;
+  rollNo: string;
+  admissionDate: string;
+  previousSchool?: string;
+
+  // Family Information
+  guardian: GuardianType;
+  siblings: SiblingType[];
+
+  // Others
+  transportation: "yes" | "no";
+  image?: TImage;
+  version: "bangla" | "english";
+
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
+  __v?: number;
+};
+
 export type TUpdateProfile = {
   name: {
     englishName: string;
@@ -118,7 +185,6 @@ export type TMutationTrigger = TypedMutationTrigger<
   any
 >;
 
-// src/pages/Admin/CreateTeacher/CreateTeacher.type.ts
 export type TTeacherForm = {
   id: string;
   name: {
@@ -142,5 +208,3 @@ export type TTeacherForm = {
     district: string;
   };
 };
-
-// Empty default export add করুন

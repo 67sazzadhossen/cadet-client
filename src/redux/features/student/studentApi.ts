@@ -8,10 +8,10 @@ const studentApi = baseApi.injectEndpoints({
         body: userInfo,
       }),
     }),
-    getStudent: builder.query({
-      query: () => ({
+    getAllStudents: builder.query({
+      query: (payload) => ({
         method: "GET",
-        url: "/students",
+        url: `/students?page=${payload.page}&search=${payload.search}&class=${payload.class}&version=${payload.version}`,
       }),
     }),
     getLastStudent: builder.query({
@@ -20,11 +20,18 @@ const studentApi = baseApi.injectEndpoints({
         url: `/students/last-student/${payload}`,
       }),
     }),
+    deleteStudent: builder.mutation({
+      query: (payload) => ({
+        method: "DELETE",
+        url: `/students/delete/${payload}`,
+      }),
+    }),
   }),
 });
 
 export const {
   useCreateStudentMutation,
-  useGetStudentQuery,
+  useGetAllStudentsQuery,
   useGetLastStudentQuery,
+  useDeleteStudentMutation,
 } = studentApi;

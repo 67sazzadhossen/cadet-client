@@ -1,6 +1,8 @@
 import { BiHome } from "react-icons/bi";
-import { FaRectangleList } from "react-icons/fa6";
+import { FaRectangleList, FaUsers } from "react-icons/fa6";
 import { IoPerson, IoSettings, IoCreate } from "react-icons/io5";
+import { ImUserPlus } from "react-icons/im";
+import { MdGroupAdd } from "react-icons/md";
 
 export const studentPaths = [
   {
@@ -63,16 +65,16 @@ export const adminPaths = [
   },
   {
     name: "Create Student",
-    icon: <IoCreate />,
+    icon: <MdGroupAdd />,
   },
   {
     name: "Create Teacher",
-    icon: <IoCreate />,
+    icon: <ImUserPlus />,
   },
 
   {
     name: "Manage Users",
-    icon: <IoPerson />,
+    icon: <FaUsers />,
   },
   {
     name: "Settings",
