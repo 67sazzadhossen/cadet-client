@@ -535,3 +535,8 @@ const AllStudents = () => {
 };
 
 export default AllStudents;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}
