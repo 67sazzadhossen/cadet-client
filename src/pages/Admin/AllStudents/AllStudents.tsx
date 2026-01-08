@@ -80,6 +80,10 @@ const AllStudents = () => {
   const startItem = (currentPage - 1) * 10 + 1;
   const endItem = Math.min(currentPage * 10, meta?.totalStudents || 0);
 
+  if (isLoading || deleting) {
+    return <LoadingAnimation />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header with Filters */}
@@ -292,7 +296,7 @@ const AllStudents = () => {
           <div className="px-6 py-4 border-b">
             <div className="flex justify-between items-center">
               <h3 className="font-semibold text-gray-900">
-                Total Students ({meta.totalStudents})
+                Total Students ({meta?.totalStudents})
               </h3>
               {deleting && (
                 <span className="text-sm text-amber-600 animate-pulse">
