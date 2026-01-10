@@ -38,7 +38,10 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Image from "next/image";
 import { TAddress, TBloodGroup, TName } from "@/types/index.type";
-import { useCreateStudentMutation } from "@/redux/features/student/studentApi";
+import {
+  useCreateStudentMutation,
+  useGetAllStudentsQuery,
+} from "@/redux/features/student/studentApi";
 import { useCloudinaryUpload } from "@/utils/useCloudinaryUpload";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 import { FaEye, FaPrint } from "react-icons/fa6";
@@ -131,6 +134,7 @@ const CreateStudent = () => {
   const [createStudent, { isLoading }] = useCreateStudentMutation();
   const [sameAsFatherPresentAddress, setSameAsFatherPresentAddress] =
     useState(false);
+  const { refetch } = useGetAllStudentsQuery({ page: "1" });
   const [sameAsFatherPermanentAddress, setSameAsFatherPermanentAddress] =
     useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -298,6 +302,7 @@ const CreateStudent = () => {
       const result = await createStudent(finalData).unwrap();
       if (result.success) {
         alert("Student Created Successfully");
+        refetch();
         reset();
       }
 
