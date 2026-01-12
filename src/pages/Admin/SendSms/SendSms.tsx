@@ -720,3 +720,8 @@ Note: Student IDs will be automatically added to the message."
 };
 
 export default SendSms;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}
