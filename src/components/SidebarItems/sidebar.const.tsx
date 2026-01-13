@@ -2,7 +2,7 @@ import { BiHome } from "react-icons/bi";
 import { FaMessage, FaUsers } from "react-icons/fa6";
 import { IoPerson, IoSettings, IoCreate } from "react-icons/io5";
 import { ImUserPlus } from "react-icons/im";
-import { MdGroupAdd } from "react-icons/md";
+import { MdGroupAdd, MdPayments } from "react-icons/md";
 
 export const studentPaths = [
   {
@@ -76,6 +76,10 @@ export const adminPaths = [
   {
     name: "Send Sms",
     icon: <FaMessage />,
+  },
+  {
+    name: "Fee Collection",
+    icon: <MdPayments />,
   },
   {
     name: "Settings",
