@@ -49,6 +49,7 @@ const AllStudents = () => {
 
   const allStudents: TStudent[] = data?.data?.data?.data || [];
   const meta = data?.data?.data?.meta;
+  console.log(allStudents);
 
   const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this student?")) {
@@ -324,6 +325,9 @@ const AllStudents = () => {
                     Admission
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Monthy Payment Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -439,6 +443,22 @@ const AllStudents = () => {
                           <div className="text-xs text-gray-600">
                             Class: {student.admissionClass}
                           </div>
+                        </div>
+                      </td>
+                      {/* Payment status Details */}
+                      <td className="px-6 py-4 ">
+                        <div className="space-y-1">
+                          <span
+                            className={`inline-block px-3 py-1 text-sm font-semibold rounded-full
+        ${
+          student.paymentInfo.status === "paid"
+            ? "bg-green-100 text-green-700"
+            : "bg-red-100 text-red-700"
+        }`}
+                          >
+                            {student.paymentInfo.status.toUpperCase()}
+                          </span>
+                          <span>{student.paymentInfo.month}</span>
                         </div>
                       </td>
 

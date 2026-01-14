@@ -12,529 +12,67 @@ import {
   CheckCircle,
   Clock,
 } from "lucide-react";
-import { useGetPaymentInfoMutation } from "@/redux/features/payment/paymentApi";
-
-interface Student {
-  id: string;
-  name: {
-    englishName: string;
-    bengaliName: string;
-  };
-  currentClass: string;
-  rollNo: string;
-  image?: {
-    url: string;
-  };
-  isCadet?: boolean;
-  version?: string;
-  bloodGroup?: string;
-}
-
-interface PaymentInfo {
-  due: number;
-  paidAmount: number;
-  paybleamount: number;
-  status: string;
-}
-
-interface ApiResponse {
-  student: Student;
-  paymentInfo: PaymentInfo;
-}
+import {
+  useGetPaymentInfoQuery,
+  useSavePaymentInfoMutation,
+} from "@/redux/features/payment/paymentApi";
+import { getInvoiceHTML } from "@/components/Invoice/Invoice";
+import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 
 const FeeCollection = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [data, setData] = useState<ApiResponse | null>(null);
-  const [paymentInfo, { isLoading }] = useGetPaymentInfoMutation();
 
-  const studentData = data;
+  const payload = {
+    id: searchTerm,
+    paymentType: "monthlyPayment" as const,
+  };
+
+  const { data, isLoading, refetch } = useGetPaymentInfoQuery(payload, {
+    skip: !searchTerm.trim(),
+  });
+
+  const [savePayment, { isLoading: saving }] = useSavePaymentInfoMutation();
+
+  const studentData = data?.data?.data;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchTerm.trim()) return;
-
-    const payload = {
-      id: searchTerm,
-      paymentType: "monthlyPayment" as const,
-    };
-    try {
-      const res = await paymentInfo(payload).unwrap();
-      setData(res.data?.data);
-    } catch (error) {
-      setData(null);
-    }
   };
 
   const handleReset = () => {
     setSearchTerm("");
-    setData(null);
   };
 
-  const handlePayNow = () => {
-    if (studentData && studentData.paymentInfo?.due > 0) {
-      handlePrintInvoice();
+  const handlePayNow = async () => {
+    const payload = {
+      id: studentData?.student.id,
+      paymentType: "monthlyFee",
+    };
+
+    const res = await savePayment(payload).unwrap();
+    if (res.data.success) {
+      refetch();
+      handlePrintInvoice(res.data.data.paymentInfo.invoiceNo);
     }
   };
 
-  const handlePrintInvoice = () => {
+  const handlePrintInvoice = (invoiceNo: string) => {
+    if (!studentData) return;
+
     const printWindow = window.open("", "_blank");
-    if (!printWindow || !studentData) return;
+    if (!printWindow) return;
 
-    const invoiceContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Fee Invoice - ${studentData.student.id}</title>
-          <style>
-            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
-            
-            * {
-              margin: 0;
-              padding: 0;
-              box-sizing: border-box;
-            }
-            
-            body {
-              font-family: 'Inter', 'Noto Sans Bengali', sans-serif;
-              font-size: 11px;
-              line-height: 1.3;
-              color: #000;
-              background: #fff;
-              padding: 5mm;
-            }
-            
-            .invoice-container {
-              width: 148mm;
-              height: 105mm; /* A4 half height */
-              margin: 0 auto;
-              padding: 4mm;
-              border: 1px solid #ddd;
-              position: relative;
-              page-break-inside: avoid;
-            }
-            
-            /* Header */
-            .header {
-              text-align: center;
-              margin-bottom: 3mm;
-              padding-bottom: 2mm;
-              border-bottom: 1.5px solid #000;
-            }
-            
-            .school-name {
-              font-size: 14px;
-              font-weight: 700;
-              margin-bottom: 1mm;
-              text-transform: uppercase;
-            }
-            
-            .school-address {
-              font-size: 9px;
-              margin-bottom: 1mm;
-            }
-            
-            .invoice-title {
-              font-size: 12px;
-              font-weight: 600;
-              margin: 2mm 0;
-            }
-            
-            /* Invoice Info */
-            .invoice-info {
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 3mm;
-              font-size: 9px;
-            }
-            
-            .info-left, .info-right {
-              display: flex;
-              flex-direction: column;
-              gap: 1mm;
-            }
-            
-            .info-item {
-              display: flex;
-              gap: 2mm;
-            }
-            
-            .label {
-              font-weight: 600;
-              min-width: 40mm;
-            }
-            
-            .value {
-              flex: 1;
-            }
-            
-            /* Fee Table */
-            .fee-table {
-              width: 100%;
-              border-collapse: collapse;
-              margin: 3mm 0;
-              font-size: 9px;
-            }
-            
-            .fee-table th {
-              background: #f0f0f0;
-              padding: 1.5mm;
-              border: 0.5px solid #000;
-              text-align: left;
-              font-weight: 600;
-            }
-            
-            .fee-table td {
-              padding: 1.5mm;
-              border: 0.5px solid #000;
-            }
-            
-            .fee-table td:first-child {
-              width: 70mm;
-            }
-            
-            .fee-table td:last-child {
-              text-align: right;
-              width: 25mm;
-            }
-            
-            .total-row td {
-              font-weight: 700;
-              background: #f0f0f0;
-            }
-            
-            /* Summary */
-            .summary {
-              margin-top: 3mm;
-              display: flex;
-              justify-content: space-between;
-            }
-            
-            .summary-left {
-              flex: 1;
-            }
-            
-            .summary-right {
-              width: 50mm;
-            }
-            
-            .amount-in-words {
-              font-size: 8.5px;
-              margin-top: 2mm;
-              font-style: italic;
-            }
-            
-            /* Footer */
-            .footer {
-              margin-top: 4mm;
-              padding-top: 2mm;
-              border-top: 1px solid #000;
-              font-size: 8px;
-            }
-            
-            .footer-grid {
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 3mm;
-            }
-            
-            .footer-section h4 {
-              font-size: 9px;
-              margin-bottom: 1mm;
-              font-weight: 600;
-            }
-            
-            .signature {
-              text-align: center;
-              margin-top: 5mm;
-            }
-            
-            .signature-line {
-              width: 40mm;
-              border-top: 1px solid #000;
-              margin: 2mm auto;
-            }
-            
-            /* Print Styles */
-            @media print {
-              body {
-                padding: 0;
-                margin: 0;
-              }
-              
-              .invoice-container {
-                width: 148mm;
-                height: 105mm;
-                border: none;
-                padding: 5mm;
-                margin: 0;
-              }
-              
-              .no-print {
-                display: none;
-              }
-            }
-            
-            /* Helper Classes */
-            .text-right {
-              text-align: right;
-            }
-            
-            .text-center {
-              text-align: center;
-            }
-            
-            .text-bold {
-              font-weight: 700;
-            }
-            
-            .mb-1 {
-              margin-bottom: 1mm;
-            }
-            
-            .mb-2 {
-              margin-bottom: 2mm;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="invoice-container">
-            <!-- Header -->
-            <div class="header">
-              <div class="school-name">গাজীপুর শাহীন ক্যাডেট স্কুল</div>
-              <div class="school-address">গাজীপুর, ঢাকা, বাংলাদেশ | ফোন: ০১৭১২-৩৪৫৬৭৮</div>
-              <div class="invoice-title">ফি রসিদ / FEE RECEIPT</div>
-            </div>
-            
-            <!-- Invoice Info -->
-            <div class="invoice-info">
-              <div class="info-left">
-                <div class="info-item">
-                  <span class="label">ছাত্র/ছাত্রীর আইডি:</span>
-                  <span class="value">${studentData.student.id}</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">নাম (ইংরেজি):</span>
-                  <span class="value">${
-                    studentData.student.name.englishName
-                  }</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">নাম (বাংলা):</span>
-                  <span class="value">${
-                    studentData.student.name.bengaliName
-                  }</span>
-                </div>
-              </div>
-              <div class="info-right">
-                <div class="info-item">
-                  <span class="label">রোল নং:</span>
-                  <span class="value">${studentData.student.rollNo}</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">ক্লাস:</span>
-                  <span class="value">${studentData.student.currentClass}</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">ইনভয়েস নং:</span>
-                  <span class="value">INV-${Date.now()
-                    .toString()
-                    .slice(-6)}</span>
-                </div>
-                <div class="info-item">
-                  <span class="label">তারিখ:</span>
-                  <span class="value">${new Date().toLocaleDateString(
-                    "bn-BD"
-                  )}</span>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Fee Table -->
-            <table class="fee-table">
-              <thead>
-                <tr>
-                  <th>বিবরণ / Description</th>
-                  <th class="text-right">টাকার পরিমাণ / Amount (৳)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>মাসিক বেতন / Monthly Tuition Fee</td>
-                  <td class="text-right">${studentData.paymentInfo.paybleamount.toFixed(
-                    2
-                  )}</td>
-                </tr>
-                <tr>
-                  <td>বিদ্যুৎ বিল / Electricity Bill</td>
-                  <td class="text-right">500.00</td>
-                </tr>
-                <tr>
-                  <td>আইটি চার্জ / IT Charge</td>
-                  <td class="text-right">300.00</td>
-                </tr>
-                <tr>
-                  <td>অন্যান্য চার্জ / Others Charge</td>
-                  <td class="text-right">200.00</td>
-                </tr>
-                <tr class="total-row">
-                  <td>সর্বমোট / Total Amount</td>
-                  <td class="text-right">${(
-                    studentData.paymentInfo.paybleamount +
-                    500 +
-                    300 +
-                    200
-                  ).toFixed(2)}</td>
-                </tr>
-                <tr>
-                  <td>পূর্বে প্রদত্ত / Previously Paid</td>
-                  <td class="text-right">${studentData.paymentInfo.paidAmount.toFixed(
-                    2
-                  )}</td>
-                </tr>
-                <tr class="total-row">
-                  <td>বকেয়া / Due Amount</td>
-                  <td class="text-right">${studentData.paymentInfo.due.toFixed(
-                    2
-                  )}</td>
-                </tr>
-              </tbody>
-            </table>
-            
-            <!-- Summary -->
-            <div class="summary">
-              <div class="summary-left">
-                <div class="amount-in-words mb-2">
-                  <span class="text-bold">অঙ্কে লেখা:</span> 
-                  ${numberToWords(studentData.paymentInfo.due)} টাকা মাত্র
-                </div>
-                <div class="mb-1">
-                  <span class="text-bold">পরিশোধের শেষ তারিখ:</span> 
-                  ${new Date(
-                    Date.now() + 7 * 24 * 60 * 60 * 1000
-                  ).toLocaleDateString("bn-BD")}
-                </div>
-                <div>
-                  <span class="text-bold">মন্তব্য:</span> বিলম্বে জমা দিলে জরিমানা আরোপ করা হবে
-                </div>
-              </div>
-              <div class="summary-right">
-                <div class="mb-1">
-                  <span class="text-bold">পেমেন্ট মেথড:</span> ক্যাশ পেমেন্ট
-                </div>
-               
-               
-              </div>
-            </div>
-            
-            <!-- Footer -->
-            <div class="footer">
-              <div class="grid grid-cols-3">
-                <div class="footer-section">
-                  <h4>শর্তাবলী / Terms & Conditions:</h4>
-                  <p>১. রসিদ হারিয়ে গেলে স্কুল দায়ী নয়</p>
-                  <p>২. এই রসিদ কম্পিউটার দ্বারা তৈরিকৃত</p>
-                  <p>৩. তারিখ পরিবর্তনের সুযোগ নেই</p>
-                </div>
+    const html = getInvoiceHTML(studentData, invoiceNo);
 
-                <div class="footer-section">
-                  <h4>যোগাযোগ / Contact:</h4>
-                  <p>হেল্পলাইন: ০৯৬৩৮-৭৭৭৮৮৮</p>
-                  <p>ইমেইল: accounts@gazipurcadet.edu.bd</p>
-                  <p>ওয়েবসাইট: www.gazipurcadet.edu.bd</p>
-                </div>
-
-                <div><div class="signature">
-                <div class="signature-line"></div>
-                <div>অনুমোদিত স্বাক্ষর / Authorized Signature</div>
-                <div>প্রধান শিক্ষক / Headmaster</div></div>
-              </div>
-              </div>
-              
-              
-            </div>
-          </div>
-          <script>
-            window.onload = function() {
-              window.print();
-              setTimeout(function() {
-                window.close();
-              }, 500);
-            }
-          </script>
-        </body>
-      </html>
-    `;
-
-    printWindow.document.write(invoiceContent);
+    printWindow.document.open();
+    printWindow.document.write(html);
     printWindow.document.close();
   };
 
-  // Helper function to convert number to Bengali words
-  const numberToWords = (num: number): string => {
-    const units = [
-      "",
-      "এক",
-      "দুই",
-      "তিন",
-      "চার",
-      "পাঁচ",
-      "ছয়",
-      "সাত",
-      "আট",
-      "নয়",
-    ];
-    const tens = [
-      "",
-      "দশ",
-      "বিশ",
-      "ত্রিশ",
-      "চল্লিশ",
-      "পঞ্চাশ",
-      "ষাট",
-      "সত্তর",
-      "আশি",
-      "নব্বই",
-    ];
-    const scales = ["", "হাজার", "লক্ষ", "কোটি"];
-
-    if (num === 0) return "শূন্য";
-
-    let words = "";
-    let scaleIndex = 0;
-
-    while (num > 0) {
-      const chunk = num % 1000;
-      if (chunk !== 0) {
-        let chunkWords = "";
-        const hundred = Math.floor(chunk / 100);
-        const ten = Math.floor((chunk % 100) / 10);
-        const unit = chunk % 10;
-
-        if (hundred > 0) {
-          chunkWords += units[hundred] + "শ ";
-        }
-
-        if (ten > 0) {
-          chunkWords += tens[ten] + " ";
-        }
-
-        if (unit > 0) {
-          chunkWords += units[unit] + " ";
-        }
-
-        if (scales[scaleIndex]) {
-          chunkWords += scales[scaleIndex] + " ";
-        }
-
-        words = chunkWords + words;
-      }
-
-      num = Math.floor(num / 1000);
-      scaleIndex++;
-    }
-
-    return words.trim() + (words.includes("টাকা") ? "" : "");
-  };
+  if (saving) {
+    return <LoadingAnimation />;
+  }
 
   return (
     <div className="">

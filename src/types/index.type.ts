@@ -138,6 +138,10 @@ export type TStudent = {
   transportation: "yes" | "no";
   image?: TImage;
   version: "bangla" | "english";
+  paymentInfo: {
+    status: string;
+    month: string;
+  };
 
   // Timestamps
   createdAt: string;
