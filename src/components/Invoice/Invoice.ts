@@ -98,7 +98,7 @@ export const getInvoiceHTML = (studentData: ApiResponse, invoiceNo: string) => {
     
     body {
       font-family: 'Inter', 'Noto Sans Bengali', sans-serif;
-      font-size: 9px;
+      font-size: 14px;
       line-height: 1.2;
       color: #000;
       background: #fff;
@@ -128,7 +128,7 @@ export const getInvoiceHTML = (studentData: ApiResponse, invoiceNo: string) => {
       border: 1px solid #dee2e6;
       padding: 10px;
       border-radius: 5px;
-      font-size: 11px;
+      font-size: 16px;
       color: #666;
       z-index: 1000;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -144,19 +144,19 @@ export const getInvoiceHTML = (studentData: ApiResponse, invoiceNo: string) => {
     }
     
     .school-name {
-      font-size: 11px;
+      font-size: 16px;
       font-weight: 700;
       margin-bottom: 0.5mm;
     }
     
     .school-info {
-      font-size: 8px;
+      font-size: 13px;
       margin-bottom: 1mm;
       color: #666;
     }
     
     .invoice-title {
-      font-size: 10px;
+      font-size: 15px;
       font-weight: 600;
       margin: 1mm 0;
     }
@@ -165,7 +165,7 @@ export const getInvoiceHTML = (studentData: ApiResponse, invoiceNo: string) => {
       display: flex;
       justify-content: space-between;
       margin-bottom: 2mm;
-      font-size: 8px;
+      font-size: 13px;
     }
     
     .meta-left, .meta-right {
@@ -193,7 +193,7 @@ export const getInvoiceHTML = (studentData: ApiResponse, invoiceNo: string) => {
       width: 100%;
       border-collapse: collapse;
       margin: 2mm 0;
-      font-size: 8px;
+      font-size: 13px;
     }
     
     .fee-table th {
@@ -234,7 +234,7 @@ export const getInvoiceHTML = (studentData: ApiResponse, invoiceNo: string) => {
       display: grid;
       grid-template-columns: 2fr 1fr;
       gap: 2mm;
-      font-size: 8px;
+      font-size: 13px;
     }
     
     .summary-left {
@@ -251,7 +251,7 @@ export const getInvoiceHTML = (studentData: ApiResponse, invoiceNo: string) => {
     }
     
     .amount-in-words {
-      font-size: 7.5px;
+      font-size: 12.5px;
       font-style: italic;
       color: #555;
     }
@@ -261,7 +261,7 @@ export const getInvoiceHTML = (studentData: ApiResponse, invoiceNo: string) => {
       margin-top: 2mm;
       padding-top: 1mm;
       border-top: 0.5px solid #000;
-      font-size: 7px;
+      font-size: 12px;
       color: #666;
     }
     
@@ -273,7 +273,7 @@ export const getInvoiceHTML = (studentData: ApiResponse, invoiceNo: string) => {
 
     
     .footer-section h4 {
-      font-size: 8px;
+      font-size: 13px;
       margin-bottom: 0.5mm;
       font-weight: 600;
       color: #333;
@@ -298,7 +298,7 @@ export const getInvoiceHTML = (studentData: ApiResponse, invoiceNo: string) => {
     @media print {
       /* Remove browser default margins and headers/footers */
       @page {
-        margin: 0 !important;
+        margin: 40px !important;
         size: auto;
       }
       
@@ -478,14 +478,14 @@ transform: translateX(-50%) !important;
           <span class="text-bold">পেমেন্ট মেথড:</span> ক্যাশ পেমেন্ট
         </div>
         <div>
-          <span class="text-bold">মন্তব্য:</span> বিলম্বে জমা দিলে জরিমানা আরোপ হবে
+          <span class="text-bold">মন্তব্য:</span> বিলম্বে জমা দিলে অতিরিক্ত ৫০ টাকা জরিমানা আরোপ করা হবে
         </div>
       </div>
       <div class="summary-right">
         <div class="mb-05">
           <span class="text-bold">অনুমোদিত স্বাক্ষর:</span>
         </div>
-        <div style="margin-top: 5mm; border-bottom: 0.5px solid #000; width: 30mm;"></div>
+        <div style="margin-top: 8mm; border-bottom: 0.5px solid #000; width: 30mm;"></div>
       </div>
     </div>
     
