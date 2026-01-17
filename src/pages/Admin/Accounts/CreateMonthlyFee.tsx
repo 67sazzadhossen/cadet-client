@@ -74,9 +74,9 @@ const CreateMonthlyFee = () => {
 
   // Default fee structure
   const defaultFeeStructure: FeeStructure = {
-    play: { bangla: 1000, english: 2000 },
-    nursery: { bangla: 1100, english: 2000 },
-    kg: { bangla: 0, english: 2100 },
+    Play: { bangla: 1000, english: 2000 },
+    Nursery: { bangla: 1100, english: 2000 },
+    Kg: { bangla: 0, english: 2100 },
     "1": { bangla: 1200, english: 2200 },
     "2": { bangla: 1200, english: 2200 },
     "3": { bangla: 1400, english: 2500 },
@@ -91,9 +91,9 @@ const CreateMonthlyFee = () => {
 
   // Available classes
   const availableClasses: string[] = [
-    "play",
-    "nursery",
-    "kg",
+    "Play",
+    "Nursery",
+    "Kg",
     "1",
     "2",
     "3",
