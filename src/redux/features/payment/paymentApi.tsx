@@ -4,7 +4,7 @@ const paymentApi = baseApi.injectEndpoints({
     getPaymentInfo: builder.query({
       query: (payload) => ({
         method: "GET",
-        url: `/payment/payment-info?id=${payload.id}&paymentType=${payload.paymentType}`,
+        url: `/payment/payment-info?id=${payload.id}`,
       }),
     }),
     savePaymentInfo: builder.mutation({

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { BiAddToQueue } from "react-icons/bi";
 import { FaUserGraduate, FaChalkboardTeacher } from "react-icons/fa";
 
 const ManageUserNav = () => {
@@ -18,6 +19,16 @@ const ManageUserNav = () => {
       name: "All Teachers",
       link: "/dashboard/manage-users/all-teachers",
       icon: <FaChalkboardTeacher className="w-5 h-5" />,
+    },
+    {
+      name: "Add Student",
+      link: "/dashboard/manage-users/add-student",
+      icon: <BiAddToQueue className="w-5 h-5" />,
+    },
+    {
+      name: "Add Teacher",
+      link: "/dashboard/manage-users/add-teacher",
+      icon: <BiAddToQueue className="w-5 h-5" />,
     },
   ];
 

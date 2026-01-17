@@ -25,7 +25,7 @@ const Logo = () => {
         {/* Main Title */}
         <div className="flex flex-col leading-tight">
           <span className="text-lg font-bold text-gray-900 tracking-wide">
-            GAZIPURSHAHEEN
+            GAZIPURSHAHEENnnnnn
           </span>
           <span className="text-sm font-semibold text-blue-800 tracking-wider uppercase">
             Cadet Academy

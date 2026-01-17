@@ -1,5 +1,5 @@
 import { BiHome } from "react-icons/bi";
-import { FaMessage, FaUsers } from "react-icons/fa6";
+import { FaHandHoldingDollar, FaMessage, FaUsers } from "react-icons/fa6";
 import { IoPerson, IoSettings, IoCreate } from "react-icons/io5";
 import { ImUserPlus } from "react-icons/im";
 import { MdGroupAdd, MdPayments } from "react-icons/md";
@@ -52,21 +52,12 @@ export const teacherPaths = [
 
 export const adminPaths = [
   {
-    name: "Home",
+    name: "Dashboard",
     icon: <BiHome />,
   },
   {
     name: "Profile",
     icon: <IoPerson />,
-  },
-
-  {
-    name: "Create Student",
-    icon: <MdGroupAdd />,
-  },
-  {
-    name: "Create Teacher",
-    icon: <ImUserPlus />,
   },
 
   {
@@ -76,6 +67,10 @@ export const adminPaths = [
   {
     name: "Send Sms",
     icon: <FaMessage />,
+  },
+  {
+    name: "Accounts",
+    icon: <FaHandHoldingDollar />,
   },
   {
     name: "Fee Collection",

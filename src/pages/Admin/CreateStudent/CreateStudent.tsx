@@ -368,17 +368,11 @@ const CreateStudent = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30 p-4 md:p-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="mx-auto">
         {/* Modern Header */}
         <div className="mb-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div className="flex items-center space-x-4">
-              <div className="relative">
-                <div className="p-4 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl shadow-lg">
-                  <FaUserGraduate className="w-8 h-8 text-white" />
-                </div>
-                <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-white"></div>
-              </div>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-800">
                   Create New Student

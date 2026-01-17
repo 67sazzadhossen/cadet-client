@@ -17,7 +17,9 @@ export const sideBarItemsGenerator = (
         acc.push({
           name: item.name,
           link:
-            item.name === "Home" ? `/dashboard` : `/dashboard/${formattedLink}`,
+            item.name === "Dashboard"
+              ? `/dashboard`
+              : `/dashboard/${formattedLink}`,
           icon: item.icon,
         });
       }

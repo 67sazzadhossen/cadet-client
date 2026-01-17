@@ -20,9 +20,21 @@ interface PaymentInfo {
 interface ApiResponse {
   student: Student;
   paymentInfo: PaymentInfo;
+  monthlyFee: {
+    lastDate: Date;
+  };
 }
 
-export const getInvoiceHTML = (studentData: ApiResponse, invoiceNo: string) => {
+export const getInvoiceHTML = (
+  studentData: ApiResponse,
+  result: {
+    paybleamount: number;
+    paidAmount: number;
+    due: number;
+    status: string;
+    invoiceNo: string;
+  },
+) => {
   const numberToWords = (num: number): string => {
     const units = [
       "",
@@ -76,11 +88,20 @@ export const getInvoiceHTML = (studentData: ApiResponse, invoiceNo: string) => {
     }
     return words.trim();
   };
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
 
-  const totalAmount = studentData.paymentInfo.paybleamount;
+  console.log(studentData);
+
+  const totalAmount = result.paybleamount;
 
   const currentDate = new Date();
-  const dueDate = new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000);
 
   return `
 <!DOCTYPE html>
@@ -395,12 +416,12 @@ transform: translateX(-50%) !important;
       <div class="meta-left">
         <div class="meta-item">
           <span class="meta-label">ইনভয়েস নং:</span>
-          <span class="meta-value">${invoiceNo}</span>
+          <span class="meta-value">${result.invoiceNo}</span>
         </div>
         <div class="meta-item">
           <span class="meta-label">তারিখ:</span>
           <span class="meta-value">${currentDate.toLocaleDateString(
-            "bn-BD"
+            "bn-BD",
           )}</span>
         </div>
         <div class="meta-item">
@@ -417,7 +438,7 @@ transform: translateX(-50%) !important;
       <div class="meta-right">
         <div class="meta-item">
           <span class="meta-label">রোল নং:</span>
-          <span class="meta-value">${studentData.student.rollNo}</span>
+          <span class="meta-value">${studentData.student.id.slice(-2)}</span>
         </div>
         <div class="meta-item">
           <span class="meta-label">ক্লাস:</span>
@@ -425,7 +446,13 @@ transform: translateX(-50%) !important;
         </div>
         <div class="meta-item">
           <span class="meta-label">সর্বশেষ তারিখ:</span>
-          <span class="meta-value">${dueDate.toLocaleDateString("bn-BD")}</span>
+          <span class="meta-value">${formatDate(
+            typeof studentData.monthlyFee.lastDate === "string"
+              ? studentData.monthlyFee.lastDate
+              : studentData.monthlyFee.lastDate.toISOString(),
+          )}
+          
+          </span>
         </div>
         
       </div>
@@ -442,9 +469,7 @@ transform: translateX(-50%) !important;
       <tbody>
         <tr>
           <td>মাসিক বেতন</td>
-          <td class="text-right">${studentData.paymentInfo.paybleamount.toFixed(
-            2
-          )}</td>
+          <td class="text-right">${result.paybleamount.toFixed(2)}</td>
         </tr>
         <tr>
           <td>বিদ্যুৎ বিল</td>
@@ -472,7 +497,7 @@ transform: translateX(-50%) !important;
       <div class="summary-left">
         <div class="amount-in-words mb-05">
           <span class="text-bold">অঙ্কে লেখা:</span> 
-          ${numberToWords(studentData.paymentInfo.due)} টাকা মাত্র
+          ${numberToWords(result.due)} টাকা মাত্র
         </div>
         <div class="mb-05">
           <span class="text-bold">পেমেন্ট মেথড:</span> ক্যাশ পেমেন্ট
