@@ -33,7 +33,7 @@ export const getInvoiceHTML = (
     due: number;
     status: string;
     invoiceNo: string;
-  },
+  }
 ) => {
   const numberToWords = (num: number): string => {
     const units = [
@@ -421,7 +421,7 @@ transform: translateX(-50%) !important;
         <div class="meta-item">
           <span class="meta-label">তারিখ:</span>
           <span class="meta-value">${currentDate.toLocaleDateString(
-            "bn-BD",
+            "en-BD"
           )}</span>
         </div>
         <div class="meta-item">
@@ -449,7 +449,7 @@ transform: translateX(-50%) !important;
           <span class="meta-value">${formatDate(
             typeof studentData.monthlyFee.lastDate === "string"
               ? studentData.monthlyFee.lastDate
-              : studentData.monthlyFee.lastDate.toISOString(),
+              : studentData.monthlyFee.lastDate.toISOString()
           )}
           
           </span>
@@ -497,7 +497,7 @@ transform: translateX(-50%) !important;
       <div class="summary-left">
         <div class="amount-in-words mb-05">
           <span class="text-bold">অঙ্কে লেখা:</span> 
-          ${numberToWords(result.due)} টাকা মাত্র
+          ${numberToWords(result.paybleamount)} টাকা মাত্র
         </div>
         <div class="mb-05">
           <span class="text-bold">পেমেন্ট মেথড:</span> ক্যাশ পেমেন্ট
