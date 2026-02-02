@@ -103,6 +103,27 @@ export type GuardianType = {
   _id?: string;
 };
 
+export type TPayment = {
+  month: string;
+  paidAmount: number;
+  due: number;
+  payableAmount: number;
+  status: "paid" | "pending" | "partial" | "unpaid";
+  invoiceNo: string | null;
+  date: string;
+};
+
+export type TPaymentInfo = {
+  due: number;
+  paidAmount: number;
+  paybleamount: number;
+  status: string;
+  month: string;
+  invoiceNo: string | null;
+  payments: TPayment[];
+  totalPayments: number;
+};
+
 export type TStudent = {
   _id: string;
   id: string;
@@ -138,10 +159,7 @@ export type TStudent = {
   transportation: "yes" | "no";
   image?: TImage;
   version: "bangla" | "english";
-  paymentInfo: {
-    status: string;
-    month: string;
-  };
+  paymentInfo: TPaymentInfo;
 
   // Timestamps
   createdAt: string;

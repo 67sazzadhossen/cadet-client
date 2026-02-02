@@ -194,7 +194,7 @@ const AllStudents = () => {
                         checked={selectedVersion === "bangla"}
                         onChange={() =>
                           setSelectedVersion(
-                            selectedVersion === "bangla" ? "" : "bangla"
+                            selectedVersion === "bangla" ? "" : "bangla",
                           )
                         }
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -207,7 +207,7 @@ const AllStudents = () => {
                         checked={selectedVersion === "english"}
                         onChange={() =>
                           setSelectedVersion(
-                            selectedVersion === "english" ? "" : "english"
+                            selectedVersion === "english" ? "" : "english",
                           )
                         }
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -328,6 +328,9 @@ const AllStudents = () => {
                     Monthy Payment Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Paid Amount
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -335,7 +338,7 @@ const AllStudents = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {!isLoading && allStudents.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center">
+                    <td colSpan={7} className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center justify-center">
                         <FiSearch className="text-gray-300 text-4xl mb-3" />
                         <div className="text-lg font-medium text-gray-700 mb-2">
@@ -447,18 +450,115 @@ const AllStudents = () => {
                       </td>
                       {/* Payment status Details */}
                       <td className="px-6 py-4 ">
+                        <div className="space-y-2 min-w-[200px]">
+                          {/* Status Badge */}
+                          <div>
+                            <span
+                              className={`inline-block px-3 py-1 text-sm font-semibold rounded-full
+                                ${
+                                  student.paymentInfo.status === "paid"
+                                    ? "bg-green-100 text-green-700"
+                                    : student.paymentInfo.status === "partial"
+                                      ? "bg-yellow-100 text-yellow-700"
+                                      : "bg-red-100 text-red-700"
+                                }`}
+                            >
+                              {student.paymentInfo.status.toUpperCase()}
+                            </span>
+                          </div>
+
+                          {/* Total Payment Summary */}
+                          <div className="text-xs text-gray-700"></div>
+
+                          {/* Paid Months */}
+                          {student.paymentInfo.payments &&
+                            student.paymentInfo.payments.length > 0 && (
+                              <div className="mt-2">
+                                <div className="text-xs font-medium text-gray-700 mb-1">
+                                  Paid Months (
+                                  {
+                                    student.paymentInfo.payments.filter(
+                                      (p) => p.status === "paid",
+                                    ).length
+                                  }
+                                  ):
+                                </div>
+                                <div className="flex flex-wrap gap-1">
+                                  {student.paymentInfo.payments
+                                    .filter(
+                                      (payment) => payment.status === "paid",
+                                    )
+                                    .slice(0, 3) // Show first 3 months
+                                    .map((payment, index) => (
+                                      <span
+                                        key={index}
+                                        className="px-2 py-0.5 bg-green-100 text-green-800 rounded text-xs font-medium"
+                                        title={`Paid: ${payment.paidAmount} Tk | Date: ${new Date(payment.date).toLocaleDateString()}`}
+                                      >
+                                        {payment.month}
+                                      </span>
+                                    ))}
+
+                                  {/* Show more indicator if there are more than 3 months */}
+                                  {student.paymentInfo.payments.filter(
+                                    (p) => p.status === "paid",
+                                  ).length > 3 && (
+                                    <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs font-medium">
+                                      +
+                                      {student.paymentInfo.payments.filter(
+                                        (p) => p.status === "paid",
+                                      ).length - 3}{" "}
+                                      more
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-4 ">
                         <div className="space-y-1">
-                          <span
-                            className={`inline-block px-3 py-1 text-sm font-semibold rounded-full
-        ${
-          student.paymentInfo.status === "paid"
-            ? "bg-green-100 text-green-700"
-            : "bg-red-100 text-red-700"
-        }`}
-                          >
-                            {student.paymentInfo.status.toUpperCase()}
-                          </span>
-                          <span>{student.paymentInfo.month}</span>
+                          {/* Total Paid Amount */}
+                          <div className="text-lg font-bold text-green-700">
+                            {student.paymentInfo.paidAmount.toLocaleString()} Tk
+                          </div>
+
+                          {/* Payment Count */}
+                          {student.paymentInfo.totalPayments > 0 && (
+                            <div className="text-xs text-gray-600 flex items-center gap-2">
+                              <div className="flex items-center">
+                                <div className="w-2 h-2 bg-blue-500 rounded-full mr-1"></div>
+                                {student.paymentInfo.totalPayments} payment(s)
+                              </div>
+
+                              {/* Show average payment per month */}
+                              {student.paymentInfo.payments &&
+                                student.paymentInfo.payments.length > 0 && (
+                                  <div className="text-xs text-gray-500">
+                                    Avg:{" "}
+                                    {Math.round(
+                                      student.paymentInfo.paidAmount /
+                                        student.paymentInfo.payments.length,
+                                    )}{" "}
+                                    Tk/month
+                                  </div>
+                                )}
+                            </div>
+                          )}
+
+                          {/* Last Payment Date */}
+                          {student.paymentInfo.payments &&
+                            student.paymentInfo.payments.length > 0 && (
+                              <div className="text-xs text-gray-500 mt-1">
+                                Last:{" "}
+                                {
+                                  student.paymentInfo.payments[
+                                    student.paymentInfo.payments.length - 1
+                                  ].month
+                                }
+                              </div>
+                            )}
                         </div>
                       </td>
 
@@ -536,7 +636,7 @@ const AllStudents = () => {
                           {pageNum}
                         </button>
                       );
-                    }
+                    },
                   )}
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
