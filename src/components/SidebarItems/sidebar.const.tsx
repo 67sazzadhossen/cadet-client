@@ -25,21 +25,14 @@ export const studentPaths = [
 
 export const teacherPaths = [
   {
-    name: "Home",
-    icon: <BiHome />,
-  },
-  {
     name: "Profile",
     icon: <IoPerson />,
   },
   {
-    name: "Teacher Dashboard",
+    name: "Performance",
     icon: <IoPerson />,
   },
-  {
-    name: "Manage Students",
-    icon: <IoSettings />,
-  },
+
   {
     name: "Marks Entry",
     icon: <IoCreate />,
@@ -77,7 +70,7 @@ export const adminPaths = [
     icon: <MdPayments />,
   },
   {
-    name: "Settings",
+    name: "Academic Management",
     icon: <IoSettings />,
   },
 ];
