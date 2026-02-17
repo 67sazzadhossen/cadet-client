@@ -1,7 +1,14 @@
+"use client";
+
+import { useGetAllSubjectsQuery } from "@/redux/features/academic/academicApi";
 import Image from "next/image";
 import React from "react";
 
 const Performance = () => {
+  const { data, isLoading } = useGetAllSubjectsQuery(undefined);
+
+  const allSubjects = data?.data?.data;
+  console.log(allSubjects);
   return (
     <div>
       <div className="flex gap-4">
@@ -29,11 +36,11 @@ const Performance = () => {
         </div>
 
         <div>
-          <select defaultValue="Pick a color" className="select">
-            <option disabled={true}>Pick a color</option>
-            <option>Crimson</option>
-            <option>Amber</option>
-            <option>Velvet</option>
+          <select defaultValue="Play" className="select">
+            <option disabled={true}>Select Class</option>
+            {allSubjects?.map((data, idx) => (
+              <option key={idx}>{data.className}</option>
+            ))}
           </select>
         </div>
       </div>
