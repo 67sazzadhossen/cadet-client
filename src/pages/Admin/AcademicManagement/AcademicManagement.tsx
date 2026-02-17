@@ -674,3 +674,8 @@ const AcademicManagement: React.FC = () => {
 };
 
 export default AcademicManagement;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}

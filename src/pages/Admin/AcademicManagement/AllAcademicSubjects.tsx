@@ -817,3 +817,8 @@ const AllAcademicSubjects: React.FC = () => {
 };
 
 export default AllAcademicSubjects;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}
