@@ -41,6 +41,12 @@ const academicApi = baseApi.injectEndpoints({
         url: `/academic/student-reports?&search=${payload.search}&class=${payload.class}&version=${payload.version}`,
       }),
     }),
+    deleteSingleReport: builder.query({
+      query: (payload) => ({
+        method: "GET",
+        url: `/academic/${payload.id}`,
+      }),
+    }),
   }),
 });
 
