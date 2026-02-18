@@ -66,6 +66,11 @@ const Performance: React.FC = () => {
     Record<string, string>
   >({});
 
+  // Separate loading state for each student
+  const [submittingStudents, setSubmittingStudents] = useState<Set<string>>(
+    new Set(),
+  );
+
   // Fetch current user data
   const { data: currentUser, isLoading: userLoading } =
     useGetMeQuery(undefined);
@@ -101,8 +106,7 @@ const Performance: React.FC = () => {
     skip: userLoading || subjectsLoading,
   });
 
-  const [addReport, { isLoading: addReportLoading }] =
-    useAddStudentReportMutation();
+  const [addReport] = useAddStudentReportMutation();
 
   useEffect(() => {
     if (!userLoading && !subjectsLoading) {
@@ -222,6 +226,9 @@ const Performance: React.FC = () => {
       return;
     }
 
+    // Add this student to submitting set
+    setSubmittingStudents((prev) => new Set(prev).add(studentId));
+
     const payload = {
       studentId,
       subject: selectedSubject,
@@ -252,6 +259,13 @@ const Performance: React.FC = () => {
           id: toastId,
         });
       }
+    } finally {
+      // Remove this student from submitting set
+      setSubmittingStudents((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(studentId);
+        return newSet;
+      });
     }
   };
 
@@ -455,7 +469,7 @@ const Performance: React.FC = () => {
                 <span>📚</span> {classSubjects.length} Subjects
               </div>
               <div className="bg-green-100 text-green-800 px-2 py-1 rounded-lg text-xs flex items-center gap-1">
-                <span>👥</span> {meta?.totalStudents || 0} Students
+                <span>👥</span> {students.length || 0} Students
               </div>
             </>
           )}
@@ -509,6 +523,7 @@ const Performance: React.FC = () => {
                 {students.map((student: Student) => {
                   const todaysReport: StudentReport | null =
                     getTodaysReport(student);
+                  const isSubmitting = submittingStudents.has(student.id);
 
                   return (
                     <div
@@ -575,7 +590,7 @@ const Performance: React.FC = () => {
                                       e.target.value,
                                     )
                                   }
-                                  disabled={addReportLoading}
+                                  disabled={isSubmitting}
                                 >
                                   <option value="">Select</option>
                                   <option value="low">Low</option>
@@ -590,10 +605,10 @@ const Performance: React.FC = () => {
                                   }
                                   disabled={
                                     !studentPerformances[student.id] ||
-                                    addReportLoading
+                                    isSubmitting
                                   }
                                 >
-                                  {addReportLoading ? (
+                                  {isSubmitting ? (
                                     <span className="flex items-center gap-1">
                                       <span className="animate-spin h-3 w-3 border-2 border-white border-t-transparent rounded-full"></span>
                                       <span>...</span>
