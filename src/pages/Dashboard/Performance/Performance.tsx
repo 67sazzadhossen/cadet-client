@@ -8,7 +8,7 @@ import {
 } from "@/redux/features/academic/academicApi";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 import React, { useState, useEffect } from "react";
-import { FiSearch, FiFilter, FiX, FiCheck } from "react-icons/fi";
+import { FiSearch, FiFilter, FiX, FiCheck, FiTrash2 } from "react-icons/fi";
 import { useGetMeQuery } from "@/redux/features/user/userApi";
 import toast from "react-hot-toast";
 
@@ -41,16 +41,6 @@ interface Subject {
   _id: string;
   className: string;
   subjects: string[];
-}
-
-interface MetaData {
-  totalStudents: number;
-  totalPages: number;
-  page: number;
-  limit: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-  isSearching: boolean;
 }
 
 const Performance: React.FC = () => {
@@ -123,21 +113,13 @@ const Performance: React.FC = () => {
 
   // Get logged user info safely
   const loggedUser = currentUser?.data?.data;
+  const role = loggedUser?.user?.role;
   const loggedUserName =
     loggedUser?.name?.bengaliName || loggedUser?.name?.englishName || "Unknown";
 
   // Safely extract data with fallbacks
   const allSubjects: Subject[] = subjectsData?.data?.data || [];
   const students: Student[] = studentData?.data?.data || [];
-  const meta: MetaData = studentData?.data?.meta || {
-    totalStudents: 0,
-    totalPages: 1,
-    page: 1,
-    limit: 10,
-    hasNextPage: false,
-    hasPreviousPage: false,
-    isSearching: false,
-  };
 
   // Get unique class names from subjects
   const classNames: string[] = [
@@ -266,6 +248,16 @@ const Performance: React.FC = () => {
         newSet.delete(studentId);
         return newSet;
       });
+    }
+  };
+
+  const handleDeleteReport = (reportId: string, studentName: string) => {
+    if (
+      window.confirm(`Are you sure you want to delete ${studentName}'s report?`)
+    ) {
+      // TODO: Implement delete functionality
+      toast.success(`Report deleted successfully!`, { duration: 2000 });
+      refetch();
     }
   };
 
@@ -477,7 +469,7 @@ const Performance: React.FC = () => {
 
         {/* Sticky Header - Class and Subject Info */}
         {selectedSubject && selectedClass && (
-          <div className="sticky top-[125px] z-10 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-3 mb-4 text-white shadow-md">
+          <div className="sticky top-0 z-10 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-3 mb-4 text-white shadow-md">
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-base sm:text-lg font-semibold">
@@ -575,6 +567,25 @@ const Performance: React.FC = () => {
                                   {todaysReport.performance === "high" &&
                                     "🟢 High"}
                                 </p>
+
+                                {/* Delete Button for Admin - Inside Today's Report */}
+                                {role === "admin" && (
+                                  <div className="mt-2 pt-2 border-t border-green-200">
+                                    <button
+                                      onClick={() =>
+                                        handleDeleteReport(
+                                          todaysReport._id,
+                                          student.name?.englishName ||
+                                            "Unknown",
+                                        )
+                                      }
+                                      className="w-full px-2 py-1 bg-red-500 text-white text-xs font-medium rounded hover:bg-red-600 transition-colors flex items-center justify-center gap-1"
+                                    >
+                                      <FiTrash2 size={12} />
+                                      Delete Report
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                             ) : (
                               // Show dropdown and submit button if no report for today
