@@ -633,3 +633,8 @@ const Performance: React.FC = () => {
 };
 
 export default Performance;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}
