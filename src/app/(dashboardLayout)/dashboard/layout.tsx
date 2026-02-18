@@ -6,12 +6,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
       <div className="drawer lg:drawer-open">
-        <input
-          id="my-drawer-4"
-          type="checkbox"
-          className="drawer-toggle"
-          defaultChecked
-        />
+        <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content">
           {/* Navbar */}
           <nav className="navbar w-full bg-base-300">

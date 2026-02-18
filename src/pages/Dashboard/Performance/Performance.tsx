@@ -274,10 +274,10 @@ const Performance: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b sticky top-0 z-20">
+      <div className="bg-white shadow-sm border-b top-0 z-20">
         <div className="px-4 py-3">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-            Student Performance
+            Student Reports
           </h1>
           <p className="text-xs sm:text-sm text-gray-600 mt-0.5">
             Track and manage student performance by subject

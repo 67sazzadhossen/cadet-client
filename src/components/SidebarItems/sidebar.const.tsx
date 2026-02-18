@@ -28,7 +28,7 @@ export const teacherPaths = [
     icon: <IoPerson />,
   },
   {
-    name: "Performance",
+    name: "Student Reports",
     icon: <IoPerson />,
   },
 
@@ -67,6 +67,10 @@ export const adminPaths = [
   {
     name: "Fee Collection",
     icon: <MdPayments />,
+  },
+  {
+    name: "Student Reports",
+    icon: <IoPerson />,
   },
   {
     name: "Academic Management",
