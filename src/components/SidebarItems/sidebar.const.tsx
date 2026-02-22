@@ -1,6 +1,6 @@
-import { BiHome } from "react-icons/bi";
+import { BiHome, BiSolidReport } from "react-icons/bi";
 import { FaHandHoldingDollar, FaMessage, FaUsers } from "react-icons/fa6";
-import { IoPerson, IoSettings, IoCreate } from "react-icons/io5";
+import { IoPerson, IoSettings } from "react-icons/io5";
 import { MdPayments } from "react-icons/md";
 
 export const studentPaths = [
@@ -9,8 +9,8 @@ export const studentPaths = [
     icon: <IoPerson />,
   },
   {
-    name: "Result",
-    icon: <IoSettings />,
+    name: "Performance Report",
+    icon: <BiSolidReport />,
   },
   {
     name: "Attendance",
@@ -28,16 +28,11 @@ export const teacherPaths = [
     icon: <IoPerson />,
   },
   {
-    name: "Student Reports",
+    name: "Attendance",
     icon: <IoPerson />,
   },
-
   {
-    name: "Marks Entry",
-    icon: <IoCreate />,
-  },
-  {
-    name: "Routine",
+    name: "Student Reports",
     icon: <IoPerson />,
   },
 ];

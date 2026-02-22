@@ -41,10 +41,16 @@ const academicApi = baseApi.injectEndpoints({
         url: `/academic/student-reports?&search=${payload.search}&class=${payload.class}&version=${payload.version}`,
       }),
     }),
-    deleteSingleReport: builder.query({
+    deleteSingleReport: builder.mutation({
+      query: (payload) => ({
+        method: "DELETE",
+        url: `/academic/delete-single-report/${payload.id}`,
+      }),
+    }),
+    getMyReports: builder.query({
       query: (payload) => ({
         method: "GET",
-        url: `/academic/${payload.id}`,
+        url: `/academic/my-reports?id=${payload.id}&date=${payload.date}`,
       }),
     }),
   }),
@@ -57,4 +63,6 @@ export const {
   useDeleteSubjectsMutation,
   useAddStudentReportMutation,
   useGetAllReportsQuery,
+  useDeleteSingleReportMutation,
+  useGetMyReportsQuery,
 } = academicApi;

@@ -3,6 +3,7 @@
 
 import {
   useAddStudentReportMutation,
+  useDeleteSingleReportMutation,
   useGetAllReportsQuery,
   useGetAllSubjectsQuery,
 } from "@/redux/features/academic/academicApi";
@@ -70,6 +71,8 @@ const Performance: React.FC = () => {
     useGetAllSubjectsQuery(undefined, {
       skip: userLoading,
     });
+
+  const [deleteReport] = useDeleteSingleReportMutation();
 
   // Debounce search term
   useEffect(() => {
@@ -251,13 +254,20 @@ const Performance: React.FC = () => {
     }
   };
 
-  const handleDeleteReport = (reportId: string, studentName: string) => {
+  const handleDeleteReport = async (reportId: string, studentName: string) => {
     if (
       window.confirm(`Are you sure you want to delete ${studentName}'s report?`)
     ) {
       // TODO: Implement delete functionality
-      toast.success(`Report deleted successfully!`, { duration: 2000 });
-      refetch();
+      const payload = {
+        id: reportId,
+      };
+
+      const res = await deleteReport(payload).unwrap();
+
+      if (res.data.success) {
+        refetch();
+      }
     }
   };
 
