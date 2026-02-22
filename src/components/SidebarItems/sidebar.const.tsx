@@ -16,10 +16,10 @@ export const studentPaths = [
     name: "Attendance",
     icon: <IoPerson />,
   },
-  {
-    name: "Payment",
-    icon: <IoSettings />,
-  },
+  // {
+  //   name: "Payment",
+  //   icon: <IoSettings />,
+  // },
 ];
 
 export const teacherPaths = [
@@ -49,6 +49,14 @@ export const adminPaths = [
 
   {
     name: "Manage Users",
+    icon: <FaUsers />,
+  },
+  {
+    name: "Teachers Attendance",
+    icon: <FaUsers />,
+  },
+  {
+    name: "Students Attendance",
     icon: <FaUsers />,
   },
   {
