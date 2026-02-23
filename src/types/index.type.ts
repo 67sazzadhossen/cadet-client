@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TypedMutationTrigger } from "@reduxjs/toolkit/query/react";
 import { Types } from "mongoose";
+import { ReactNode } from "react";
 
 export type TName = {
   bengaliName: string;
@@ -114,6 +115,7 @@ export type TPayment = {
 };
 
 export type TPaymentInfo = {
+  dueAmount: ReactNode;
   due: number;
   paidAmount: number;
   paybleamount: number;
