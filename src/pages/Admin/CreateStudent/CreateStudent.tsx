@@ -9,33 +9,28 @@ import {
   FaCalendarAlt,
   FaUser,
   FaPhone,
-  FaHome,
   FaPlus,
   FaTrash,
   FaUpload,
-  FaImage,
   FaEnvelope,
   FaBirthdayCake,
   FaFlag,
   FaBook,
-  FaUsers,
   FaBus,
   FaCopy,
   FaCheck,
   FaIdCard,
   FaSchool,
   FaChild,
-  FaTransgender,
   FaHeartbeat,
-  FaShareAlt,
   FaTimes,
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
-import { IoCheckmarkCircle } from "react-icons/io5";
+
 import { RiParentFill } from "react-icons/ri";
-import { MdCheckCircle, MdFamilyRestroom, MdLocationOn } from "react-icons/md";
-import { TbAddressBook } from "react-icons/tb";
+import { MdCheckCircle, MdFamilyRestroom } from "react-icons/md";
+
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Image from "next/image";
@@ -46,7 +41,6 @@ import {
 } from "@/redux/features/student/studentApi";
 import { useCloudinaryUpload } from "@/utils/useCloudinaryUpload";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
-import { FaEye, FaPrint } from "react-icons/fa6";
 
 // Types based on your Mongoose schema
 interface TGuardianInfo {
@@ -1309,3 +1303,8 @@ const CreateStudent = () => {
 };
 
 export default CreateStudent;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}

@@ -65,7 +65,7 @@ const AllTeachers = () => {
       teacher.name?.englishName
         ?.toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
-      teacher.name?.bengaliName?.includes(searchTerm) || // Fixed: changed banglaName to bengaliName
+      teacher.name?.bengaliName?.includes(searchTerm) ||
       teacher.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       teacher.designation?.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -368,7 +368,7 @@ const AllTeachers = () => {
                         </span>
                       </div>
 
-                      {/* Quick Contact */}
+                      {/* Quick Contact - Updated to use TContact type */}
                       <div className="flex items-center gap-3 mt-2">
                         {teacher.contact?.whatsapp && (
                           <span className="text-xs text-gray-600 flex items-center gap-1">
@@ -384,7 +384,7 @@ const AllTeachers = () => {
                 {/* Expanded Details */}
                 {isExpanded && (
                   <div className="px-4 pb-4 pt-2 border-t border-gray-100 bg-gray-50/50">
-                    {/* Contact Info */}
+                    {/* Contact Info - Updated to use TContact type */}
                     <div className="grid grid-cols-2 gap-3 mb-4">
                       <div className="bg-white p-3 rounded-lg border">
                         <div className="flex items-center gap-2 text-xs text-gray-600 mb-1">
@@ -392,7 +392,16 @@ const AllTeachers = () => {
                           <span>ফোন</span>
                         </div>
                         <p className="text-sm font-medium truncate">
-                          {teacher.contact?.phone || "N/A"}
+                          {teacher.contact?.mobile || "N/A"}
+                        </p>
+                      </div>
+                      <div className="bg-white p-3 rounded-lg border">
+                        <div className="flex items-center gap-2 text-xs text-gray-600 mb-1">
+                          <FiPhone size={12} className="text-green-500" />
+                          <span>মোবাইল</span>
+                        </div>
+                        <p className="text-sm font-medium truncate">
+                          {teacher.contact?.mobile || "N/A"}
                         </p>
                       </div>
                       <div className="bg-white p-3 rounded-lg border">
@@ -401,7 +410,16 @@ const AllTeachers = () => {
                           <span>ইমেইল</span>
                         </div>
                         <p className="text-sm font-medium truncate">
-                          {teacher.email || "N/A"}
+                          {teacher.contact?.email || "N/A"}
+                        </p>
+                      </div>
+                      <div className="bg-white p-3 rounded-lg border">
+                        <div className="flex items-center gap-2 text-xs text-gray-600 mb-1">
+                          <FaWhatsapp size={12} className="text-green-600" />
+                          <span>WhatsApp</span>
+                        </div>
+                        <p className="text-sm font-medium truncate">
+                          {teacher.contact?.whatsapp || "N/A"}
                         </p>
                       </div>
                     </div>
@@ -475,16 +493,7 @@ const AllTeachers = () => {
                         <h4 className="text-xs font-semibold text-gray-700 mb-2">
                           ঠিকানা
                         </h4>
-                        <p className="text-xs">
-                          {[
-                            teacher.address.village,
-                            teacher.address.postOffice,
-                            teacher.address.thana,
-                            teacher.address.district,
-                          ]
-                            .filter(Boolean)
-                            .join(", ")}
-                        </p>
+                        <p className="text-xs">{teacher.address.district}</p>
                       </div>
                     )}
 
@@ -524,3 +533,8 @@ const AllTeachers = () => {
 };
 
 export default AllTeachers;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}
