@@ -79,4 +79,8 @@ export const adminPaths = [
     name: "Academic Management",
     icon: <IoSettings />,
   },
+  {
+    name: "Id Cards",
+    icon: <IoSettings />,
+  },
 ];

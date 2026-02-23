@@ -4,12 +4,14 @@ import { Types } from "mongoose";
 import { ReactNode } from "react";
 
 export type TName = {
+  banglaName: any;
   bengaliName: string;
   englishName: string;
   _id?: Types.ObjectId;
 };
 
 export type TContact = {
+  phone: string;
   email: string;
   mobile: string;
   whatsapp: string;
@@ -17,6 +19,9 @@ export type TContact = {
 };
 
 export type TAddress = {
+  village: any;
+  thana: any;
+  postOffice: any;
   address: string;
   district: string;
   _id?: Types.ObjectId;
@@ -59,6 +64,7 @@ export type TAdmin = {
 };
 
 export type TTeacher = {
+  email: string;
   _id: Types.ObjectId;
   user: {
     needsPasswordChanged: boolean;
