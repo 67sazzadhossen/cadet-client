@@ -7,7 +7,15 @@ const attendanceApi = baseApi.injectEndpoints({
         url: `/attendance/get-my-attendance?date=${payload.date}&month=${payload.month}`,
       }),
     }),
+
+    getTeachersAttendance: builder.query({
+      query: () => ({
+        method: "GET",
+        url: `/attendance/teachers-attendance`,
+      }),
+    }),
   }),
 });
 
-export const { useGetMyAttendanceQuery } = attendanceApi;
+export const { useGetMyAttendanceQuery, useGetTeachersAttendanceQuery } =
+  attendanceApi;
