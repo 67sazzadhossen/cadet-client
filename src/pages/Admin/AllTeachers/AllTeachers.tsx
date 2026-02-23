@@ -65,7 +65,7 @@ const AllTeachers = () => {
       teacher.name?.englishName
         ?.toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
-      teacher.name?.banglaName?.includes(searchTerm) ||
+      teacher.name?.bengaliName?.includes(searchTerm) || // Fixed: changed banglaName to bengaliName
       teacher.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       teacher.designation?.toLowerCase().includes(searchTerm.toLowerCase());
 
