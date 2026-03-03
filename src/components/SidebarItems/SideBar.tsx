@@ -2,15 +2,19 @@
 import { useLogoutMutation } from "@/redux/features/auth/authApi";
 import { logout, selectCurrentUser } from "@/redux/features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
-import { sideBarItemsGenerator } from "@/utils/sidebarItemsGenerator";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { TSidebar } from "./sidebar.type";
-import { adminPaths, studentPaths, teacherPaths } from "./sidebar.const";
+import {
+  adminPaths,
+  studentPaths,
+  teacherPaths,
+  TSidebarItem,
+} from "./sidebar.const";
 import { BiSolidLogOutCircle } from "react-icons/bi";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
+import SidebarItem from "./SideBarItem";
 
 const SideBar = () => {
   const currentUser = useAppSelector(selectCurrentUser) as {
@@ -23,17 +27,13 @@ const SideBar = () => {
     TEACHER: "teacher",
     STUDENT: "student",
   };
-  type role = {
-    ADMIN: string;
-    TEACHER: string;
-    STUDENT: string;
-  } | null;
 
-  const sidebarItems =
-    (role === userRole.STUDENT && sideBarItemsGenerator(studentPaths)) ||
-    (role === userRole.TEACHER && sideBarItemsGenerator(teacherPaths)) ||
-    (role === userRole.ADMIN && sideBarItemsGenerator(adminPaths)) ||
+  const sidebarItems: TSidebarItem[] =
+    (role === userRole.STUDENT && studentPaths) ||
+    (role === userRole.TEACHER && teacherPaths) ||
+    (role === userRole.ADMIN && adminPaths) ||
     [];
+
   const [loggingOut] = useLogoutMutation();
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -45,45 +45,51 @@ const SideBar = () => {
   };
 
   return (
-    <ul className="menu w-full grow space-y-3 ">
-      {/* List item */}
+    <div className="h-full flex flex-col bg-base-100">
+      {/* Logo Section */}
+      <div className="p-4">
+        <Link href={"/"} className="block">
+          <div className="flex items-center gap-2">
+            <Image
+              src={logo}
+              width={40}
+              height={40}
+              alt="logo"
+              className="rounded-lg"
+            />
+            <span className="is-drawer-close:hidden text-lg font-bold text-primary truncate">
+              School MS
+            </span>
+          </div>
+        </Link>
+      </div>
 
-      <Link href={"/"}>
-        <Image src={logo} width={40} height={80} alt="logo" className="" />
-      </Link>
-      <div className="divider -my-2 mb-5"></div>
-      {sidebarItems.map((item: TSidebar, idx) => (
-        <li key={idx}>
-          <Link href={item.link}>
-            <button
-              className="is-drawer-close:tooltip is-drawer-close:tooltip-right flex items-center gap-2"
-              data-tip={item.name}
-            >
-              <span className="text-2xl">{item.icon}</span>
-              <span className="is-drawer-close:hidden whitespace-nowrap">
-                {item.name}
-              </span>
-            </button>
-          </Link>
-        </li>
-      ))}
+      <div className="divider my-0" />
 
-      <li className="absolute bottom-20 text-2xl">
-        {" "}
+      {/* Menu Items */}
+      <div className="flex-1 overflow-y-auto py-4 px-3">
+        <ul className="space-y-1">
+          {sidebarItems.map((item: TSidebarItem, idx) => (
+            <SidebarItem key={idx} item={item} />
+          ))}
+        </ul>
+      </div>
+
+      {/* Logout Section */}
+      <div className="p-3 border-t border-base-200">
         <button
           onClick={handleLogout}
-          className="is-drawer-close:tooltip is-drawer-close:tooltip-right flex items-center gap-2 -ml-2 text-red-700"
-          data-tip="Logout"
+          className="flex items-center gap-3 px-4 py-2.5 w-full rounded-lg text-error hover:bg-error/10 transition-all duration-200"
         >
-          <span className="text-4xl">
+          <span className="text-2xl">
             <BiSolidLogOutCircle />
           </span>
-          <span className="is-drawer-close:hidden whitespace-nowrap uppercase font-bold">
+          <span className="is-drawer-close:hidden text-sm font-medium uppercase">
             Logout
           </span>
         </button>
-      </li>
-    </ul>
+      </div>
+    </div>
   );
 };
 

@@ -4,11 +4,13 @@ import { QRCodeCanvas } from "qrcode.react";
 
 const StudentIdCard = () => {
   const studentData = {
-    name: "YOUR NAME",
-    role: "JOB POSITION",
-    id: "000 000 000 221",
-    email: "your mail here",
-    phone: "+ 00 11 231 589",
+    name: "Jubayet hossen",
+    role: "Student",
+    id: "261011",
+    class: "6",
+    roll: "01",
+    bloodGroup: "O+",
+    phone: "01772731958",
     photo:
       "https://images.unsplash.com/photo-1595152772835-219674b2a8a6?q=80&w=300&h=300&fit=crop",
     company: "COMPANY NAME",
@@ -62,41 +64,58 @@ const StudentIdCard = () => {
           </div>
         </div>
 
-        {/* Info Content Section */}
-        <div className="mt-64 text-center px-10">
+        {/* Info Content Section - FIXED ALIGNMENT HERE */}
+        <div className="mt-64 text-center px-6">
           <h1 className="text-2xl font-black text-gray-900 tracking-tight leading-none">
             {studentData.name}
           </h1>
-          <p className="text-[10px] font-bold text-gray-400 mt-2 mb-8 tracking-[0.2em]">
+          <p className="text-[10px] font-bold text-gray-400 mt-2 mb-6 tracking-[0.2em]">
             {studentData.role}
           </p>
 
-          <div className="grid gap-2 grid-cols-3">
-            <div className="text-[11px] col-span-2   text-left space-y-2 font-bold text-gray-700">
-              <div className="flex items-center">
-                <span className="w-16 text-gray-400">ID NO</span>
-                <span>: {studentData.id}</span>
+          {/* Two Column Layout - Left: Details, Right: QR Code */}
+          <div className="flex gap-3 items-start text-sm px-2">
+            {/* Left Column - Student Details */}
+            <div className="flex-1 text-[10px] text-left space-y-2 font-bold text-gray-700">
+              <div className="flex items-start">
+                <span className="w-[45px] text-gray-400 ">ID NO</span>
+                <span className="ml-1">: {studentData.id}</span>
               </div>
-              <div className="flex items-center">
-                <span className="w-16 text-gray-400">EMAIL</span>
-                <span className="lowercase">: {studentData.email}</span>
+              <div className="flex items-center gap-4">
+                <div className="flex items-start">
+                  <span className="w-[45px] text-gray-400 ">CLASS</span>
+                  <span className="ml-1 lowercase">: {studentData.class}</span>
+                </div>
+                <div className="flex items-start">
+                  <span className="w-[45px] text-gray-400 ">ROLL</span>
+                  <span className="ml-1">: {studentData.roll}</span>
+                </div>
               </div>
-              <div className="flex items-center">
-                <span className="w-16 text-gray-400">PHONE</span>
-                <span>: {studentData.phone}</span>
+              <div className="flex items-start">
+                <span className="w-[45px] text-gray-400 ">PHONE</span>
+                <span className="ml-1">: {studentData.phone}</span>
+              </div>
+              <div className="flex items-start">
+                <span className="w-[80px] text-gray-400 ">BLOOD GROUP</span>
+                <span className="ml-1">: {studentData.bloodGroup}</span>
               </div>
             </div>
 
-            {/* Barcode Placeholder */}
-            <div className=" ">
-              <QRCodeCanvas
-                value={`https://gscam.edu.bd/verify/${studentData.id}`}
-                size={65}
-                bgColor="#ffffff"
-                fgColor="#000000"
-                level="H"
-                includeMargin={false}
-              />
+            {/* Right Column - QR Code (Perfectly Aligned) */}
+            <div className="flex flex-col items-center justify-center ">
+              <div className="bg-white p-1 rounded-lg shadow-sm border border-gray-200">
+                <QRCodeCanvas
+                  value={`https://gscam.edu.bd/verify/${studentData.id}`}
+                  size={75}
+                  bgColor="#ffffff"
+                  fgColor="#000000"
+                  level="H"
+                  includeMargin={false}
+                />
+              </div>
+              <span className="text-[6px] text-gray-400 mt-1 tracking-wider">
+                SCAN TO VERIFY
+              </span>
             </div>
           </div>
         </div>
@@ -115,7 +134,7 @@ const StudentIdCard = () => {
         </div>
       </div>
 
-      {/* --- BACK SIDE --- */}
+      {/* --- BACK SIDE --- (পুরোপুরি অপরিবর্তিত) */}
       <div className="relative w-[320px] h-[500px] bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-300">
         {/* Top Slant Detail */}
         <div
