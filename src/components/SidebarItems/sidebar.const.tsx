@@ -201,6 +201,11 @@ export const adminPaths: TSidebarItem[] = [
         link: "/dashboard/fee/reports",
         icon: <BiSolidReport />,
       },
+      {
+        name: "Session Fee Reports",
+        link: "/dashboard/fee/session-reports",
+        icon: <BiSolidReport />,
+      },
     ],
   },
   {
