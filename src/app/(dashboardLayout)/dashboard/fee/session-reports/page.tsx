@@ -1,7 +1,11 @@
-import React from "react";
+import SesssionFeeReports from "@/pages/Dashboard/FeeReports/SessionFeeReports/SesssionFeeReports";
 
 const page = () => {
-  return <div>Page</div>;
+  return (
+    <div>
+      <SesssionFeeReports />
+    </div>
+  );
 };
 
 export default page;
