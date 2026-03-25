@@ -1,60 +1,65 @@
+// app/dashboard/layout.tsx
+"use client";
 import PrivateRoute from "@/components/privateRoute/PrivateRoute";
-import SideBar from "@/components/SidebarItems/SideBar";
-import React from "react";
 
-const layout = ({ children }: { children: React.ReactNode }) => {
+import { FiMenu } from "react-icons/fi";
+import { ReactNode, useState } from "react";
+import { Sidebar } from "@/components/SidebarItems/SideBar";
+
+interface LayoutProps {
+  children: ReactNode;
+}
+
+const Layout = ({ children }: LayoutProps) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
-    <div>
-      <div className="drawer lg:drawer-open">
-        <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
-        <div className="drawer-content">
+    <PrivateRoute>
+      <div className="flex h-screen bg-gray-50">
+        {/* Sidebar with state */}
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        />
+
+        {/* Main Content */}
+        <main className="flex-1 flex flex-col min-w-0 h-full">
           {/* Navbar */}
-          <nav className="navbar w-full bg-base-300">
-            <label
-              htmlFor="my-drawer-4"
-              aria-label="open sidebar"
-              className="btn btn-square btn-ghost"
+          <nav className="bg-white shadow-sm border-b border-gray-200 h-16 flex items-center px-4 lg:px-6">
+            {/* Menu Button - Left side */}
+            <button
+              onClick={toggleSidebar}
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors mr-3"
+              aria-label="Toggle menu"
             >
-              {/* Sidebar toggle icon */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                strokeLinejoin="round"
-                strokeLinecap="round"
-                strokeWidth="2"
-                fill="none"
-                stroke="currentColor"
-                className="my-1.5 inline-block size-6"
-              >
-                <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
-                <path d="M9 4v16"></path>
-                <path d="M14 10l2 2l-2 2"></path>
-              </svg>
-            </label>
-            <div className="px-4 uppercase font-bold text-xl">
-              gazipurshaheen cadet academy
+              <FiMenu className="w-6 h-6 text-gray-600" />
+            </button>
+
+            {/* Title - Centered on mobile, left aligned on desktop */}
+            <div className="flex-1 text-center lg:text-left">
+              <h1 className="text-lg lg:text-xl font-bold text-gray-800 uppercase tracking-wide">
+                Gazipur Shaheen Cadet Academy
+              </h1>
+            </div>
+
+            {/* User Profile Section */}
+            <div className="flex items-center gap-2">
+              {/* Add user menu here if needed */}
             </div>
           </nav>
-          {/* Page content here */}
-          <div className="p-4">
-            <PrivateRoute>{children}</PrivateRoute>
-          </div>
-        </div>
 
-        <div className="drawer-side is-drawer-close:overflow-visible">
-          <label
-            htmlFor="my-drawer-4"
-            aria-label="close sidebar"
-            className="drawer-overlay"
-          ></label>
-          <div className="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64 text-black  ">
-            {/* Sidebar content here */}
-            <SideBar />
+          {/* Page Content */}
+          <div className="flex-1 overflow-auto p-4 lg:p-6 bg-gray-50">
+            <div className="">{children}</div>
           </div>
-        </div>
+        </main>
       </div>
-    </div>
+    </PrivateRoute>
   );
 };
 
-export default layout;
+export default Layout;

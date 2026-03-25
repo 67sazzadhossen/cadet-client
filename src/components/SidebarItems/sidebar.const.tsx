@@ -1,8 +1,56 @@
 import { JSX } from "react";
-import { BiHome, BiSolidReport } from "react-icons/bi";
-import { FaHandHoldingDollar, FaMessage, FaUsers } from "react-icons/fa6";
-import { IoPerson, IoSettings } from "react-icons/io5";
-import { MdPayments } from "react-icons/md";
+import {
+  BiHome,
+  BiSolidReport,
+  BiUser,
+  BiCalendarCheck,
+  BiMoney,
+  BiGroup,
+  BiCreditCard,
+  BiBookOpen,
+  BiTime,
+  BiIdCard,
+} from "react-icons/bi";
+import {
+  FaChalkboardTeacher,
+  FaExclamationTriangle,
+  FaUserCog,
+} from "react-icons/fa";
+import {
+  FaHandHoldingDollar,
+  FaMessage,
+  FaUsers,
+  FaUserGraduate,
+  FaMoneyBillWave,
+  FaFileInvoiceDollar,
+  FaBookOpen,
+  FaClipboardList,
+  FaUserShield,
+  FaChartLine,
+} from "react-icons/fa6";
+import {
+  IoPerson,
+  IoSettings,
+  IoPeople,
+  IoCalendar,
+  IoDocumentText,
+  IoCash,
+  IoWallet,
+  IoBusiness,
+  IoSchool,
+} from "react-icons/io5";
+import {
+  MdPayments,
+  MdAttachMoney,
+  MdReceipt,
+  MdAssignment,
+  MdClass,
+  MdSubject,
+  MdSchedule,
+  MdReport,
+  MdEmail,
+  MdSms,
+} from "react-icons/md";
 
 export interface TSidebarItem {
   name: string;
@@ -20,52 +68,35 @@ export const studentPaths: TSidebarItem[] = [
   {
     name: "Performance Report",
     link: "/dashboard/performance",
-    icon: <BiSolidReport />,
+    icon: <FaChartLine />,
   },
   {
     name: "Attendance",
     link: "/dashboard/attendance",
-    icon: <IoPerson />,
+    icon: <BiCalendarCheck />,
   },
-  // Example with submenu
-  // {
-  //   name: "Payment",
-  //   icon: <IoSettings />,
-  //   children: [
-  //     {
-  //       name: "Make Payment",
-  //       link: "/dashboard/payment/make",
-  //       icon: <MdPayments />,
-  //     },
-  //     {
-  //       name: "Payment History",
-  //       link: "/dashboard/payment/history",
-  //       icon: <BiSolidReport />,
-  //     },
-  //   ],
-  // },
 ];
 
 export const teacherPaths: TSidebarItem[] = [
   {
     name: "Profile",
     link: "/dashboard/profile",
-    icon: <IoPerson />,
+    icon: <FaChalkboardTeacher />,
   },
   {
     name: "Attendance",
     link: "/dashboard/attendance",
-    icon: <IoPerson />,
+    icon: <BiCalendarCheck />,
   },
   {
     name: "Student Reports",
     link: "/dashboard/student-reports",
-    icon: <IoPerson />,
+    icon: <FaClipboardList />,
     children: [
       {
         name: "Class Reports",
         link: "/dashboard/student-reports/class",
-        icon: <BiSolidReport />,
+        icon: <FaUsers />,
       },
       {
         name: "Individual Reports",
@@ -85,69 +116,80 @@ export const adminPaths: TSidebarItem[] = [
   {
     name: "Profile",
     link: "/dashboard/profile",
-    icon: <IoPerson />,
+    icon: <FaUserCog />,
   },
   {
-    name: "Manage Users",
+    name: "Manage Students",
     icon: <FaUsers />,
     children: [
       {
-        name: "All Users",
-        link: "/dashboard/users/all",
-        icon: <FaUsers />,
+        name: "All Students",
+        link: "/dashboard/manage-students/all-students",
+        icon: <IoPeople />,
       },
       {
-        name: "Add User",
-        link: "/dashboard/users/add",
-        icon: <IoPerson />,
+        name: "Add Student",
+        link: "/dashboard/manage-students/add-student",
+        icon: <FaUserGraduate />,
+      },
+    ],
+  },
+  {
+    name: "Manage Teachers",
+    icon: <FaUsers />,
+    children: [
+      {
+        name: "All Teachers",
+        link: "/dashboard/manage-teachers/all-teachers",
+        icon: <IoPeople />,
       },
       {
-        name: "Roles & Permissions",
-        link: "/dashboard/users/roles",
-        icon: <IoSettings />,
+        name: "Add Teacher",
+        link: "/dashboard/manage-teachers/add-teacher",
+        icon: <FaUserGraduate />,
       },
     ],
   },
   {
     name: "Attendance",
-    icon: <FaUsers />,
+    icon: <BiCalendarCheck />,
     children: [
       {
         name: "Teachers Attendance",
         link: "/dashboard/attendance/teachers",
-        icon: <FaUsers />,
+        icon: <FaChalkboardTeacher />,
       },
       {
         name: "Students Attendance",
         link: "/dashboard/attendance/students",
-        icon: <FaUsers />,
+        icon: <FaUserGraduate />,
       },
     ],
   },
   {
     name: "Send Sms",
     link: "/dashboard/sms",
-    icon: <FaMessage />,
+    icon: <MdSms />,
   },
   {
     name: "Accounts",
-    icon: <FaHandHoldingDollar />,
+    icon: <IoWallet />,
     children: [
       {
         name: "Income",
         link: "/dashboard/accounts/income",
-        icon: <MdPayments />,
+        icon: <FaMoneyBillWave />,
       },
       {
         name: "Expenses",
         link: "/dashboard/accounts/expenses",
-        icon: <BiSolidReport />,
+        icon: <IoCash />,
       },
     ],
   },
   {
     name: "Fee Collection",
-    icon: <MdPayments />,
+    icon: <MdReceipt />,
     children: [
       {
         name: "Collect Fee",
@@ -159,48 +201,53 @@ export const adminPaths: TSidebarItem[] = [
         link: "/dashboard/fee/reports",
         icon: <BiSolidReport />,
       },
+      {
+        name: "Session Fee Reports",
+        link: "/dashboard/fee/session-reports",
+        icon: <BiSolidReport />,
+      },
     ],
   },
   {
     name: "Student Reports",
-    icon: <IoPerson />,
+    icon: <FaClipboardList />,
     children: [
       {
         name: "Academic Reports",
         link: "/dashboard/reports/academic",
-        icon: <BiSolidReport />,
+        icon: <FaBookOpen />,
       },
       {
         name: "Behavior Reports",
         link: "/dashboard/reports/behavior",
-        icon: <IoPerson />,
+        icon: <FaExclamationTriangle />,
       },
     ],
   },
   {
     name: "Academic Management",
-    icon: <IoSettings />,
+    icon: <IoSchool />,
     children: [
       {
         name: "Classes",
         link: "/dashboard/academic/classes",
-        icon: <IoSettings />,
+        icon: <MdClass />,
       },
       {
         name: "Subjects",
         link: "/dashboard/academic/subjects",
-        icon: <IoSettings />,
+        icon: <MdSubject />,
       },
       {
         name: "Routines",
         link: "/dashboard/academic/routines",
-        icon: <IoSettings />,
+        icon: <BiTime />,
       },
     ],
   },
   {
     name: "Id Cards",
     link: "/dashboard/id-cards",
-    icon: <IoSettings />,
+    icon: <BiIdCard />,
   },
 ];

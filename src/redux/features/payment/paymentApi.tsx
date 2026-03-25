@@ -14,8 +14,26 @@ const paymentApi = baseApi.injectEndpoints({
         body: payload,
       }),
     }),
+    feeReports: builder.query({
+      query: (params) => ({
+        method: "GET",
+        url: `/payment/fee-reports`,
+        params: params, // এখানে params হিসেবে সব ফিল্টার চলে যাবে
+      }),
+    }),
+    sessionFeeReports: builder.query({
+      query: (params) => ({
+        method: "GET",
+        url: `/payment/session-fee-reports`,
+        params: params, // এখানে params হিসেবে সব ফিল্টার চলে যাবে
+      }),
+    }),
   }),
 });
 
-export const { useGetPaymentInfoQuery, useSavePaymentInfoMutation } =
-  paymentApi;
+export const {
+  useGetPaymentInfoQuery,
+  useSavePaymentInfoMutation,
+  useFeeReportsQuery,
+  useSessionFeeReportsQuery,
+} = paymentApi;

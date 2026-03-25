@@ -1,5 +1,4 @@
 import DashboardHome from "@/pages/Dashboard/DashboardHome/DashboardHome";
-import React from "react";
 
 const page = () => {
   return (
