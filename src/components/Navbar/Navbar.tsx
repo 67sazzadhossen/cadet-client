@@ -19,6 +19,7 @@ import { TCurrentUser } from "@/types/index.type";
 import Logo from "../shared/Logo";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import HandleLogout from "@/utils/HandleLogout";
+import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 
 interface NavItem {
   name: string;
@@ -31,7 +32,7 @@ const Navbar = () => {
   const [profileDropdown, setProfileDropdown] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const currentUser = useAppSelector(selectCurrentUser);
-  const { data, isLoading } = useGetMeQuery(undefined);
+  const { data, isLoading, isFetching } = useGetMeQuery(undefined);
   const currentUserData: TCurrentUser = data?.data?.data;
   const handleLogout = HandleLogout();
 
@@ -121,6 +122,9 @@ const Navbar = () => {
     { name: "Dashboard", link: "/dashboard", icon: <MdDashboard size={18} /> },
     { name: "Logout", link: "/logout", icon: <MdLogout size={18} /> },
   ];
+  if (isFetching || isLoading) {
+    return <LoadingAnimation />;
+  }
 
   // Animation variants
   const mobileMenuVariants: Variants = {

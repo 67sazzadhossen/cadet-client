@@ -11,7 +11,7 @@ const paymentApi = baseApi.injectEndpoints({
       query: (payload) => ({
         method: "POST",
         url: `/payment/save-payment`,
-        body: payload,
+        body: payload, // Now includes id, paymentType, month, year
       }),
     }),
     feeReports: builder.query({

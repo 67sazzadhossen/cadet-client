@@ -181,14 +181,17 @@ const SessionFeeReports = () => {
   const totalStudents = reportData?.totalStudents || 0;
   const totalRecords = reportData?.totalRecords || 0;
   const summary = reportData?.summary || {
+    totalStudents: 0,
+    studentsWithPayments: 0,
+    studentsWithoutPayments: 0,
+    studentsWithDue: 0,
+    studentsPaid: 0,
     totalSessionFee: 0,
     totalAdmissionFee: 0,
     totalRequired: 0,
     totalPaid: 0,
     totalDue: 0,
     collectionRate: 0,
-    studentsWithDue: 0,
-    studentsPaid: 0,
   };
 
   const tableData = processTableData();
@@ -668,3 +671,8 @@ const SessionFeeReports = () => {
 };
 
 export default SessionFeeReports;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}

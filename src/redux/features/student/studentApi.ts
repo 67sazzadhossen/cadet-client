@@ -8,6 +8,13 @@ const studentApi = baseApi.injectEndpoints({
         body: userInfo,
       }),
     }),
+    updateStudent: builder.mutation({
+      query: (userInfo) => ({
+        method: "POST",
+        url: "/students/update-student",
+        body: userInfo,
+      }),
+    }),
     getAllStudents: builder.query({
       query: (payload) => ({
         method: "GET",
@@ -34,4 +41,5 @@ export const {
   useGetAllStudentsQuery,
   useGetLastStudentQuery,
   useDeleteStudentMutation,
+  useUpdateStudentMutation,
 } = studentApi;

@@ -663,3 +663,8 @@ const TeachersAttendance = () => {
 };
 
 export default TeachersAttendance;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}

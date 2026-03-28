@@ -4,7 +4,6 @@ import { Types } from "mongoose";
 import { ReactNode } from "react";
 
 export type TName = {
-  banglaName: any;
   bengaliName: string;
   englishName: string;
   _id?: Types.ObjectId;
@@ -19,11 +18,11 @@ export type TContact = {
 };
 
 export type TAddress = {
-  village: any;
-  thana: any;
-  postOffice: any;
   address: string;
   district: string;
+  village?: string;
+  thana?: string;
+  postOffice?: string;
   _id?: Types.ObjectId;
 };
 
@@ -87,27 +86,35 @@ export type TTeacher = {
 };
 
 export type SiblingType = {
-  name?: string;
-  class?: string;
-  institution?: string;
+  name: string;
+  relation: "brother" | "sister";
+  class: string;
+  roll: string;
   _id?: string;
 };
 
 // Guardian related types
-type GuardianPersonType = {
-  name?: string;
-  occupation?: string;
-  phone?: string;
-  email?: string;
-  nid?: string;
-  _id?: string;
+export type TGuardianInfo = {
+  name: TName;
+  mobile: string;
+  nid: string;
+  occupation: string;
+  presentAddress: TAddress;
+  permanentAddress: TAddress;
+  _id?: Types.ObjectId;
 };
 
-export type GuardianType = {
-  father?: GuardianPersonType;
-  mother?: GuardianPersonType;
-  localGuardian?: GuardianPersonType;
-  _id?: string;
+export type TGuardian = {
+  father: TGuardianInfo;
+  mother: TGuardianInfo;
+  localGuardian?: {
+    name?: string;
+    email?: string;
+    relation?: string;
+    phone?: string;
+    _id?: Types.ObjectId;
+  };
+  _id?: Types.ObjectId;
 };
 
 export type TPayment = {
@@ -118,27 +125,34 @@ export type TPayment = {
   status: "paid" | "pending" | "partial" | "unpaid";
   invoiceNo: string | null;
   date: string;
+  _id?: string;
 };
 
 export type TPaymentInfo = {
-  dueAmount: ReactNode;
-  due: number;
+  dueAmount: number;
   paidAmount: number;
-  paybleamount: number;
-  status: string;
-  month: string;
-  invoiceNo: string | null;
+  payableAmount: number;
+  status: "paid" | "partial" | "unpaid";
   payments: TPayment[];
   totalPayments: number;
+  _id?: Types.ObjectId;
 };
+
+export type TRole = "admin" | "student" | "superAdmin";
+export type TUserStatus = "active" | "blocked";
+export type TVersion = "bangla" | "english";
+export type TTransportation = "yes" | "no";
 
 export type TStudent = {
   _id: string;
   id: string;
+  studentId?: string;
+
   user: {
     needsPasswordChanged: boolean;
-    role: string;
-    status: string;
+    role: TRole;
+    status: TUserStatus;
+    _id?: string;
   };
 
   // Personal Information
@@ -146,7 +160,7 @@ export type TStudent = {
   dateOfBirth: string;
   birthCertificateNo: string;
   nationality: string;
-  religion: string;
+  religion: "Islam" | "Hinduism" | "Christianity" | "Buddhism";
 
   // Contact Information
   email: string;
@@ -157,17 +171,22 @@ export type TStudent = {
   currentClass: string;
   rollNo: string;
   admissionDate: string;
-  previousSchool?: string;
+  previousSchool: string;
 
   // Family Information
-  guardian: GuardianType;
+  guardian: TGuardian;
   siblings: SiblingType[];
 
   // Others
-  transportation: "yes" | "no";
-  image?: TImage;
-  version: "bangla" | "english";
+  transportation: TTransportation;
+  image: TImage;
+  version: TVersion;
   paymentInfo: TPaymentInfo;
+  waiver: number;
+  bloodGroup: TBloodGroup;
+  isCadet: boolean;
+  admissionFee: number;
+  sessionFee: number;
 
   // Timestamps
   createdAt: string;

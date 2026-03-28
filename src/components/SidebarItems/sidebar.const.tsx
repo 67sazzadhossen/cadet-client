@@ -246,6 +246,27 @@ export const adminPaths: TSidebarItem[] = [
     ],
   },
   {
+    name: "Accounts",
+    icon: <IoSchool />,
+    children: [
+      {
+        name: "Add Monthly Fee Info",
+        link: "/dashboard/accounts/create-monthly-fee",
+        icon: <MdClass />,
+      },
+      {
+        name: "Subjects",
+        link: "/dashboard/academic/subjects",
+        icon: <MdSubject />,
+      },
+      {
+        name: "Routines",
+        link: "/dashboard/academic/routines",
+        icon: <BiTime />,
+      },
+    ],
+  },
+  {
     name: "Id Cards",
     link: "/dashboard/id-cards",
     icon: <BiIdCard />,

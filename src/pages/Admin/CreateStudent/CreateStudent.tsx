@@ -26,6 +26,7 @@ import {
   FaTimes,
   FaChevronDown,
   FaChevronUp,
+  FaMoneyBillWave,
 } from "react-icons/fa";
 
 import { RiParentFill } from "react-icons/ri";
@@ -78,6 +79,7 @@ interface StudentFormData {
   image: string;
   email: string;
   admissionClass: string;
+  currentClass: string;
   name: TName;
   dateOfBirth: string;
   religion: string;
@@ -92,6 +94,9 @@ interface StudentFormData {
   transportation: "yes" | "no";
   isCadet: boolean;
   bloodGroup: TBloodGroup;
+  waiver: number;
+  admissionFee: number;
+  sessionFee: number;
 }
 
 interface CreatedStudentData {
@@ -103,6 +108,7 @@ interface CreatedStudentData {
   };
   email: string;
   admissionClass: string;
+  currentClass: string;
   name: TName;
   dateOfBirth: string;
   religion: string;
@@ -117,6 +123,9 @@ interface CreatedStudentData {
   transportation: "yes" | "no";
   isCadet: boolean;
   bloodGroup: TBloodGroup;
+  waiver: number;
+  admissionFee: number;
+  sessionFee: number;
   createdAt: string;
   studentId: string;
 }
@@ -141,6 +150,7 @@ const CreateStudent = () => {
     academicInfo: true,
     guardianInfo: true,
     siblingsInfo: false,
+    feeInfo: true,
   });
 
   const { uploadToCloudinary, loading: imageUploading } = useCloudinaryUpload();
@@ -152,6 +162,7 @@ const CreateStudent = () => {
     image: "",
     email: "s@gmail.com",
     admissionClass: "1",
+    currentClass: "1",
     name: {
       bengaliName: "বাংলা নাম",
       englishName: "",
@@ -210,6 +221,9 @@ const CreateStudent = () => {
     transportation: "no",
     isCadet: false,
     bloodGroup: "A+",
+    waiver: 0,
+    admissionFee: 0,
+    sessionFee: 0,
   };
 
   const {
@@ -286,6 +300,8 @@ const CreateStudent = () => {
         ...data,
         image,
         admissionDate: data.admissionDate.toISOString(),
+        // Set currentClass same as admissionClass by default
+        currentClass: data.admissionClass,
       };
 
       const result = await createStudent(finalData).unwrap();
@@ -478,7 +494,10 @@ const CreateStudent = () => {
                   </label>
                   <select
                     {...register("admissionClass", { required: true })}
-                    onChange={(e) => setSelectClass(e.target.value)}
+                    onChange={(e) => {
+                      setSelectClass(e.target.value);
+                      setValue("currentClass", e.target.value);
+                    }}
                     className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                   >
                     <option value="">ক্লাস নির্বাচন করুন</option>
@@ -737,6 +756,86 @@ const CreateStudent = () => {
                   </select>
                 </div>
               )}
+            </div>
+          )}
+        </div>
+
+        {/* Fee Information Section */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+          <button
+            type="button"
+            onClick={() => toggleSection("feeInfo")}
+            className="w-full px-4 py-3 flex items-center justify-between bg-gradient-to-r from-amber-50 to-yellow-50/50"
+          >
+            <div className="flex items-center space-x-2">
+              <div className="p-1.5 bg-amber-500 rounded-lg">
+                <FaMoneyBillWave className="w-3 h-3 text-white" />
+              </div>
+              <span className="font-semibold text-gray-900 text-sm">
+                ফি সংক্রান্ত তথ্য
+              </span>
+            </div>
+            {expandedSections.feeInfo ? (
+              <FaChevronUp className="w-4 h-4 text-gray-500" />
+            ) : (
+              <FaChevronDown className="w-4 h-4 text-gray-500" />
+            )}
+          </button>
+
+          {expandedSections.feeInfo && (
+            <div className="p-4 space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="flex items-center text-xs font-medium text-gray-700 mb-1">
+                    <FaMoneyBillWave className="w-3 h-3 mr-1 text-amber-500" />
+                    ভর্তি ফি (টাকা) *
+                  </label>
+                  <input
+                    type="number"
+                    {...register("admissionFee", {
+                      required: true,
+                      valueAsNumber: true,
+                      min: 0,
+                    })}
+                    className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    placeholder="ভর্তি ফি"
+                  />
+                </div>
+                <div>
+                  <label className="flex items-center text-xs font-medium text-gray-700 mb-1">
+                    <FaMoneyBillWave className="w-3 h-3 mr-1 text-amber-500" />
+                    সেশন ফি (টাকা) *
+                  </label>
+                  <input
+                    type="number"
+                    {...register("sessionFee", {
+                      required: true,
+                      valueAsNumber: true,
+                      min: 0,
+                    })}
+                    className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    placeholder="সেশন ফি"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="flex items-center text-xs font-medium text-gray-700 mb-1">
+                  <FaMoneyBillWave className="w-3 h-3 mr-1 text-amber-500" />
+                  ওয়েভার/ছাড় (টাকা)
+                </label>
+                <input
+                  type="number"
+                  {...register("waiver", {
+                    valueAsNumber: true,
+                    min: 0,
+                  })}
+                  className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  placeholder="ছাড়ের পরিমাণ (যদি থাকে)"
+                />
+                <p className="text-[10px] text-gray-500 mt-1">
+                  ফি থেকে ছাড়ের পরিমাণ দিন
+                </p>
+              </div>
             </div>
           )}
         </div>

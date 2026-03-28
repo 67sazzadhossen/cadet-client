@@ -15,6 +15,18 @@ interface PaymentInfo {
   paidAmount: number;
   paybleamount: number;
   status: string;
+  month?: string;
+  year?: string;
+  breakdown?: {
+    baseMonthlyFee: number;
+    waiver?: { percentage: number; amount: number };
+    monthlyFeeAfterWaiver: number;
+    itCharge: number;
+    electricityBill: number;
+    transportationFee: number;
+    othersFee: number;
+    total: number;
+  };
 }
 
 interface ApiResponse {
@@ -33,7 +45,19 @@ export const getInvoiceHTML = (
     due: number;
     status: string;
     invoiceNo: string;
-  }
+    month?: string;
+    year?: string;
+    breakdown?: {
+      baseMonthlyFee: number;
+      waiver?: { percentage: number; amount: number };
+      monthlyFeeAfterWaiver: number;
+      itCharge: number;
+      electricityBill: number;
+      transportationFee: number;
+      othersFee: number;
+      total: number;
+    };
+  },
 ) => {
   const numberToWords = (num: number): string => {
     const units = [
@@ -88,6 +112,7 @@ export const getInvoiceHTML = (
     }
     return words.trim();
   };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -97,11 +122,14 @@ export const getInvoiceHTML = (
     });
   };
 
-  console.log(studentData);
-
   const totalAmount = result.paybleamount;
-
   const currentDate = new Date();
+  const breakdown = result.breakdown;
+
+  // Helper to format amount with proper spacing
+  const formatAmount = (amount: number) => {
+    return amount.toFixed(2);
+  };
 
   return `
 <!DOCTYPE html>
@@ -126,13 +154,11 @@ export const getInvoiceHTML = (
       padding: 0;
       margin: 0;
       display: flex;
-     
     }
- 
     
     .invoice-container {
       width: 190mm;
-      min-height: 80mm; /* খুবই কম হাইট */
+      min-height: 80mm;
       padding: 3mm;
       border: 1px solid #ddd;
       position: relative;
@@ -140,7 +166,6 @@ export const getInvoiceHTML = (
       margin: auto;
     }
     
-    /* Print Guide */
     .print-guide {
       position: fixed;
       top: 10px;
@@ -156,7 +181,6 @@ export const getInvoiceHTML = (
       max-width: 200px;
     }
     
-    /* Header - খুব কম্প্যাক্ট */
     .header {
       text-align: center;
       margin-bottom: 2mm;
@@ -209,7 +233,6 @@ export const getInvoiceHTML = (
       flex: 1;
     }
     
-    /* Compact Table */
     .fee-table {
       width: 100%;
       border-collapse: collapse;
@@ -244,12 +267,11 @@ export const getInvoiceHTML = (
       background: #f0f0f0;
     }
     
-    .due-row td {
-      font-weight: 700;
-      background: #fff0f0;
+    .waiver-row td {
+      color: #2e7d32;
+      background: #e8f5e9;
     }
     
-    /* Summary - সবচেয়ে কম্প্যাক্ট */
     .summary {
       margin-top: 2mm;
       display: grid;
@@ -277,7 +299,6 @@ export const getInvoiceHTML = (
       color: #555;
     }
     
-    /* Footer - একদম ছোট */
     .footer {
       margin-top: 2mm;
       padding-top: 1mm;
@@ -286,12 +307,10 @@ export const getInvoiceHTML = (
       color: #666;
     }
     
-   .footer-grid {
-  display: flex;
-  justify-content: space-between;
- 
-}
-
+    .footer-grid {
+      display: flex;
+      justify-content: space-between;
+    }
     
     .footer-section h4 {
       font-size: 13px;
@@ -304,20 +323,7 @@ export const getInvoiceHTML = (
       margin: 0.3mm 0;
     }
     
-    .signature {
-      text-align: center;
-      margin-top: 3mm;
-    }
-    
-    .signature-line {
-      width: 30mm;
-      border-top: 0.5px solid #000;
-      margin: 1mm auto 0.5mm auto;
-    }
-    
-    /* Print Styles - Browser Header/Footer Remove */
     @media print {
-      /* Remove browser default margins and headers/footers */
       @page {
         margin: 40px !important;
         size: auto;
@@ -331,12 +337,10 @@ export const getInvoiceHTML = (
         display: block !important;
       }
       
-      /* Center content on printed page */
       .invoice-container {
         position: absolute !important;
-        
         left: 50% !important;
-transform: translateX(-50%) !important;
+        transform: translateX(-50%) !important;
         width: 190mm !important;
         min-height: 80mm !important;
         border: none !important;
@@ -345,18 +349,15 @@ transform: translateX(-50%) !important;
         box-shadow: none !important;
       }
       
-      /* Hide print guide */
       .print-guide {
         display: none !important;
       }
       
-      /* Prevent unwanted page breaks */
       .header, .invoice-meta, .fee-table, .summary, .footer {
         page-break-inside: avoid;
         page-break-after: avoid;
       }
       
-      /* Force single page */
       html, body {
         height: 297mm !important;
         width: 210mm !important;
@@ -364,7 +365,6 @@ transform: translateX(-50%) !important;
       }
     }
     
-    /* Helper Classes */
     .text-right {
       text-align: right;
     }
@@ -390,7 +390,7 @@ transform: translateX(-50%) !important;
     }
     
     .color-green {
-      color: #388e3c;
+      color: #2e7d32;
     }
   </style>
 </head>
@@ -420,9 +420,7 @@ transform: translateX(-50%) !important;
         </div>
         <div class="meta-item">
           <span class="meta-label">তারিখ:</span>
-          <span class="meta-value">${currentDate.toLocaleDateString(
-            "en-BD"
-          )}</span>
+          <span class="meta-value">${currentDate.toLocaleDateString("en-BD")}</span>
         </div>
         <div class="meta-item">
           <span class="meta-label">ছাত্র আইডি:</span>
@@ -430,15 +428,23 @@ transform: translateX(-50%) !important;
         </div>
         <div class="meta-item">
           <span class="meta-label">নাম:</span>
-          <span class="meta-value">${
-            studentData.student.name.englishName
-          }</span>
+          <span class="meta-value">${studentData.student.name.englishName}</span>
         </div>
+        ${
+          result.month
+            ? `
+        <div class="meta-item">
+          <span class="meta-label">মাস:</span>
+          <span class="meta-value">${result.month} ${result.year || ""}</span>
+        </div>
+        `
+            : ""
+        }
       </div>
       <div class="meta-right">
         <div class="meta-item">
           <span class="meta-label">রোল নং:</span>
-          <span class="meta-value">${studentData.student.id.slice(-2)}</span>
+          <span class="meta-value">${studentData.student.rollNo || studentData.student.id.slice(-2)}</span>
         </div>
         <div class="meta-item">
           <span class="meta-label">ক্লাস:</span>
@@ -449,12 +455,9 @@ transform: translateX(-50%) !important;
           <span class="meta-value">${formatDate(
             typeof studentData.monthlyFee.lastDate === "string"
               ? studentData.monthlyFee.lastDate
-              : studentData.monthlyFee.lastDate.toISOString()
-          )}
-          
-          </span>
+              : studentData.monthlyFee.lastDate.toISOString(),
+          )}</span>
         </div>
-        
       </div>
     </div>
     
@@ -467,28 +470,92 @@ transform: translateX(-50%) !important;
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>মাসিক বেতন</td>
-          <td class="text-right">${result.paybleamount.toFixed(2)}</td>
-        </tr>
-        <tr>
-          <td>বিদ্যুৎ বিল</td>
-          <td class="text-right">00.00</td>
-        </tr>
-        <tr>
-          <td>আইটি চার্জ</td>
-          <td class="text-right">00.00</td>
-        </tr>
-        <tr>
-          <td>অন্যান্য চার্জ</td>
-          <td class="text-right">00.00</td>
-        </tr>
+        ${
+          breakdown
+            ? `
+          <!-- Base Monthly Fee -->
+          <tr>
+            <td>মাসিক বেতন (${breakdown.baseMonthlyFee ? breakdown.baseMonthlyFee.toFixed(0) : 0} ৳)</td>
+            <td class="text-right">${formatAmount(breakdown.baseMonthlyFee)}</td>
+          </tr>
+          
+          <!-- Waiver (if applicable) -->
+          ${
+            breakdown.waiver && breakdown.waiver.percentage > 0
+              ? `
+          <tr class="waiver-row">
+            <td>ছাড় (${breakdown.waiver.percentage}%)</td>
+            <td class="text-right color-green">- ${formatAmount(breakdown.waiver.amount)}</td>
+          </tr>
+          <tr>
+            <td>ছাড়后的 মাসিক বেতন</td>
+            <td class="text-right">${formatAmount(breakdown.monthlyFeeAfterWaiver)}</td>
+          </tr>
+          `
+              : ""
+          }
+          
+          <!-- IT Charge -->
+          ${
+            breakdown.itCharge > 0
+              ? `
+          <tr>
+            <td>আইটি চার্জ</td>
+            <td class="text-right">${formatAmount(breakdown.itCharge)}</td>
+          </tr>
+          `
+              : ""
+          }
+          
+          <!-- Electricity Bill -->
+          ${
+            breakdown.electricityBill > 0
+              ? `
+          <tr>
+            <td>বিদ্যুৎ বিল</td>
+            <td class="text-right">${formatAmount(breakdown.electricityBill)}</td>
+          </tr>
+          `
+              : ""
+          }
+          
+          <!-- Transportation Fee -->
+          ${
+            breakdown.transportationFee > 0
+              ? `
+          <tr>
+            <td>পরিবহন ফি</td>
+            <td class="text-right">${formatAmount(breakdown.transportationFee)}</td>
+          </tr>
+          `
+              : ""
+          }
+          
+          <!-- Others Fee -->
+          ${
+            breakdown.othersFee > 0
+              ? `
+          <tr>
+            <td>অন্যান্য চার্জ</td>
+            <td class="text-right">${formatAmount(breakdown.othersFee)}</td>
+          </tr>
+          `
+              : ""
+          }
+        `
+            : `
+          <!-- Fallback if no breakdown -->
+          <tr>
+            <td>মাসিক বেতন</td>
+            <td class="text-right">${formatAmount(result.paybleamount)}</td>
+          </tr>
+        `
+        }
+        
         <tr class="total-row">
           <td class="text-bold">সর্বমোট</td>
-          <td class="text-right text-bold">${totalAmount.toFixed(2)}</td>
+          <td class="text-right text-bold">${formatAmount(totalAmount)}</td>
         </tr>
-        
-    
       </tbody>
     </table>
     
@@ -497,7 +564,7 @@ transform: translateX(-50%) !important;
       <div class="summary-left">
         <div class="amount-in-words mb-05">
           <span class="text-bold">অঙ্কে লেখা:</span> 
-          ${numberToWords(result.paybleamount)} টাকা মাত্র
+          ${numberToWords(totalAmount)} টাকা মাত্র
         </div>
         <div class="mb-05">
           <span class="text-bold">পেমেন্ট মেথড:</span> ক্যাশ পেমেন্ট
@@ -505,6 +572,15 @@ transform: translateX(-50%) !important;
         <div>
           <span class="text-bold">মন্তব্য:</span> বিলম্বে জমা দিলে অতিরিক্ত ৫০ টাকা জরিমানা আরোপ করা হবে
         </div>
+        ${
+          breakdown && breakdown.waiver && breakdown.waiver.percentage > 0
+            ? `
+        <div class="color-green mt-1" style="font-size: 11px;">
+          * ${breakdown.waiver.percentage}% ছাড় প্রয়োগ করা হয়েছে
+        </div>
+        `
+            : ""
+        }
       </div>
       <div class="summary-right">
         <div class="mb-05">
@@ -530,20 +606,14 @@ transform: translateX(-50%) !important;
           <p>ইমেইল: gsca.mymensingh@gmail.com</p>
           <p>ওয়েবসাইট: www.gscam.edu.bd</p>
         </div>
-        
-       
       </div>
     </div>
   </div>
 
   <script>
     window.onload = function() {
-      // Wait a bit for CSS to load properly
       setTimeout(function() {
-        // Auto print
         window.print();
-        
-        // Close window after print
         setTimeout(function() {
           window.close();
         }, 500);
