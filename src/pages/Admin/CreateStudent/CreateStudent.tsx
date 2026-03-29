@@ -222,8 +222,8 @@ const CreateStudent = () => {
     isCadet: false,
     bloodGroup: "A+",
     waiver: 0,
-    admissionFee: 0,
-    sessionFee: 0,
+    admissionFee: 1000,
+    sessionFee: 4000,
   };
 
   const {
