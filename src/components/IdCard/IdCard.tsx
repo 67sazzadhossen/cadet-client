@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { QRCodeCanvas } from "qrcode.react";
+import logo from "@/assets/id_card/logo.png";
 
 const StudentIdCard = () => {
   const studentData = {
@@ -42,9 +43,13 @@ const StudentIdCard = () => {
 
           {/* Company Branding */}
           <div className="relative z-40 pt-10 text-center">
-            <h2 className="text-white font-black text-xl tracking-tighter leading-none">
-              {studentData.company}
-            </h2>
+            <Image
+              src={logo}
+              alt="Gazipurshaheen Cadet Academy Mymensingh"
+              width={250}
+              height={100}
+              className="mx-auto"
+            />
             <p className="text-white text-[7px] tracking-[0.4em] opacity-80 mt-1">
               {studentData.tagline}
             </p>
