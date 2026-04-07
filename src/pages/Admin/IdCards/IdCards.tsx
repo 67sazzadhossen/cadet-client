@@ -26,3 +26,8 @@ const IdCards = () => {
 };
 
 export default IdCards;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}
