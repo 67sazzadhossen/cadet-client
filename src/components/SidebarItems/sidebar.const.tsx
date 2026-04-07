@@ -67,12 +67,12 @@ export const studentPaths: TSidebarItem[] = [
   },
   {
     name: "Performance Report",
-    link: "/dashboard/performance",
+    link: "/dashboard/reports",
     icon: <FaChartLine />,
   },
   {
     name: "Attendance",
-    link: "/dashboard/attendance",
+    link: "/dashboard/my-attendance",
     icon: <BiCalendarCheck />,
   },
 ];
@@ -213,8 +213,8 @@ export const adminPaths: TSidebarItem[] = [
     icon: <FaClipboardList />,
     children: [
       {
-        name: "Academic Reports",
-        link: "/dashboard/reports/academic",
+        name: "Daily Reports",
+        link: "/dashboard/student-reports",
         icon: <FaBookOpen />,
       },
       {
@@ -229,13 +229,13 @@ export const adminPaths: TSidebarItem[] = [
     icon: <IoSchool />,
     children: [
       {
-        name: "Classes",
-        link: "/dashboard/academic/classes",
+        name: "Add Subject",
+        link: "/dashboard/academic-management",
         icon: <MdClass />,
       },
       {
         name: "Subjects",
-        link: "/dashboard/academic/subjects",
+        link: "/dashboard/academic/all-subjects",
         icon: <MdSubject />,
       },
       {
