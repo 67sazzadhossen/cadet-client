@@ -64,7 +64,7 @@ const AdmitCards = () => {
       const halfHeight = pdfHeight / 2; // 148.5mm
 
       // 5px প্যাডিং mm এ কনভার্ট করুন (96dpi তে 1px = 0.264583mm)
-      const paddingMM = 2.5; // 5px ≈ 2.5mm
+      const paddingMM = 5; // 5px ≈ 2.5mm
 
       // কার্ডের জন্য ইউজেবল এলাকা (প্যাডিং বাদে)
       const usableWidth = pdfWidth - paddingMM * 2;
