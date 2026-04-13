@@ -571,11 +571,11 @@ const Performance: React.FC = () => {
                                 </p>
                                 <p className="text-xs font-semibold text-green-700">
                                   {todaysReport.performance === "low" &&
-                                    "🔴 Low"}
+                                    "🔴 C Grade"}
                                   {todaysReport.performance === "medium" &&
-                                    "🟡 Medium"}
+                                    "🟡 Grade"}
                                   {todaysReport.performance === "high" &&
-                                    "🟢 High"}
+                                    "🟢 Grade"}
                                 </p>
 
                                 {/* Delete Button for Admin - Inside Today's Report */}
@@ -614,9 +614,9 @@ const Performance: React.FC = () => {
                                   disabled={isSubmitting}
                                 >
                                   <option value="">Select</option>
-                                  <option value="low">Low</option>
-                                  <option value="medium">Medium</option>
-                                  <option value="high">High</option>
+                                  <option value="high">A Grade</option>
+                                  <option value="medium">B Grade</option>
+                                  <option value="low">C Grade</option>
                                 </select>
 
                                 <button

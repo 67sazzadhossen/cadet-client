@@ -129,7 +129,7 @@ const ShowProfile = ({
                       </span>
                     </span>
                     <span className="bg-gray-100 text-gray-800 px-4 py-2 rounded-full text-sm font-medium tracking-wide border border-gray-300">
-                      EMPLOYEE ID: {data.id}
+                      ID: {data.id}
                     </span>
                     {isTeacher && (
                       <span className="bg-gray-100 text-gray-800 px-4 py-2 rounded-full text-sm font-medium tracking-wide border border-gray-300">
@@ -158,7 +158,7 @@ const ShowProfile = ({
                           Email
                         </p>
                         <p className="font-medium text-gray-900">
-                          {data.contact.email}
+                          {data.contact?.email}
                         </p>
                       </div>
                     </div>
@@ -172,7 +172,7 @@ const ShowProfile = ({
                           Mobile
                         </p>
                         <p className="font-medium text-gray-900">
-                          {data.contact.mobile}
+                          {data.contact?.mobile}
                         </p>
                       </div>
                     </div>
@@ -186,7 +186,7 @@ const ShowProfile = ({
                           WhatsApp
                         </p>
                         <p className="font-medium text-gray-900">
-                          {data.contact.whatsapp}
+                          {data.contact?.whatsapp}
                         </p>
                       </div>
                     </div>
@@ -206,10 +206,10 @@ const ShowProfile = ({
                           Address
                         </p>
                         <p className="font-medium text-gray-900">
-                          {data.address.address}
+                          {data.address?.address}
                         </p>
                         <p className="text-sm text-gray-600 mt-1">
-                          District: {data.address.district}
+                          District: {data.address?.district}
                         </p>
                       </div>
                     </div>
