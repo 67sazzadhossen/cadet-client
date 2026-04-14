@@ -5,7 +5,7 @@
 const AdmitCard = ({ student }: { student: any }) => {
   // ছবির মতো একই ডেটা ফর্ম্যাট ব্যবহার করার জন্য
   const isBangla = student.version === "bangla";
-  const examName = "1st Semester"; // Pictures use this, let's keep it constant or dynamic from props
+  const examName = "Monthly Test-February"; // Pictures use this, let's keep it constant or dynamic from props
   const session = "2026";
   const date = "2026-03-01";
 
@@ -237,13 +237,13 @@ const AdmitCard = ({ student }: { student: any }) => {
           {/* Signature Section */}
           <div className="w-[35%] p-2 flex flex-col justify-end items-center text-center">
             <div className="mb-2 w-[60%] flex flex-col items-center">
-              <img src="/signature_jubayet.png" alt="sign" />
+              {/* Signature Image Dynamic with dynamic prop from student prop or dynamic from local code */}
             </div>
-            <div className="border-t-2 border-dotted border-black w-[80%] pt-1 -mt-8">
+            <div className="border-t-2 border-dotted border-black w-[80%] pt-1 mt-12">
               <p className="font-bold text-base text-black uppercase mt-0 p-0">
                 Director & Principal
               </p>
-              <p className="text-[11px] hidden text-gray-700 m-0 p-0">
+              <p className="text-[11px] text-gray-700 m-0 p-0">
                 Date : <b>{date}</b>
               </p>
             </div>
@@ -256,8 +256,3 @@ const AdmitCard = ({ student }: { student: any }) => {
 };
 
 export default AdmitCard;
-export async function getServerSideProps() {
-  return {
-    props: {}, // Page will render only on client
-  };
-}
