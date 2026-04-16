@@ -14,10 +14,18 @@ const accountsApi = baseApi.injectEndpoints({
         url: `/accounts/get-monthly-fee`,
       }),
     }),
+    getPaymentHistory: builder.query({
+      query: (params) => ({
+        url: "/accounts/payment-history",
+        method: "GET",
+        params: params, // This will add query parameters
+      }),
+    }),
   }),
 });
 
 export const {
   useCreateMonthlyPaymentInfoMutation,
   useGetMonthlyPaymentInfoQuery,
+  useGetPaymentHistoryQuery,
 } = accountsApi;

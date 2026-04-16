@@ -265,6 +265,11 @@ export const adminPaths: TSidebarItem[] = [
         icon: <MdClass />,
       },
       {
+        name: "Payment History",
+        link: "/dashboard/accounts/payment-history",
+        icon: <MdClass />,
+      },
+      {
         name: "Subjects",
         link: "/dashboard/academic/subjects",
         icon: <MdSubject />,
