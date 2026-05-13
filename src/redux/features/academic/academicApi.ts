@@ -53,6 +53,13 @@ const academicApi = baseApi.injectEndpoints({
         url: `/academic/my-reports?id=${payload.id}&date=${payload.date}`,
       }),
     }),
+    saveMarks: builder.mutation({
+      query: (payload) => ({
+        method: "POST",
+        url: `/academic/save-marks`,
+        body: payload,
+      }),
+    }),
   }),
 });
 
@@ -65,4 +72,5 @@ export const {
   useGetAllReportsQuery,
   useDeleteSingleReportMutation,
   useGetMyReportsQuery,
+  useSaveMarksMutation,
 } = academicApi;

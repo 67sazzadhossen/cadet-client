@@ -2,7 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { useGetAllStudentsQuery } from "@/redux/features/student/studentApi";
-import { useGetAllSubjectsQuery } from "@/redux/features/academic/academicApi";
+import {
+  useGetAllSubjectsQuery,
+  useSaveMarksMutation,
+} from "@/redux/features/academic/academicApi";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 import { FiCheck } from "react-icons/fi";
 import toast from "react-hot-toast";
@@ -11,6 +14,7 @@ const AddMark = () => {
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [marks, setMarks] = useState<Record<string, number>>({});
+  const [saveMarks, { isLoading }] = useSaveMarksMutation();
 
   // 📚 Subjects API
   const { data: subjectsData, isLoading: subjectLoading } =
@@ -57,7 +61,7 @@ const AddMark = () => {
   };
 
   // 🚀 Submit (console only)
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedClass) {
       return toast.error("Class select korun");
     }
@@ -84,6 +88,10 @@ const AddMark = () => {
     };
 
     console.log("✅ FINAL PAYLOAD 👉", payload);
+
+    const res = await saveMarks(payload).unwrap();
+    console.log(res.data);
+
     toast.success("Console e payload dekhun ✅");
   };
 
@@ -154,9 +162,9 @@ const AddMark = () => {
                   <input
                     type="number"
                     placeholder="Mark"
-                    value={marks[student._id] || ""}
+                    value={marks[student.id] || ""}
                     onChange={(e) =>
-                      handleMarkChange(student._id, Number(e.target.value))
+                      handleMarkChange(student.id, Number(e.target.value))
                     }
                     className="w-20 border p-1 rounded text-center"
                   />
