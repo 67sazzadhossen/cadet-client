@@ -60,6 +60,20 @@ const academicApi = baseApi.injectEndpoints({
         body: payload,
       }),
     }),
+    getMarks: builder.query({
+      query: (payload) => ({
+        url: `/academic/marks`, // Endpoint change kora hoyeche jeno save-marks er sathe na mile jay
+        method: "POST", // Body pathanor jonno POST use kora hoyeche
+        body: payload,
+      }),
+    }),
+    getResult: builder.query({
+      query: (payload) => ({
+        url: `/academic/get-result`, // Endpoint change kora hoyeche jeno save-marks er sathe na mile jay
+        method: "POST", // Body pathanor jonno POST use kora hoyeche
+        body: payload,
+      }),
+    }),
   }),
 });
 
@@ -73,4 +87,6 @@ export const {
   useDeleteSingleReportMutation,
   useGetMyReportsQuery,
   useSaveMarksMutation,
+  useGetMarksQuery,
+  useGetResultQuery,
 } = academicApi;

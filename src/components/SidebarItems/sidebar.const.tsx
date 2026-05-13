@@ -258,6 +258,11 @@ export const adminPaths: TSidebarItem[] = [
         link: "/dashboard/academic/add-mark",
         icon: <BiTime />,
       },
+      {
+        name: "Result",
+        link: "/dashboard/academic/result",
+        icon: <BiTime />,
+      },
     ],
   },
   {

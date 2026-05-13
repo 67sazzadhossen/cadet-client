@@ -5,22 +5,35 @@ import { useGetAllStudentsQuery } from "@/redux/features/student/studentApi";
 import {
   useGetAllSubjectsQuery,
   useSaveMarksMutation,
+  useGetMarksQuery,
 } from "@/redux/features/academic/academicApi";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 import { FiCheck } from "react-icons/fi";
 import toast from "react-hot-toast";
 
+// Mark structure er jonne interface
+interface StudentMarks {
+  monthly1?: number;
+  monthly2?: number;
+  classTest?: number;
+  semester?: number;
+}
+
 const AddMark = () => {
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
-  const [marks, setMarks] = useState<Record<string, number>>({});
-  const [saveMarks, { isLoading }] = useSaveMarksMutation();
+  const [selectedExamName, setSelectedExamName] = useState(""); // 👈 Notun State
+  const [selectedYear, setSelectedYear] = useState(
+    new Date().getFullYear().toString(),
+  ); // 👈 Notun State (Default current year)
 
-  // 📚 Subjects API
+  // Record<studentId, StudentMarks object>
+  const [marks, setMarks] = useState<Record<string, StudentMarks>>({});
+  const [saveMarks, { isLoading: isSaving }] = useSaveMarksMutation();
+
   const { data: subjectsData, isLoading: subjectLoading } =
     useGetAllSubjectsQuery(undefined);
 
-  // 👨‍🎓 Students API (ONLY যখন class select হবে)
   const { data: studentData, isLoading: studentLoading } =
     useGetAllStudentsQuery(
       {
@@ -30,104 +43,165 @@ const AddMark = () => {
         page: 1,
         limit: 1000,
       },
-      {
-        skip: !selectedClass, // ❗ important
-      },
+      { skip: !selectedClass },
     );
 
-  // ✅ Safe data extract
+  // 🔍 Existing Marks Fetching Logic
+  const { data: existingMarksData, isFetching: isFetchingMarks } =
+    useGetMarksQuery(
+      {
+        class: selectedClass,
+        subject: selectedSubject,
+        examName: selectedExamName, // 👈 Payload update
+        year: selectedYear, // 👈 Payload update
+      },
+      { skip: !selectedClass || !selectedSubject || !selectedExamName },
+    );
+
+  // 🔄 DB theke data asle seta marks state e set kora
+  useEffect(() => {
+    if (existingMarksData?.data?.data?.marks) {
+      const dbMarks: Record<string, StudentMarks> = {};
+      existingMarksData.data.data.marks.forEach((item: any) => {
+        dbMarks[item.studentId] = {
+          monthly1: item.monthly1,
+          monthly2: item.monthly2,
+          classTest: item.classTest,
+          semester: item.semester,
+        };
+      });
+      setMarks(dbMarks);
+    } else {
+      // Jodi oi semester/year e kono data na thake, tobe state clear kore dibe
+      setMarks({});
+    }
+  }, [
+    existingMarksData,
+    selectedClass,
+    selectedSubject,
+    selectedExamName,
+    selectedYear,
+  ]);
+
   const allSubjects = subjectsData?.data?.data || [];
   const students = studentData?.data?.data?.data || [];
-
-  // 🎯 Selected class subjects
   const selectedClassData = allSubjects.find(
     (item: any) => item.className === selectedClass,
   );
-
   const classSubjects = selectedClassData?.subjects || [];
 
-  // 🧪 Debug logs
-  useEffect(() => {
-    console.log("Subjects 👉", subjectsData);
-    console.log("Students 👉", studentData);
-  }, [subjectsData, studentData]);
+  // Year generate korar jonne (Current year theke 5 bochor piche porjonto)
+  const years = Array.from({ length: 6 }, (_, i) =>
+    (new Date().getFullYear() - i).toString(),
+  );
 
-  // ✏️ Mark change
-  const handleMarkChange = (studentId: string, value: number) => {
+  // Input field change handle korar jonne function
+  const handleMarkChange = (
+    studentId: string,
+    field: keyof StudentMarks,
+    value: string,
+  ) => {
+    const numValue = value === "" ? undefined : Number(value);
     setMarks((prev) => ({
       ...prev,
-      [studentId]: value,
+      [studentId]: {
+        ...prev[studentId],
+        [field]: numValue,
+      },
     }));
   };
 
-  // 🚀 Submit (console only)
   const handleSubmit = async () => {
-    if (!selectedClass) {
-      return toast.error("Class select korun");
+    if (
+      !selectedClass ||
+      !selectedSubject ||
+      !selectedExamName ||
+      !selectedYear
+    ) {
+      return toast.error("Class, Subject, Exam ebong Year select korun");
     }
 
-    if (!selectedSubject) {
-      return toast.error("Subject select korun");
-    }
-
-    const formattedMarks = Object.entries(marks)
-      .filter(([_, mark]) => mark !== undefined && mark !== null)
-      .map(([studentId, mark]) => ({
+    // Payload ready kora
+    const formattedMarks = Object.entries(marks).map(
+      ([studentId, markData]) => ({
         studentId,
-        mark,
-      }));
+        ...markData,
+      }),
+    );
 
     if (formattedMarks.length === 0) {
-      return toast.error("At least 1 mark din");
+      return toast.error("At least ekjon student er mark din");
     }
 
     const payload = {
       class: selectedClass,
       subject: selectedSubject,
+      examName: selectedExamName, // 👈 Add kora hoyeche
+      year: selectedYear, // 👈 Add kora hoyeche
       marks: formattedMarks,
     };
 
-    console.log("✅ FINAL PAYLOAD 👉", payload);
-
-    const res = await saveMarks(payload).unwrap();
-    console.log(res.data);
-
-    toast.success("Console e payload dekhun ✅");
+    try {
+      const res = await saveMarks(payload).unwrap();
+      toast.success("Marks successfully save hoyeche!");
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Kichu vul hoyeche");
+    }
   };
 
-  // ⏳ Loading
-  if (subjectLoading) {
-    return <LoadingAnimation />;
-  }
+  // 🎹 Enter key handle korar function
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSubmit();
+    }
+  };
+
+  if (subjectLoading) return <LoadingAnimation />;
 
   return (
-    <div className="p-4 space-y-4 max-w-xl mx-auto">
-      <h1 className="text-xl font-bold">Add Marks</h1>
+    <div className="p-4 space-y-4 max-w-4xl mx-auto">
+      {/* 🟢 Saving Overlay - Full Screen Faded */}
+      {isSaving && (
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity">
+          <div className="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center gap-4">
+            {/* Spinner */}
+            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-lg font-semibold text-gray-700 animate-pulse">
+              Saving Marks...
+            </p>
+            <p className="text-sm text-gray-500">
+              Please do not close the window
+            </p>
+          </div>
+        </div>
+      )}
+      <h1 className="text-2xl font-bold text-center">Add Academic Marks</h1>
 
-      {/* 📘 Class Select */}
-      <select
-        value={selectedClass}
-        onChange={(e) => {
-          setSelectedClass(e.target.value);
-          setSelectedSubject("");
-          setMarks({});
-        }}
-        className="border p-2 rounded w-full"
-      >
-        <option value="">Select Class</option>
-        {allSubjects.map((cls: any) => (
-          <option key={cls._id} value={cls.className}>
-            {cls.className}
-          </option>
-        ))}
-      </select>
-
-      {/* 📗 Subject Select */}
-      {selectedClass && (
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Class Selection */}
         <select
+          value={selectedClass}
+          onChange={(e) => {
+            setSelectedClass(e.target.value);
+            setSelectedSubject("");
+            setMarks({});
+          }}
+          className="border p-2 rounded"
+        >
+          <option value="">Select Class</option>
+          {allSubjects.map((cls: any) => (
+            <option key={cls._id} value={cls.className}>
+              {cls.className}
+            </option>
+          ))}
+        </select>
+
+        {/* Subject Selection */}
+        <select
+          disabled={!selectedClass}
           value={selectedSubject}
           onChange={(e) => setSelectedSubject(e.target.value)}
-          className="border p-2 rounded w-full"
+          className="border p-2 rounded"
         >
           <option value="">Select Subject</option>
           {classSubjects.map((sub: string, idx: number) => (
@@ -136,54 +210,141 @@ const AddMark = () => {
             </option>
           ))}
         </select>
-      )}
 
-      {/* 👨‍🎓 Student List */}
-      {selectedSubject && (
-        <>
-          {studentLoading ? (
+        {/* Exam Name Selection */}
+        <select
+          value={selectedExamName}
+          onChange={(e) => setSelectedExamName(e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option value="">Select Exam</option>
+          <option value="1st Semester">1st Semester</option>
+          <option value="2nd Semester">2nd Semester</option>
+          <option value="3rd Semester">3rd Semester</option>
+        </select>
+
+        {/* Year Selection */}
+        <select
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(e.target.value)}
+          className="border p-2 rounded"
+        >
+          {years.map((yr) => (
+            <option key={yr} value={yr}>
+              {yr}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {selectedSubject && selectedExamName && (
+        <div className="mt-6">
+          {studentLoading || isFetchingMarks ? (
             <LoadingAnimation />
-          ) : students.length === 0 ? (
-            <p className="text-center text-gray-500">No students found</p>
           ) : (
-            <div className="grid gap-3">
-              {students.map((student: any) => (
-                <div
-                  key={student._id}
-                  className="flex items-center justify-between border p-3 rounded"
-                >
-                  <div>
-                    <p className="font-medium">{student.name?.englishName}</p>
-                    <p className="text-xs text-gray-500">
-                      Roll: {student.rollNo}
-                    </p>
-                  </div>
-
-                  <input
-                    type="number"
-                    placeholder="Mark"
-                    value={marks[student.id] || ""}
-                    onChange={(e) =>
-                      handleMarkChange(student.id, Number(e.target.value))
-                    }
-                    className="w-20 border p-1 rounded text-center"
-                  />
-                </div>
-              ))}
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-gray-200">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="border p-2 text-left">Student Info</th>
+                    <th className="border p-2">1st Monthly</th>
+                    <th className="border p-2">2nd Monthly</th>
+                    <th className="border p-2">Class Test</th>
+                    <th className="border p-2">Semester</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {students.map((student: any) => (
+                    <tr key={student._id} className="hover:bg-gray-50">
+                      <td className="border p-2">
+                        <p className="font-bold">{student.name?.englishName}</p>
+                        <p className="text-xs text-gray-500">
+                          Roll: {student.rollNo}
+                        </p>
+                      </td>
+                      <td className="border p-2">
+                        <input
+                          type="text"
+                          className="w-full p-1 border rounded text-center"
+                          value={marks[student.id]?.monthly1 ?? ""}
+                          onKeyDown={handleKeyDown}
+                          onChange={(e) =>
+                            handleMarkChange(
+                              student.id,
+                              "monthly1",
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </td>
+                      <td className="border p-2">
+                        <input
+                          type="text"
+                          className="w-full p-1 border rounded text-center"
+                          value={marks[student.id]?.monthly2 ?? ""}
+                          onKeyDown={handleKeyDown}
+                          onChange={(e) =>
+                            handleMarkChange(
+                              student.id,
+                              "monthly2",
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </td>
+                      <td className="border p-2">
+                        <input
+                          type="text"
+                          className="w-full p-1 border rounded text-center"
+                          value={marks[student.id]?.classTest ?? ""}
+                          onKeyDown={handleKeyDown}
+                          onChange={(e) =>
+                            handleMarkChange(
+                              student.id,
+                              "classTest",
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </td>
+                      <td className="border p-2">
+                        <input
+                          type="text"
+                          className="w-full p-1 border rounded text-center"
+                          value={marks[student.id]?.semester ?? ""}
+                          onKeyDown={handleKeyDown}
+                          onChange={(e) =>
+                            handleMarkChange(
+                              student.id,
+                              "semester",
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
-        </>
-      )}
 
-      {/* ✅ Submit */}
-      {selectedSubject && students.length > 0 && (
-        <button
-          onClick={handleSubmit}
-          className="w-full bg-green-600 text-white py-3 rounded flex items-center justify-center gap-2"
-        >
-          <FiCheck />
-          Submit Marks
-        </button>
+          {students.length > 0 && (
+            <button
+              onClick={handleSubmit}
+              disabled={isSaving}
+              className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded flex items-center justify-center gap-2 transition"
+            >
+              {isSaving ? (
+                "Saving..."
+              ) : (
+                <>
+                  <FiCheck /> Submit All Marks
+                </>
+              )}
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
