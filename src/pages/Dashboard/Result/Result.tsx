@@ -362,3 +362,8 @@ const Result = () => {
 };
 
 export default Result;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}
