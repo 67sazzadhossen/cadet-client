@@ -351,3 +351,8 @@ const AddMark = () => {
 };
 
 export default AddMark;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}

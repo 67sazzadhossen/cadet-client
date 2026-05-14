@@ -4,6 +4,8 @@ import Image from "next/image";
 import { GraduationCap, BookOpen, Printer, Download } from "lucide-react";
 import { useGetResultQuery } from "@/redux/features/academic/academicApi";
 import logo from "@/assets/logo.png";
+import jsPDF from "jspdf";
+import { toJpeg } from "html-to-image";
 
 const Result = () => {
   const [filters, setFilters] = useState({
@@ -41,20 +43,61 @@ const Result = () => {
 
   // PDF ডাউনলোড ফাংশন
   const handleDownloadPDF = async () => {
-    // শুধুমাত্র ক্লায়েন্ট সাইডে লাইব্রেরিটি ইমপোর্ট করবে
-    const html2pdf = (await import("html2pdf.js")).default;
-    const element = reportRef.current;
+    if (results.length === 0) {
+      alert("কোনো ডাটা পাওয়া যায়নি!");
+      return;
+    }
 
-    const opt = {
-      margin: 0.2,
-      filename: `Results_${filters.class}_${filters.examName}.pdf`,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-      pagebreak: { mode: ["css", "legacy"] }, // CSS এর break-after-page প্রপার্টি ফলো করবে
-    };
+    try {
+      const pdf = new jsPDF({
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait",
+      });
 
-    html2pdf().set(opt).from(element).save();
+      // আপনার HTML এ class "result-card" যোগ করা হয়েছে, সেটি এখানে ধরা হচ্ছে
+      const cards = reportRef.current?.querySelectorAll(".result-card");
+
+      if (!cards || cards.length === 0) {
+        alert("ডাউনলোড করার মতো কোনো এলিমেন্ট খুঁজে পাওয়া যায়নি।");
+        return;
+      }
+
+      for (let i = 0; i < cards.length; i++) {
+        const element = cards[i] as HTMLElement;
+
+        // ইমেজ জেনারেট করার সময় কিছু সময় দেওয়া ভালো যাতে ফন্ট লোড হয়
+        const dataUrl = await toJpeg(element, {
+          quality: 0.95,
+          pixelRatio: 2, // ৩ দিলে ফাইল অনেক বড় হয়ে যায়, ২ ব্যালেন্সড
+          backgroundColor: "#ffffff",
+          cacheBust: true,
+        });
+
+        if (i > 0) {
+          pdf.addPage();
+        }
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+        pdf.addImage(
+          dataUrl,
+          "JPEG",
+          0,
+          0,
+          pdfWidth,
+          pdfHeight,
+          undefined,
+          "FAST",
+        );
+      }
+
+      pdf.save(`Results_${filters.class}_${filters.examName}.pdf`);
+    } catch (error) {
+      console.error("PDF Generation Error:", error);
+      alert("PDF ডাউনলোড করতে সমস্যা হচ্ছে। আপনার ব্রাউজারের কনসোল চেক করুন।");
+    }
   };
 
   return (
@@ -160,7 +203,8 @@ const Result = () => {
             ? results.map((student: any) => (
                 <div
                   key={student.studentId}
-                  className="bg-white p-8 shadow-lg border-[12px] border-double border-gray-200 relative print:shadow-none print:border-gray-300 print:m-0 break-after-page"
+                  // এখানে 'result-card' ক্লাসটি যোগ করা হয়েছে
+                  className="result-card bg-white p-8 shadow-lg border-[12px] border-double border-gray-200 relative print:shadow-none print:border-gray-300 print:m-0 break-after-page"
                 >
                   {/* School Header with Logo */}
                   <div className="flex items-center justify-center gap-6 border-b-2 border-gray-800 pb-4 mb-6">
@@ -360,3 +404,8 @@ const Result = () => {
 };
 
 export default Result;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}
