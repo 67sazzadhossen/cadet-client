@@ -36,8 +36,8 @@ const AddMark = () => {
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedExamName, setSelectedExamName] = useState("");
-  const [selectedVersion, setSelectedVersion] = useState("english"); // নতুন যুক্ত করা হয়েছে
-  const [selectedIsCadet, setSelectedIsCadet] = useState(false); // নতুন যুক্ত করা হয়েছে
+  const [selectedVersion, setSelectedVersion] = useState("english"); // নতুন যুক্ত করা হয়েছে
+  const [selectedIsCadet, setSelectedIsCadet] = useState(false); // নতুন যুক্ত করা হয়েছে
   const [selectedYear, setSelectedYear] = useState(
     new Date().getFullYear().toString(),
   );
@@ -61,20 +61,20 @@ const AddMark = () => {
   const { data: subjectsData, isLoading: subjectLoading } =
     useGetAllSubjectsQuery(undefined);
 
-  // Student query তে version এবং isCadet পাঠানো হয়েছে
+  // Student query তে version এবং isCadet পাঠানো হয়েছে
   const { data: studentData } = useGetAllStudentsQuery(
     {
       search: "",
       class: selectedClass,
       version: selectedVersion,
-      isCadet: selectedIsCadet,
+      isCadet: true,
       page: 1,
       limit: 1000,
     },
     { skip: !selectedClass },
   );
 
-  // Marks query তে version এবং isCadet পাঠানো হয়েছে
+  // Marks query তে version এবং isCadet পাঠানো হয়েছে
   const { data: existingMarksData } = useGetMarksQuery(
     {
       class: selectedClass,
@@ -222,7 +222,13 @@ const AddMark = () => {
   }, [handleSubmit]);
 
   const allSubjects = subjectsData?.data?.data || [];
-  const students = studentData?.data?.data?.data || [];
+  const rawStudents = studentData?.data?.data?.data || [];
+
+  // ক্লায়েন্ট-সাইডে Cadet Status এর উপর ভিত্তি করে ফিল্টারিং করা হয়েছে
+  const students = rawStudents.filter(
+    (student: any) => (student.isCadet ?? false) === selectedIsCadet,
+  );
+
   const selectedClassData = allSubjects.find(
     (item: any) => item.className === selectedClass,
   );
@@ -345,9 +351,6 @@ const AddMark = () => {
           ))}
         </select>
       </div>
-
-      {/* Config Section ও Marks Table আগের মতোই থাকবে... */}
-      {/* ... (বাকি কোড আপনার অরিজিনাল কোডের মতো অপরিবর্তিত আছে) ... */}
 
       {/* Config Section */}
       {selectedSubject && selectedExamName && (
