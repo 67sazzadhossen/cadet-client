@@ -105,6 +105,22 @@ export const teacherPaths: TSidebarItem[] = [
       },
     ],
   },
+  {
+    name: "Academic Management",
+    icon: <IoSchool />,
+    children: [
+      {
+        name: "Add Mark",
+        link: "/dashboard/academic/add-mark",
+        icon: <BiTime />,
+      },
+      {
+        name: "Result",
+        link: "/dashboard/academic/result",
+        icon: <BiTime />,
+      },
+    ],
+  },
 ];
 
 export const adminPaths: TSidebarItem[] = [
