@@ -43,15 +43,15 @@ const AddMark = () => {
   );
 
   const [config, setConfig] = useState<ExamConfig>({
-    monthly1FullMark: 100,
-    monthly1Weight: 10,
-    monthly2FullMark: 100,
-    monthly2Weight: 10,
+    monthly1FullMark: 15,
+    monthly1Weight: 5,
+    monthly2FullMark: 15,
+    monthly2Weight: 5,
     classTestFullMark: 10,
-    classTestWeight: 5,
+    classTestWeight: 10,
     activitiesFullMark: 10,
-    activitiesWeight: 5,
-    semesterFullMark: 100,
+    activitiesWeight: 10,
+    semesterFullMark: 70,
     semesterWeight: 70,
   });
 
@@ -126,15 +126,15 @@ const AddMark = () => {
       setMarks(dbMarks);
       const firstEntry = marksFromDb[0];
       setConfig({
-        monthly1FullMark: firstEntry.monthly1FullMark ?? 100,
-        monthly1Weight: firstEntry.monthly1Weight ?? 10,
-        monthly2FullMark: firstEntry.monthly2FullMark ?? 100,
-        monthly2Weight: firstEntry.monthly2Weight ?? 10,
+        monthly1FullMark: firstEntry.monthly1FullMark ?? 15,
+        monthly1Weight: firstEntry.monthly1Weight ?? 5,
+        monthly2FullMark: firstEntry.monthly2FullMark ?? 15,
+        monthly2Weight: firstEntry.monthly2Weight ?? 5,
         classTestFullMark: firstEntry.classTestFullMark ?? 10,
-        classTestWeight: firstEntry.classTestWeight ?? 5,
+        classTestWeight: firstEntry.classTestWeight ?? 10,
         activitiesFullMark: firstEntry.activitiesFullMark ?? 10,
-        activitiesWeight: firstEntry.activitiesWeight ?? 5,
-        semesterFullMark: firstEntry.semesterFullMark ?? 100,
+        activitiesWeight: firstEntry.activitiesWeight ?? 10,
+        semesterFullMark: firstEntry.semesterFullMark ?? 70,
         semesterWeight: firstEntry.semesterWeight ?? 70,
       });
     } else {
@@ -160,9 +160,10 @@ const AddMark = () => {
       return toast.error("সবগুলো ফিল্ড সিলেক্ট করুন");
     }
 
-    if (totalWeight !== 100) {
+    // এখানে শর্ত পরিবর্তন করে ১০০ অথবা ৫০ চেক করা হয়েছে
+    if (totalWeight !== 100 && totalWeight !== 50) {
       return toast.error(
-        `Weight (%) এর যোগফল ১০০ হতে হবে। বর্তমানে: ${totalWeight}`,
+        `Weight (%) এর যোগফল ১০০ অথবা ৫০ হতে হবে। বর্তমানে: ${totalWeight}`,
       );
     }
 
@@ -224,7 +225,7 @@ const AddMark = () => {
   const allSubjects = subjectsData?.data?.data || [];
   const rawStudents = studentData?.data?.data?.data || [];
 
-  // ক্লায়েন্ট-সাইডে Cadet Status এর উপর ভিত্তি করে ফিল্টারিং করা হয়েছে
+  // ক্লায়েন্ট-সাইডে Cadet Status এর উপর ভিত্তি করে ফিল্টারিং করা হয়েছে
   const students = rawStudents.filter(
     (student: any) => (student.isCadet ?? false) === selectedIsCadet,
   );
@@ -357,9 +358,9 @@ const AddMark = () => {
         <div className="bg-slate-50 p-4 rounded-lg border space-y-3">
           <h2 className="text-sm font-bold text-gray-600 uppercase border-b pb-1 flex justify-between">
             <span>Exam Config (Dynamic)</span>
-            {totalWeight !== 100 && (
+            {totalWeight !== 100 && totalWeight !== 50 && (
               <span className="text-red-500 font-bold">
-                Total Weight: {totalWeight}% (Must be 100)
+                Total Weight: {totalWeight}% (Must be 100 or 50)
               </span>
             )}
           </h2>
@@ -378,7 +379,7 @@ const AddMark = () => {
               />
               <input
                 type="number"
-                className={`w-full border rounded p-1 text-center ${totalWeight !== 100 ? "border-red-500 bg-red-50" : "bg-blue-50"}`}
+                className={`w-full border rounded p-1 text-center ${totalWeight !== 100 && totalWeight !== 50 ? "border-red-500 bg-red-50" : "bg-blue-50"}`}
                 value={config.monthly1Weight}
                 onChange={(e) =>
                   handleConfigChange("monthly1Weight", e.target.value)
@@ -397,7 +398,7 @@ const AddMark = () => {
               />
               <input
                 type="number"
-                className={`w-full border rounded p-1 text-center ${totalWeight !== 100 ? "border-red-500 bg-red-50" : "bg-blue-50"}`}
+                className={`w-full border rounded p-1 text-center ${totalWeight !== 100 && totalWeight !== 50 ? "border-red-500 bg-red-50" : "bg-blue-50"}`}
                 value={config.monthly2Weight}
                 onChange={(e) =>
                   handleConfigChange("monthly2Weight", e.target.value)
@@ -418,7 +419,7 @@ const AddMark = () => {
                   />
                   <input
                     type="number"
-                    className={`w-full border rounded p-1 text-center ${totalWeight !== 100 ? "border-red-500 bg-red-50" : "bg-blue-50"}`}
+                    className={`w-full border rounded p-1 text-center ${totalWeight !== 100 && totalWeight !== 50 ? "border-red-500 bg-red-50" : "bg-blue-50"}`}
                     value={config.classTestWeight}
                     onChange={(e) =>
                       handleConfigChange("classTestWeight", e.target.value)
@@ -437,7 +438,7 @@ const AddMark = () => {
                   />
                   <input
                     type="number"
-                    className={`w-full border rounded p-1 text-center ${totalWeight !== 100 ? "border-red-500 bg-red-50" : "bg-blue-50"}`}
+                    className={`w-full border rounded p-1 text-center ${totalWeight !== 100 && totalWeight !== 50 ? "border-red-500 bg-red-50" : "bg-blue-50"}`}
                     value={config.activitiesWeight}
                     onChange={(e) =>
                       handleConfigChange("activitiesWeight", e.target.value)
@@ -458,7 +459,7 @@ const AddMark = () => {
               />
               <input
                 type="number"
-                className={`w-full border rounded p-1 text-center ${totalWeight !== 100 ? "border-red-500 bg-red-50" : "bg-blue-50"}`}
+                className={`w-full border rounded p-1 text-center ${totalWeight !== 100 && totalWeight !== 50 ? "border-red-500 bg-red-50" : "bg-blue-50"}`}
                 value={config.semesterWeight}
                 onChange={(e) =>
                   handleConfigChange("semesterWeight", e.target.value)
