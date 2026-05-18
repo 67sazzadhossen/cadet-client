@@ -12,7 +12,7 @@ const Result = () => {
     class: "Play",
     year: "2026",
     examName: "1st Semester",
-    version: "english",
+    version: "bangla",
     isCadet: false,
   });
 
