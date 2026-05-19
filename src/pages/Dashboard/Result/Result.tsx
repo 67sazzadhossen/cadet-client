@@ -373,11 +373,11 @@ const Result = () => {
             </div>
 
             <div style="border-top:2px solid black;padding-top:6px;width:180px;text-align:center;">
-              Branch Head
+              Co-Ordinator
             </div>
 
             <div style="border-top:2px solid black;padding-top:6px;width:180px;text-align:center;">
-              Principal
+              Director
             </div>
           </div>
         </div>
