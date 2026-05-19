@@ -653,12 +653,12 @@ const Result = () => {
                 <div className="border-t-2 border-black pt-1 w-48 text-center">
                   {filters.version !== "english"
                     ? "শাখা প্রধানের স্বাক্ষর"
-                    : "Branch Head's Sign"}
+                    : "Co-Ordinator's Sign"}
                 </div>
                 <div className="border-t-2 border-black pt-1 w-48 text-center">
                   {filters.version !== "english"
-                    ? "প্রধান শিক্ষকের স্বাক্ষর"
-                    : "Principal's Sign"}
+                    ? "পরিচালকের স্বাক্ষর"
+                    : "Director Sign"}
                 </div>
               </div>
             </div>
