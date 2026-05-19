@@ -1,11 +1,40 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useState, useRef } from "react";
 import Image from "next/image";
-import { GraduationCap, Printer, Download } from "lucide-react";
+import { GraduationCap, Printer, Download, FileText } from "lucide-react";
 import { useGetResultQuery } from "@/redux/features/academic/academicApi";
 import logo from "@/assets/logo.png";
 import jsPDF from "jspdf";
 import { toJpeg } from "html-to-image";
+
+// 🟢 Typescript Interfaces
+interface SubjectResult {
+  subject: string;
+  monthly1: number | string;
+  monthly2: number | string;
+  classTest?: number | string;
+  activities?: number | string;
+  semester: number | string;
+  totalInSubject: number;
+}
+
+interface StudentResult {
+  studentId: string;
+  studentName: string;
+  fathersName: string;
+  mothersName: string;
+  class: string;
+  rollNo: string;
+  version: string;
+  isCadet: boolean;
+  examName: string;
+  year: string;
+  grandTotal: number;
+  averageMark: number | string;
+  position: number | string;
+  results: SubjectResult[];
+}
 
 const Result = () => {
   const [filters, setFilters] = useState({
@@ -16,7 +45,10 @@ const Result = () => {
     isCadet: false,
   });
 
+  const [showSummary, setShowSummary] = useState(false);
+
   const reportRef = useRef<HTMLDivElement>(null);
+  const summaryRef = useRef<HTMLDivElement>(null);
 
   const { data: response, isLoading } = useGetResultQuery({
     class: filters.class,
@@ -24,28 +56,51 @@ const Result = () => {
     examName: filters.examName,
   });
 
-  const rawResults = response?.data?.data?.data || [];
+  const rawResults: StudentResult[] = response?.data?.data?.data || [];
 
-  const results = rawResults.filter((student: any) => {
+  const results = rawResults.filter((student: StudentResult) => {
     return (
       student.version.toLowerCase() === filters.version.toLowerCase() &&
       student.isCadet === filters.isCadet
     );
   });
 
-  // ১-৫ ক্লাসের জন্য লজিক (Play এবং Nursery সহ)
+  // রোল নম্বর অনুযায়ী ক্রমানুসারে সাজানো (যেমনটি ইমেজে খাতার তালিকায় থাকে)
+  const sortedSummaryResults = [...results].sort(
+    (a, b) => Number(a.rollNo) - Number(b.rollNo),
+  );
+
+  // ইউনিক সব সাবজেক্টের নাম বের করা সামারি টেবিল হেডার তৈরির জন্য
+  const allSubjects = Array.from(
+    new Set(
+      results.flatMap((s: StudentResult) =>
+        s.results.map((r: SubjectResult) => r.subject),
+      ),
+    ),
+  );
+
+  // বর্তমান গ্রুপের সব শিক্ষার্থীর মধ্যে সর্বোচ্চ Grand Total কত তা বের করার লজিক
+  const highestGrandTotal =
+    results.length > 0
+      ? Math.max(...results.map((s: StudentResult) => s.grandTotal))
+      : 0;
+
   const isJuniorClass = ["1", "2", "3", "4", "5"].includes(filters.class);
 
   const handlePrint = () => {
     window.print();
   };
 
+  // 🟢 বর্ডার ফুল পেজ, লেখা চ্যাপ্টা হওয়া রোধ এবং সিগনেচার ফুটারে ফিক্সড লজিক
   const handleDownloadPDF = async () => {
     if (results.length === 0) {
       alert("কোনো ডাটা পাওয়া যায়নি!");
       return;
     }
     try {
+      // লোগো বা ডাইনামিক সোর্স ব্রাউজারে সেট হওয়ার জন্য সামান্য ৩০০ মিলিসেকেন্ড সময় দেওয়া
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
       const pdf = new jsPDF({
         unit: "mm",
         format: "a4",
@@ -54,20 +109,136 @@ const Result = () => {
       const cards = reportRef.current?.querySelectorAll(".result-card");
       if (!cards || cards.length === 0) return;
 
+      const pdfWidth = 210; // A4 Width
+      const pdfHeight = 297; // A4 Height
+      const margin = 6; // বর্ডারের মার্জিন
+
       for (let i = 0; i < cards.length; i++) {
         const element = cards[i] as HTMLElement;
+
+        // ১. সিগনেচার সেকশনটিকে স্ক্রিনশট থেকে আলাদা করার জন্য সাময়িক হাইড করা
+        const sigSection = element.querySelector(
+          ".grid-cols-3.mt-16",
+        ) as HTMLElement;
+        if (sigSection) sigSection.style.opacity = "0";
+
+        // ডাবল বর্ডার ডাইনামিকালি PDF-এ আঁকবো, তাই HTML বর্ডার সাময়িক হাইড
+        const originalBorder = element.style.border;
+        const originalShadow = element.style.boxShadow;
+        element.style.border = "none";
+        element.style.boxShadow = "none";
+
         const dataUrl = await toJpeg(element, {
           quality: 0.95,
           pixelRatio: 2,
           backgroundColor: "#ffffff",
+          cacheBust: true, // 👈 এটি লোগো ক্যাশ বা পুরানো ইমেজ আটকে থাকা রোধ করবে
         });
+
+        // সিগনেচার ও বর্ডার আবার আগের অবস্থায় ফেরত আনা
+        if (sigSection) sigSection.style.opacity = "1";
+        element.style.border = originalBorder;
+        element.style.boxShadow = originalShadow;
+
         if (i > 0) pdf.addPage();
-        pdf.addImage(dataUrl, "JPEG", 0, 0, 210, 297, undefined, "FAST");
+
+        // ২. পুরো পেজ জুড়ে নিখুঁত ডাবল বর্ডার তৈরি (Full Page Border)
+        pdf.setLineWidth(1.5);
+        pdf.setDrawColor(200, 200, 200); // gray-200 কালার
+        pdf.rect(margin, margin, pdfWidth - margin * 2, pdfHeight - margin * 2);
+        pdf.rect(
+          margin + 1.5,
+          margin + 1.5,
+          pdfWidth - (margin + 1.5) * 2,
+          pdfHeight - (margin + 1.5) * 2,
+        );
+
+        // ৩. মেইন কন্টেন্টের অ্যাসপেক্ট রেশিও হিসাব করা (যাতে লেখা চ্যাপ্টা না হয়)
+        const elementWidth = element.offsetWidth;
+        const elementHeight = element.offsetHeight;
+        const ratio = elementWidth / elementHeight;
+
+        const contentWidth = pdfWidth - (margin + 4) * 2;
+        const contentHeight = contentWidth / ratio;
+
+        // কন্টেন্ট পেজের টপ-এ বসবে
+        pdf.addImage(
+          dataUrl,
+          "JPEG",
+          margin + 4,
+          margin + 4,
+          contentWidth,
+          contentHeight,
+          undefined,
+          "FAST",
+        );
+
+        // ৪. সিগনেচার সেকশনটি PDF-এর একেবারে নিচে (Footer) টেক্সট আকারে নিখুঁতভাবে বসানো
+        pdf.setFontSize(9);
+        pdf.setFont("helvetica", "bold");
+        pdf.setTextColor(0, 0, 0);
+
+        const footerY = pdfHeight - 20; // নিচ থেকে ২০ মিমি উপরে সিগনেচার লাইন
+
+        // প্রথম সিগনেচার (Left aligned)
+        pdf.line(margin + 5, footerY, margin + 45, footerY);
+        pdf.text("CLASS TEACHER'S SIGN", margin + 7, footerY + 5);
+
+        // মাঝখানের রিমার্কস (Center aligned)
+        pdf.line(pdfWidth / 2 - 20, footerY, pdfWidth / 2 + 20, footerY);
+        pdf.text("REMARKS", pdfWidth / 2, footerY + 5, { align: "center" });
+
+        // প্রধান শিক্ষকের স্বাক্ষর (Right aligned)
+        pdf.line(
+          pdfWidth - margin - 45,
+          footerY,
+          pdfWidth - margin - 5,
+          footerY,
+        );
+        pdf.text("PRINCIPAL'S SIGN", pdfWidth - margin - 40, footerY + 5);
       }
       pdf.save(`Results_${filters.class}_${filters.examName}.pdf`);
     } catch (error) {
       console.error(error);
     }
+  };
+
+  // 🟢 রেজাল্ট সামারি PDF (A4 Landscape) ফরম্যাটে ডাউনলোড করার লজিক
+  const handleDownloadSummaryPDF = async () => {
+    if (results.length === 0) {
+      alert("কোনো ডাটা পাওয়া যায়নি!");
+      return;
+    }
+
+    // সামারি সেকশনটি ক্ষণিকের জন্য ভিজিবল করা যাতে স্ক্রিনশট নেওয়া যায়
+    setShowSummary(true);
+
+    setTimeout(async () => {
+      try {
+        if (summaryRef.current) {
+          const dataUrl = await toJpeg(summaryRef.current, {
+            quality: 0.98,
+            pixelRatio: 2,
+            backgroundColor: "#ffffff",
+            cacheBust: true, // 👈 ডাইনামিক লোগো ক্যাশ সমস্যা ফিক্স করবে
+          });
+
+          // A4 Landscape PDF তৈরি করা (297mm x 210mm)
+          const pdf = new jsPDF({
+            orientation: "landscape",
+            unit: "mm",
+            format: "a4",
+          });
+
+          pdf.addImage(dataUrl, "JPEG", 0, 0, 297, 210, undefined, "FAST");
+          pdf.save(`Result_Summary_${filters.class}_${filters.year}.pdf`);
+        }
+      } catch (error) {
+        console.error("Summary PDF download failed", error);
+      } finally {
+        setShowSummary(false);
+      }
+    }, 500);
   };
 
   return (
@@ -79,18 +250,19 @@ const Result = () => {
             <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
               <GraduationCap className="text-red-600" /> Academic Management
             </h1>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
+              {/* 🟢 নতুন বাটন: Summary PDF (Landscape) */}
+              <button
+                onClick={handleDownloadSummaryPDF}
+                className="flex items-center gap-2 bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 shadow-md transition-all"
+              >
+                <FileText size={18} /> Result Summary (PDF)
+              </button>
               <button
                 onClick={handleDownloadPDF}
                 className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 shadow-md"
               >
-                <Download size={18} /> Download PDF
-              </button>
-              <button
-                onClick={handlePrint}
-                className="flex items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-black shadow-md"
-              >
-                <Printer size={18} /> Print All Results
+                <Download size={18} /> Download Cards (PDF)
               </button>
             </div>
           </div>
@@ -157,26 +329,201 @@ const Result = () => {
           </div>
         </div>
 
-        {/* Results Display */}
+        {/* 🟢 A4 Landscape (297mm x 210mm) অনুপাত বজায় রেখে ডিজাইন করা হিডেন সামারি সেকশন */}
+        {showSummary && (
+          <div className="fixed -left-[9999px] top-0">
+            <div
+              ref={summaryRef}
+              className="w-[1122px] h-[794px] p-8 bg-white border-[4px] border-black text-black flex flex-col justify-between"
+              style={{ fontFamily: "'Noto Serif Bengali', serif, sans-serif" }}
+            >
+              <div>
+                {/* Header */}
+                <div className="flex items-center justify-between border-b-4 border-black pb-3 mb-4">
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={
+                        filters.version !== "english"
+                          ? logo.src
+                          : "/star_frolic.png"
+                      }
+                      alt="Logo"
+                      width={65}
+                      height={65}
+                      crossOrigin="anonymous"
+                    />
+                    <div>
+                      <h2 className="text-2xl font-black tracking-wide">
+                        {filters.version !== "english"
+                          ? "গাজীপুর শাহীন ক্যাডেট একাডেমি, ময়মনসিংহ"
+                          : "STAR FROLIC ENGLISH VERSION SCHOOL, MYMENSINGH"}
+                      </h2>
+                    </div>
+                  </div>
+                  <div className="text-right font-bold text-xs space-y-1">
+                    <div>
+                      {filters.version !== "english" ? "শ্রেণি: " : "Class: "}
+                      <span className="underline">{filters.class}</span>
+                    </div>
+                    <div>
+                      {filters.version !== "english" ? "পরীক্ষা: " : "Exam: "}{" "}
+                      <span className="underline">
+                        {filters.examName} - {filters.year}
+                      </span>
+                    </div>
+                    <div>
+                      {filters.version !== "english" ? "ভার্সন: " : "Version: "}{" "}
+                      <span className="underline">
+                        {filters.version.toUpperCase()}
+                      </span>{" "}
+                      {filters.class === "6" && (
+                        <>
+                          {filters.version !== "english" ? (
+                            <>({filters.isCadet ? "ক্যাডেট" : "নন-ক্যাডেট"})</>
+                          ) : (
+                            <>({filters.isCadet ? "Cadet" : "Non-Cadet"})</>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <h3 className="text-center text-lg font-extrabold border-2 border-black py-1 bg-gray-100 mb-4 uppercase tracking-wider">
+                  Result Summary
+                </h3>
+
+                {/* Ledger Table */}
+                <table className="w-full border-collapse border-2 border-black text-xs">
+                  <thead>
+                    <tr className="bg-gray-100 font-bold text-center">
+                      <th className="border border-black p-2 w-16">
+                        {filters.version !== "english" ? "রোল নং" : "Roll No"}
+                      </th>
+                      <th className="border border-black p-2 text-left">
+                        {filters.version !== "english"
+                          ? "শিক্ষার্থীর নাম"
+                          : "Student Name"}
+                      </th>
+                      {allSubjects.map((sub, i) => (
+                        <th
+                          key={i}
+                          className="border border-black p-1 max-w-[85px] break-words"
+                        >
+                          {sub}
+                        </th>
+                      ))}
+                      <th className="border border-black p-2 bg-gray-200 font-black w-24">
+                        {filters.version !== "english"
+                          ? "মোট নম্বর"
+                          : "Grand Total"}
+                      </th>
+                      <th className="border border-black p-2 bg-gray-200 font-black w-20">
+                        {filters.version !== "english"
+                          ? "গড় নম্বর"
+                          : "Avg Mark"}
+                      </th>
+                      <th className="border border-black p-2 bg-green-50 font-black w-24">
+                        {filters.version !== "english"
+                          ? "সর্বোচ্চ নম্বর"
+                          : "Highest Mark"}
+                      </th>
+                      <th className="border border-black p-2 bg-amber-100 font-black w-20">
+                        {filters.version !== "english"
+                          ? "মেধা স্থান"
+                          : "Position"}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sortedSummaryResults.map((student: StudentResult) => (
+                      <tr
+                        key={student.studentId}
+                        className="text-center font-semibold hover:bg-gray-50"
+                      >
+                        <td className="border border-black p-1.5">
+                          {student.rollNo}
+                        </td>
+                        <td className="border border-black p-1.5 text-left font-bold">
+                          {student.studentName}
+                        </td>
+                        {allSubjects.map((sub, i) => {
+                          const subResult = student.results.find(
+                            (r: SubjectResult) => r.subject === sub,
+                          );
+                          return (
+                            <td key={i} className="border border-black p-1.5">
+                              {subResult ? subResult.totalInSubject : "-"}
+                            </td>
+                          );
+                        })}
+                        <td className="border border-black p-1.5 bg-gray-50 font-bold">
+                          {student.grandTotal}
+                        </td>
+                        <td className="border border-black p-1.5 bg-gray-50">
+                          {student.averageMark}
+                        </td>
+                        <td className="border border-black p-1.5 bg-green-50 font-bold">
+                          {highestGrandTotal}
+                        </td>
+                        <td className="border border-black p-1.5 bg-amber-50 font-black text-red-700">
+                          {student.position}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Signatures at the bottom edge */}
+              <div className="flex justify-between items-center mt-auto pb-2 px-4 text-xs font-bold">
+                <div className="border-t-2 border-black pt-1 w-48 text-center">
+                  {filters.version !== "english"
+                    ? "শ্রেণি শিক্ষকের স্বাক্ষর"
+                    : "Class Teacher's Sign"}
+                </div>
+                <div className="border-t-2 border-black pt-1 w-48 text-center">
+                  {filters.version !== "english"
+                    ? "শাখা প্রধানের স্বাক্ষর"
+                    : "Branch Head's Sign"}
+                </div>
+                <div className="border-t-2 border-black pt-1 w-48 text-center">
+                  {filters.version !== "english"
+                    ? "প্রধান শিক্ষকের স্বাক্ষর"
+                    : "Principal's Sign"}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Results Display (Standard Report Cards) */}
         <div ref={reportRef} className="space-y-12">
           {results.length > 0
-            ? results.map((student: any) => (
+            ? results.map((student: StudentResult) => (
                 <div
                   key={student.studentId}
                   className="result-card bg-white p-8 shadow-lg border-[12px] border-double border-gray-200 relative break-after-page"
                 >
                   {/* Header */}
                   <div className="flex items-center justify-center gap-6 border-b-2 border-gray-800 pb-4 mb-6 text-center">
-                    <Image
-                      src={logo}
+                    <img
+                      src={
+                        student.version !== "english"
+                          ? logo.src
+                          : "/star_frolic.png"
+                      }
                       alt="GSCA Logo"
-                      width={80}
+                      width={110}
                       height={80}
                       className="object-contain"
+                      crossOrigin="anonymous"
                     />
                     <div>
                       <h2 className="text-3xl font-black text-black uppercase tracking-widest leading-none">
-                        GAZIPURSHAHEEN CADET ACADEMY
+                        {student.version !== "english"
+                          ? "GAZIPURSHAHEEN CADET ACADEMY"
+                          : "STAR FROLIC ENGLISH VERSION SCHOOL"}
                       </h2>
                       <p className="text-sm font-bold text-gray-700 mt-2">
                         Mymensingh Branch, Bangladesh
@@ -188,7 +535,7 @@ const Result = () => {
                   </div>
 
                   {/* Info Grid */}
-                  <div className="grid grid-cols-2 gap-y-3 mb-6 text-[13px] font-semibold uppercase">
+                  <div className="grid grid-cols-2 gap-5 mb-6 text-[13px] font-semibold uppercase">
                     <div className="flex gap-2">
                       <span className="text-gray-500 w-32">Student Name:</span>
                       <span className="border-b border-dotted border-black flex-1">
@@ -196,13 +543,15 @@ const Result = () => {
                       </span>
                     </div>
                     <div className="flex gap-2">
-                      <span className="text-gray-500 w-32">Admission No:</span>
+                      <span className="text-gray-500 w-32">Id No:</span>
                       <span className="border-b border-dotted border-black flex-1">
                         {student.studentId}
                       </span>
                     </div>
-                    <div className="flex gap-2">
-                      <span className="text-gray-500 w-32">Father's Name:</span>
+                    <div className="flex gap-2 hidden">
+                      <span className="text-gray-500 w-32">
+                        Father&apos;s Name:
+                      </span>
                       <span className="border-b border-dotted border-black flex-1">
                         {student.fathersName}
                       </span>
@@ -213,8 +562,10 @@ const Result = () => {
                         {student.class} ({student.version})
                       </span>
                     </div>
-                    <div className="flex gap-2">
-                      <span className="text-gray-500 w-32">Mother's Name:</span>
+                    <div className="flex gap-2 hidden">
+                      <span className="text-gray-500 w-32">
+                        Mother&apos;s Name:
+                      </span>
                       <span className="border-b border-dotted border-black flex-1">
                         {student.mothersName}
                       </span>
@@ -240,7 +591,6 @@ const Result = () => {
                         <th className="border border-gray-800 p-2">
                           Monthly 2
                         </th>
-                        {/* কন্ডিশনাল কলাম */}
                         {isJuniorClass && (
                           <>
                             <th className="border border-gray-800 p-2">
@@ -258,42 +608,43 @@ const Result = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {student.results.map((res: any, idx: number) => (
-                        <tr
-                          key={idx}
-                          className="text-center font-medium text-sm"
-                        >
-                          <td className="border border-gray-800 p-2 text-left">
-                            {res.subject}
-                          </td>
-                          <td className="border border-gray-800 p-2">
-                            {res.monthly1}
-                          </td>
-                          <td className="border border-gray-800 p-2">
-                            {res.monthly2}
-                          </td>
-                          {isJuniorClass && (
-                            <>
-                              <td className="border border-gray-800 p-2">
-                                {res.classTest}
-                              </td>
-                              <td className="border border-gray-800 p-2">
-                                {res.activities}
-                              </td>
-                            </>
-                          )}
-                          <td className="border border-gray-800 p-2">
-                            {res.semester}
-                          </td>
-                          <td className="border border-gray-800 p-2 font-bold bg-gray-50">
-                            {res.totalInSubject}
-                          </td>
-                        </tr>
-                      ))}
+                      {student.results.map(
+                        (res: SubjectResult, idx: number) => (
+                          <tr
+                            key={idx}
+                            className="text-center font-medium text-sm"
+                          >
+                            <td className="border border-gray-800 p-2 text-left">
+                              {res.subject}
+                            </td>
+                            <td className="border border-gray-800 p-2">
+                              {res.monthly1}
+                            </td>
+                            <td className="border border-gray-800 p-2">
+                              {res.monthly2}
+                            </td>
+                            {isJuniorClass && (
+                              <>
+                                <td className="border border-gray-800 p-2">
+                                  {res.classTest}
+                                </td>
+                                <td className="border border-gray-800 p-2">
+                                  {res.activities}
+                                </td>
+                              </>
+                            )}
+                            <td className="border border-gray-800 p-2">
+                              {res.semester}
+                            </td>
+                            <td className="border border-gray-800 p-2 font-bold bg-gray-50">
+                              {res.totalInSubject}
+                            </td>
+                          </tr>
+                        ),
+                      )}
                     </tbody>
                     <tfoot>
                       <tr className="bg-gray-100 font-black">
-                        {/* ডাইনামিক Colspan: বড় ক্লাসে ৩, ছোট ক্লাসে ৫ */}
                         <td
                           colSpan={isJuniorClass ? 5 : 3}
                           className="border border-gray-800 p-2 text-right uppercase"
@@ -307,7 +658,7 @@ const Result = () => {
                     </tfoot>
                   </table>
 
-                  {/* Summary & Signatures sections remain same... */}
+                  {/* Summary & Signatures */}
                   <div className="grid grid-cols-3 gap-4 mb-10 text-center font-bold text-sm uppercase">
                     <div className="border border-gray-800 p-2 bg-gray-50">
                       <p className="text-[10px] text-gray-500">Average Mark</p>
@@ -315,7 +666,7 @@ const Result = () => {
                     </div>
                     <div className="border border-gray-800 p-2 bg-gray-50">
                       <p className="text-[10px] text-gray-500">Position</p>
-                      <p className="text-lg">#{student.position}</p>
+                      <p className="text-lg">{student.position}</p>
                     </div>
                     <div className="border border-gray-800 p-2 bg-gray-50">
                       <p className="text-[10px] text-gray-500">Result Status</p>
@@ -325,16 +676,16 @@ const Result = () => {
 
                   <div className="grid grid-cols-3 gap-8 mt-16 pt-4 text-center text-xs font-bold uppercase">
                     <div className="border-t border-black pt-2">
-                      Class Teacher's Sign
+                      Class Teacher&apos;s Sign
                     </div>
                     <div>
                       <div className="border-t border-black pt-2 italic text-[10px] normal-case font-normal">
-                        "Good performance. Keep it up."
+                        &quot;Good performance. Keep it up.&quot;
                       </div>
                       <div className="mt-1">Remarks</div>
                     </div>
                     <div className="border-t border-black pt-2">
-                      Principal's Sign
+                      Principal&apos;s Sign
                     </div>
                   </div>
                 </div>
@@ -366,8 +717,9 @@ const Result = () => {
 };
 
 export default Result;
+
 export async function getServerSideProps() {
   return {
-    props: {}, // Page will render only on client
+    props: {},
   };
 }
