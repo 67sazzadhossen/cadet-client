@@ -210,35 +210,203 @@ const Result = () => {
       return;
     }
 
-    // সামারি সেকশনটি ক্ষণিকের জন্য ভিজিবল করা যাতে স্ক্রিনশট নেওয়া যায়
-    setShowSummary(true);
+    const studentsPerPage = 20;
+    const totalPages = Math.ceil(sortedSummaryResults.length / studentsPerPage);
 
-    setTimeout(async () => {
-      try {
-        if (summaryRef.current) {
-          const dataUrl = await toJpeg(summaryRef.current, {
-            quality: 0.98,
-            pixelRatio: 2,
-            backgroundColor: "#ffffff",
-            cacheBust: true, // 👈 ডাইনামিক লোগো ক্যাশ সমস্যা ফিক্স করবে
-          });
+    try {
+      const pdf = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4",
+      });
 
-          // A4 Landscape PDF তৈরি করা (297mm x 210mm)
-          const pdf = new jsPDF({
-            orientation: "landscape",
-            unit: "mm",
-            format: "a4",
-          });
+      for (let page = 0; page < totalPages; page++) {
+        const start = page * studentsPerPage;
+        const end = start + studentsPerPage;
 
-          pdf.addImage(dataUrl, "JPEG", 0, 0, 297, 210, undefined, "FAST");
-          pdf.save(`Result_Summary_${filters.class}_${filters.year}.pdf`);
+        const currentPageStudents = sortedSummaryResults.slice(start, end);
+
+        // temporary render data
+        const tempDiv = document.createElement("div");
+        tempDiv.style.position = "fixed";
+        tempDiv.style.left = "-9999px";
+        tempDiv.style.top = "0";
+
+        document.body.appendChild(tempDiv);
+
+        tempDiv.innerHTML = `
+        <div
+          id="summary-page"
+          style="
+            width:1122px;
+            min-height:794px;
+            background:white;
+            padding:32px;
+            border:4px solid black;
+            font-family:sans-serif;
+            box-sizing:border-box;
+          "
+        >
+          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:4px solid black;padding-bottom:12px;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:16px;">
+              <img 
+                src="${
+                  filters.version !== "english" ? logo.src : "/star_frolic.png"
+                }"
+                width="65"
+                height="65"
+              />
+              <div>
+                <h2 style="font-size:28px;font-weight:900;margin:0;">
+                  ${
+                    filters.version !== "english"
+                      ? "গাজীপুর শাহীন ক্যাডেট একাডেমি, ময়মনসিংহ"
+                      : "STAR FROLIC ENGLISH VERSION SCHOOL"
+                  }
+                </h2>
+              </div>
+            </div>
+
+            <div style="font-size:12px;font-weight:bold;text-align:right;">
+              <div>Class: ${filters.class}</div>
+              <div>${filters.examName} - ${filters.year}</div>
+              <div>${filters.version.toUpperCase()}</div>
+            </div>
+          </div>
+
+          <h3 style="
+            text-align:center;
+            border:2px solid black;
+            padding:8px;
+            margin-bottom:16px;
+            font-size:22px;
+            font-weight:900;
+          ">
+            RESULT SUMMARY
+          </h3>
+
+          <table style="
+            width:100%;
+            border-collapse:collapse;
+            font-size:11px;
+          ">
+            <thead>
+              <tr style="background:#f3f3f3;">
+                <th style="border:1px solid black;padding:6px;">Roll</th>
+                <th style="border:1px solid black;padding:6px;text-align:left;">Student Name</th>
+
+                ${allSubjects
+                  .map(
+                    (sub) => `
+                  <th style="border:1px solid black;padding:6px;">
+                    ${sub}
+                  </th>
+                `,
+                  )
+                  .join("")}
+
+                <th style="border:1px solid black;padding:6px;">Total</th>
+                <th style="border:1px solid black;padding:6px;">Average</th>
+                <th style="border:1px solid black;padding:6px;">Highest</th>
+                <th style="border:1px solid black;padding:6px;">Position</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              ${currentPageStudents
+                .map(
+                  (student) => `
+                <tr>
+                  <td style="border:1px solid black;padding:6px;text-align:center;">
+                    ${student.rollNo}
+                  </td>
+
+                  <td style="border:1px solid black;padding:6px;font-weight:bold;">
+                    ${student.studentName}
+                  </td>
+
+                  ${allSubjects
+                    .map((sub) => {
+                      const subResult = student.results.find(
+                        (r) => r.subject === sub,
+                      );
+
+                      return `
+                        <td style="border:1px solid black;padding:6px;text-align:center;">
+                          ${subResult ? subResult.totalInSubject : "-"}
+                        </td>
+                      `;
+                    })
+                    .join("")}
+
+                  <td style="border:1px solid black;padding:6px;text-align:center;font-weight:bold;">
+                    ${student.grandTotal}
+                  </td>
+
+                  <td style="border:1px solid black;padding:6px;text-align:center;">
+                    ${student.averageMark}
+                  </td>
+
+                  <td style="border:1px solid black;padding:6px;text-align:center;">
+                    ${highestGrandTotal}
+                  </td>
+
+                  <td style="border:1px solid black;padding:6px;text-align:center;color:red;font-weight:bold;">
+                    ${student.position}
+                  </td>
+                </tr>
+              `,
+                )
+                .join("")}
+            </tbody>
+          </table>
+
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            margin-top:40px;
+            font-size:12px;
+            font-weight:bold;
+          ">
+            <div style="border-top:2px solid black;padding-top:6px;width:180px;text-align:center;">
+              Class Teacher
+            </div>
+
+            <div style="border-top:2px solid black;padding-top:6px;width:180px;text-align:center;">
+              Branch Head
+            </div>
+
+            <div style="border-top:2px solid black;padding-top:6px;width:180px;text-align:center;">
+              Principal
+            </div>
+          </div>
+        </div>
+      `;
+
+        const summaryElement = tempDiv.querySelector(
+          "#summary-page",
+        ) as HTMLElement;
+
+        const dataUrl = await toJpeg(summaryElement, {
+          quality: 1,
+          pixelRatio: 2,
+          backgroundColor: "#ffffff",
+          cacheBust: true,
+        });
+
+        if (page > 0) {
+          pdf.addPage();
         }
-      } catch (error) {
-        console.error("Summary PDF download failed", error);
-      } finally {
-        setShowSummary(false);
+
+        pdf.addImage(dataUrl, "JPEG", 0, 0, 297, 210);
+
+        document.body.removeChild(tempDiv);
       }
-    }, 500);
+
+      pdf.save(`Result_Summary_${filters.class}_${filters.year}.pdf`);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
