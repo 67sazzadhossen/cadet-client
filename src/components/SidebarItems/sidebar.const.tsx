@@ -85,7 +85,7 @@ export const teacherPaths: TSidebarItem[] = [
   },
   {
     name: "Attendance",
-    link: "/dashboard/attendance",
+    link: "/dashboard/my-attendance",
     icon: <BiCalendarCheck />,
   },
   {
