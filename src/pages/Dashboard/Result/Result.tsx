@@ -296,7 +296,7 @@ const Result = () => {
                 <h2 style="font-size:28px;font-weight:900;margin:0;">
                   ${
                     filters.version !== "english"
-                      ? "গাজীপুর শাহীন ক্যাডেট একাডেমি, ময়মনসিংহ"
+                      ? "গাজীপুরশাহীন ক্যাডেট একাডেমি, ময়মনসিংহ শাখা"
                       : "STAR FROLIC ENGLISH VERSION SCHOOL"
                   }
                 </h2>
