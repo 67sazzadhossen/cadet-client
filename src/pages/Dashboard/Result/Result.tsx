@@ -659,7 +659,9 @@ const Result = () => {
                         </td>
                         {sortedSubjects.map((sub, i) => {
                           const subResult = student.results.find(
-                            (r: SubjectResult) => r.subject === sub,
+                            (r) =>
+                              r.subject.toLowerCase().trim() ===
+                              sub.toLowerCase().trim(),
                           );
                           return (
                             <td key={i} className="border border-black p-1.5">
