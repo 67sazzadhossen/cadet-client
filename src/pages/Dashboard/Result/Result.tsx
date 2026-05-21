@@ -80,7 +80,7 @@ const Result = () => {
     ),
   );
 
-  // 🟢 Custom Subject Serial Order
+  // ১. সাবজেক্টগুলোর জন্য আপনার নির্দিষ্ট করা সিরিয়াল অ্যারে
   const subjectOrder = [
     "Bangla",
     "English",
@@ -90,28 +90,23 @@ const Result = () => {
     "Drawing",
   ];
 
-  // 🟢 Subject Sorting
-  const sortedSubjects = [...allSubjects].sort((a, b) => {
+  // ২. আপনার বিদ্যমান সাবজেক্ট লিস্টকে এই সিরিয়াল অনুযায়ী সর্ট করা
+  // (ধরে নিচ্ছি আপনার আসল অ্যারের নাম 'sortedSubjects' অথবা এটি যেখান থেকে জেনারেট হচ্ছিল)
+  const sortedSubjects = [
+    ...new Set(
+      results.flatMap((student) =>
+        student.results.map((r: SubjectResult) => r.subject),
+      ),
+    ),
+  ].sort((a, b) => {
     const indexA = subjectOrder.indexOf(a);
     const indexB = subjectOrder.indexOf(b);
 
-    // দুটোই custom list এ থাকলে
-    if (indexA !== -1 && indexB !== -1) {
-      return indexA - indexB;
-    }
+    // যদি কোনো সাবজেক্ট লিস্টে না থাকে, সেটিকে শেষে পাঠিয়ে দেবে
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
 
-    // a আছে কিন্তু b নাই
-    if (indexA !== -1) {
-      return -1;
-    }
-
-    // b আছে কিন্তু a নাই
-    if (indexB !== -1) {
-      return 1;
-    }
-
-    // দুটোই custom list এর বাইরে হলে alphabetical
-    return a.localeCompare(b);
+    return indexA - indexB;
   });
 
   // বর্তমান গ্রুপের সব শিক্ষার্থীর মধ্যে সর্বোচ্চ Grand Total কত তা বের করার লজিক
