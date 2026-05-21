@@ -327,13 +327,13 @@ const Result = () => {
                 <th style="border:1px solid black;padding:6px;">Roll</th>
                 <th style="border:1px solid black;padding:6px;text-align:left;">Student Name</th>
 
-                ${allSubjects
+                ${sortedSubjects
                   .map(
                     (sub) => `
-                  <th style="border:1px solid black;padding:6px;">
-                    ${sub}
-                  </th>
-                `,
+      <th style="border:1px solid black;padding:6px;">
+        ${sub}
+      </th>
+    `,
                   )
                   .join("")}
 
