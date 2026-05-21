@@ -123,10 +123,6 @@ const Result = () => {
 
   const isJuniorClass = ["1", "2", "3", "4", "5"].includes(filters.class);
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   // 🟢 বর্ডার ফুল পেজ, লেখা চ্যাপ্টা হওয়া রোধ এবং সিগনেচার ফুটারে ফিক্সড লজিক
   const handleDownloadPDF = async () => {
     if (results.length === 0) {
@@ -342,7 +338,7 @@ const Result = () => {
                   .join("")}
 
                 <th style="border:1px solid black;padding:6px;">Total</th>
-                <th style="border:1px solid black;padding:6px;">Average</th>
+               
                 <th style="border:1px solid black;padding:6px;">Highest</th>
                 <th style="border:1px solid black;padding:6px;">Position</th>
               </tr>
@@ -379,9 +375,7 @@ const Result = () => {
                     ${student.grandTotal}
                   </td>
 
-                  <td style="border:1px solid black;padding:6px;text-align:center;">
-                    ${student.averageMark}
-                  </td>
+                 
 
                   <td style="border:1px solid black;padding:6px;text-align:center;">
                     ${highestGrandTotal}
@@ -683,7 +677,14 @@ const Result = () => {
                           {highestGrandTotal}
                         </td>
                         <td className="border border-black p-1.5 bg-amber-50 font-black text-red-700">
-                          {student.position}
+                          $
+                          {Number(student.position) === 1
+                            ? "1st"
+                            : Number(student.position) === 2
+                              ? "2nd"
+                              : Number(student.position) === 3
+                                ? "3rd"
+                                : `${student.position}th`}
                         </td>
                       </tr>
                     ))}
@@ -802,10 +803,10 @@ const Result = () => {
                           Subject Name
                         </th>
                         <th className="border border-gray-800 p-2">
-                          Monthly 1
+                          1st Monthly
                         </th>
                         <th className="border border-gray-800 p-2">
-                          Monthly 2
+                          2nd Monthly
                         </th>
                         {isJuniorClass && (
                           <>
@@ -886,14 +887,22 @@ const Result = () => {
                   </table>
 
                   {/* Summary & Signatures */}
-                  <div className="grid grid-cols-3 gap-4 mb-10 text-center font-bold text-sm uppercase">
+                  <div className="grid grid-cols-3 gap-4 mb-10 text-center font-bold text-sm ">
                     <div className="border border-gray-800 p-2 bg-gray-50">
                       <p className="text-[10px] text-gray-500">Average Mark</p>
                       <p className="text-lg">{student.averageMark}</p>
                     </div>
                     <div className="border border-gray-800 p-2 bg-gray-50">
                       <p className="text-[10px] text-gray-500">Position</p>
-                      <p className="text-lg">{student.position}</p>
+                      <p className="text-lg">
+                        {Number(student.position) === 1
+                          ? "1st"
+                          : Number(student.position) === 2
+                            ? "2nd"
+                            : Number(student.position) === 3
+                              ? "3rd"
+                              : `${student.position}th`}
+                      </p>
                     </div>
                     <div className="border border-gray-800 p-2 bg-gray-50">
                       <p className="text-[10px] text-gray-500">Result Status</p>
@@ -906,13 +915,11 @@ const Result = () => {
                       Class Teacher&apos;s Sign
                     </div>
                     <div>
-                      <div className="border-t border-black pt-2 italic text-[10px] normal-case font-normal">
-                        &quot;Good performance. Keep it up.&quot;
-                      </div>
-                      <div className="mt-1">Remarks</div>
+                      <div className="border-t border-black pt-2 italic text-[10px] normal-case font-normal"></div>
+                      <div className="mt-1">Co- Ordinator&apos;s Sign</div>
                     </div>
                     <div className="border-t border-black pt-2">
-                      Principal&apos;s Sign
+                      Director&apos;s Sign
                     </div>
                   </div>
                 </div>
