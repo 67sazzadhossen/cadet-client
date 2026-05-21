@@ -58,6 +58,8 @@ const Result = () => {
 
   const rawResults: StudentResult[] = response?.data?.data?.data || [];
 
+  console.log(response?.data?.data.totalExamMarks);
+
   const results = rawResults.filter((student: StudentResult) => {
     return (
       student.version.toLowerCase() === filters.version.toLowerCase() &&
@@ -80,18 +82,17 @@ const Result = () => {
     ),
   );
 
-  // ১. সাবজেক্টগুলোর জন্য আপনার নির্দিষ্ট করা সিরিয়াল অ্যারে
+  // ১. আপনার নির্দিষ্ট করা সিরিয়াল (সবচেয়ে নিরাপদ উপায়ে সম্ভাব্য ভুল বানানসহ)
   const subjectOrder = [
-    "Bangla",
-    "English",
-    "Mathematics",
-    "Religion",
-    "Spoken",
-    "Drawing",
+    "bangla",
+    "english",
+    "mathem", // 👈 শুধু 'mathem' রাখায় "mathematics" বা ভুল বানান "mathemetics" দুটির সাথেই নিখুঁত মিলবে
+    "religion",
+    "spoken",
+    "draw", // 👈 "drawing" বা "drawing (oral)" সব কভার করবে
   ];
 
-  // ২. আপনার বিদ্যমান সাবজেক্ট লিস্টকে এই সিরিয়াল অনুযায়ী সর্ট করা
-  // (ধরে নিচ্ছি আপনার আসল অ্যারের নাম 'sortedSubjects' অথবা এটি যেখান থেকে জেনারেট হচ্ছিল)
+  // ২. ১০০% নিখুঁত কেস-ইনসেনসিটিভ ও টাইপো-সেফ সর্টিং লজিক
   const sortedSubjects = [
     ...new Set(
       results.flatMap((student) =>
@@ -99,10 +100,15 @@ const Result = () => {
       ),
     ),
   ].sort((a, b) => {
-    const indexA = subjectOrder.indexOf(a);
-    const indexB = subjectOrder.indexOf(b);
+    const cleanA = a.toLowerCase().trim();
+    const cleanB = b.toLowerCase().trim();
 
-    // যদি কোনো সাবজেক্ট লিস্টে না থাকে, সেটিকে শেষে পাঠিয়ে দেবে
+    // includes বা startsWith ব্যবহার করে আংশিক শব্দ মিলিয়ে ইনডেক্স বের করা
+    const indexA = subjectOrder.findIndex((sub) => cleanA.includes(sub));
+    const indexB = subjectOrder.findIndex((sub) => cleanB.includes(sub));
+
+    // যদি কোনো সাবজেক্ট লিস্টের সাথে না মেলে, সেটিকে ক্রমানুসারে শেষে পাঠাবে
+    if (indexA === -1 && indexB === -1) return cleanA.localeCompare(cleanB);
     if (indexA === -1) return 1;
     if (indexB === -1) return -1;
 
@@ -300,7 +306,7 @@ const Result = () => {
             <div style="font-size:12px;font-weight:bold;text-align:right;">
               <div>Class: ${filters.class}</div>
               <div>${filters.examName} - ${filters.year}</div>
-              <div>${filters.version.toUpperCase()}</div>
+              <div>Total Mark: ${totalExamMarks}</div>
             </div>
           </div>
 
@@ -381,9 +387,17 @@ const Result = () => {
                     ${highestGrandTotal}
                   </td>
 
-                  <td style="border:1px solid black;padding:6px;text-align:center;color:red;font-weight:bold;">
-                    ${student.position}
-                  </td>
+                 <td style="border:1px solid black;padding:6px;text-align:center;color:red;font-weight:bold;">
+  ${
+    Number(student.position) === 1
+      ? "1st"
+      : Number(student.position) === 2
+        ? "2nd"
+        : Number(student.position) === 3
+          ? "3rd"
+          : `${student.position}th`
+  }
+</td>
                 </tr>
               `,
                 )
@@ -438,6 +452,10 @@ const Result = () => {
       console.error(error);
     }
   };
+
+  const totalExamMarks = response?.data?.data.totalExamMarks;
+
+  console.log("Calculated Total Mark:", totalExamMarks);
 
   return (
     <div className="p-4 md:p-8 bg-gray-100 min-h-screen">
@@ -553,8 +571,8 @@ const Result = () => {
                     <div>
                       <h2 className="text-2xl font-black tracking-wide">
                         {filters.version !== "english"
-                          ? "গাজীপুর শাহীন ক্যাডেট একাডেমি, ময়মনসিংহ"
-                          : "STAR FROLIC ENGLISH VERSION SCHOOL, MYMENSINGH"}
+                          ? "গাজীপুরশাহীন ক্যাডেট একাডেমি, ময়মনসিংহ শাখা"
+                          : "STAR FROLIC ENGLISH VERSION SCHOOL, MYMENSINGH BRANCH"}
                       </h2>
                     </div>
                   </div>
@@ -806,8 +824,19 @@ const Result = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {student.results.map(
-                        (res: SubjectResult, idx: number) => (
+                      {/* 🟢 ফিক্সড কোড (সর্ট করা সাবজেক্ট অনুযায়ী ডাটা খোঁজা হচ্ছে) */}
+                      {sortedSubjects.map((subName, idx) => {
+                        // বর্তমান শিক্ষার্থীর results থেকে সর্ট করা সাবজেক্টের অবজেক্টটি খুঁজে বের করা
+                        const res = student.results.find(
+                          (r) =>
+                            r.subject.toLowerCase().trim() ===
+                            subName.toLowerCase().trim(),
+                        );
+
+                        // যদি কোনো শিক্ষার্থীর ঐ সাবজেক্টের ডাটা না থাকে, তবে রো-টি স্কিপ বা খালি দেখাবে
+                        if (!res) return null;
+
+                        return (
                           <tr
                             key={idx}
                             className="text-center font-medium text-sm"
@@ -824,22 +853,22 @@ const Result = () => {
                             {isJuniorClass && (
                               <>
                                 <td className="border border-gray-800 p-2">
-                                  {res.classTest}
+                                  {res.classTest || "-"}
                                 </td>
                                 <td className="border border-gray-800 p-2">
-                                  {res.activities}
+                                  {res.activities || "-"}
                                 </td>
                               </>
                             )}
                             <td className="border border-gray-800 p-2">
                               {res.semester}
                             </td>
-                            <td className="border border-gray-800 p-2 font-bold bg-gray-50">
+                            <td className="border border-gray-800 p-2 bg-gray-100 font-bold">
                               {res.totalInSubject}
                             </td>
                           </tr>
-                        ),
-                      )}
+                        );
+                      })}
                     </tbody>
                     <tfoot>
                       <tr className="bg-gray-100 font-black">
