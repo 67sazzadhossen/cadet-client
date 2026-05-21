@@ -741,8 +741,8 @@ const Result = () => {
                           ? "GAZIPURSHAHEEN CADET ACADEMY"
                           : "STAR FROLIC ENGLISH VERSION SCHOOL"}
                       </h2>
-                      <p className="text-sm font-bold text-gray-700 mt-2">
-                        Mymensingh Branch, Bangladesh
+                      <p className="text-2xl font-bold text-gray-700 mt-2">
+                        Mymensingh Branch
                       </p>
                       <div className="mt-2 inline-block bg-gray-800 text-white px-6 py-1 font-bold rounded-full uppercase text-[12px]">
                         Progress Report: {student.examName} ({student.year})
