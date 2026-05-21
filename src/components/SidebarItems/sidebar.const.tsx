@@ -67,7 +67,7 @@ export const studentPaths: TSidebarItem[] = [
   },
   {
     name: "Performance Report",
-    link: "/dashboard/reports",
+    link: "/dashboard/performance-report",
     icon: <FaChartLine />,
   },
   {
@@ -90,12 +90,12 @@ export const teacherPaths: TSidebarItem[] = [
   },
   {
     name: "Student Reports",
-    link: "/dashboard/student-reports",
+
     icon: <FaClipboardList />,
     children: [
       {
         name: "Class Reports",
-        link: "/dashboard/student-reports/class",
+        link: "/dashboard/student-reports",
         icon: <FaUsers />,
       },
       {

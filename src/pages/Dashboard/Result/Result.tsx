@@ -71,6 +71,7 @@ const Result = () => {
   );
 
   // ইউনিক সব সাবজেক্টের নাম বের করা সামারি টেবিল হেডার তৈরির জন্য
+  // ইউনিক সব সাবজেক্টের নাম বের করা সামারি টেবিল হেডার তৈরির জন্য
   const allSubjects = Array.from(
     new Set(
       results.flatMap((s: StudentResult) =>
@@ -78,6 +79,40 @@ const Result = () => {
       ),
     ),
   );
+
+  // 🟢 Custom Subject Serial Order
+  const subjectOrder = [
+    "Bangla",
+    "English",
+    "Mathematics",
+    "Religion",
+    "Spoken",
+    "Drawing",
+  ];
+
+  // 🟢 Subject Sorting
+  const sortedSubjects = [...allSubjects].sort((a, b) => {
+    const indexA = subjectOrder.indexOf(a);
+    const indexB = subjectOrder.indexOf(b);
+
+    // দুটোই custom list এ থাকলে
+    if (indexA !== -1 && indexB !== -1) {
+      return indexA - indexB;
+    }
+
+    // a আছে কিন্তু b নাই
+    if (indexA !== -1) {
+      return -1;
+    }
+
+    // b আছে কিন্তু a নাই
+    if (indexB !== -1) {
+      return 1;
+    }
+
+    // দুটোই custom list এর বাইরে হলে alphabetical
+    return a.localeCompare(b);
+  });
 
   // বর্তমান গ্রুপের সব শিক্ষার্থীর মধ্যে সর্বোচ্চ Grand Total কত তা বের করার লজিক
   const highestGrandTotal =
@@ -325,7 +360,7 @@ const Result = () => {
                     ${student.studentName}
                   </td>
 
-                  ${allSubjects
+                  ${sortedSubjects
                     .map((sub) => {
                       const subResult = student.results.find(
                         (r) => r.subject === sub,
@@ -573,7 +608,7 @@ const Result = () => {
                           ? "শিক্ষার্থীর নাম"
                           : "Student Name"}
                       </th>
-                      {allSubjects.map((sub, i) => (
+                      {sortedSubjects.map((sub, i) => (
                         <th
                           key={i}
                           className="border border-black p-1 max-w-[85px] break-words"
@@ -615,7 +650,7 @@ const Result = () => {
                         <td className="border border-black p-1.5 text-left font-bold">
                           {student.studentName}
                         </td>
-                        {allSubjects.map((sub, i) => {
+                        {sortedSubjects.map((sub, i) => {
                           const subResult = student.results.find(
                             (r: SubjectResult) => r.subject === sub,
                           );
