@@ -875,6 +875,7 @@ const Result = () => {
                     </tbody>
                     <tfoot>
                       <tr className="bg-gray-100 font-black">
+                        <td></td>
                         <td
                           colSpan={isJuniorClass ? 5 : 3}
                           className="border border-gray-800 p-2 text-right uppercase"
