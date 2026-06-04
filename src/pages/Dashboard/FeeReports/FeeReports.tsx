@@ -209,7 +209,7 @@ const FeeReports = () => {
   );
 
   const reportData = data?.data?.data;
-  const isLoadingState = isLoading || isFetching || isSearching;
+  const isLoadingState = isLoading || isSearching;
 
   // Function to print invoice
   const printInvoice = (
@@ -1034,7 +1034,11 @@ const FeeReports = () => {
                                   disabled={confirmingPayment}
                                   className="px-2 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs rounded-md hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm"
                                 >
-                                  Pay Now
+                                  {isFetching ? (
+                                    <div className="loading"></div>
+                                  ) : (
+                                    "Pay Now"
+                                  )}
                                 </button>
                               </div>
                             ) : (
