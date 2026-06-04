@@ -434,7 +434,7 @@ const FeeReports = () => {
               response.data?.paymentInfo?.invoiceNo ||
               response.paymentInfo?.invoiceNo ||
               `INV-${paymentModal.studentId}-${paymentModal.month}`;
-            printInvoice(student, payment, invoiceNo);
+            // printInvoice(student, payment, invoiceNo);
           }
         }
       } else {
