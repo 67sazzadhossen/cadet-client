@@ -2,36 +2,85 @@
 import Image from "next/image";
 import { QRCodeCanvas } from "qrcode.react";
 import logo from "@/assets/id_card/logo.png";
+import brand from "@/assets/brand.png";
+import { TStudent } from "@/types/index.type";
+import signature from "@/assets/sign.jpg";
+import { domToPng } from "modern-screenshot";
+import { FiDownload } from "react-icons/fi";
 
-const StudentIdCard = () => {
+interface StudentIdCardProps {
+  student: TStudent;
+}
+
+const StudentIdCard = ({ student }: StudentIdCardProps) => {
   const studentData = {
-    name: "Jubayet hossen",
+    name: student?.name?.englishName || "N/A",
     role: "Student",
-    id: "261011",
-    class: "6",
-    roll: "01",
-    bloodGroup: "O+",
-    phone: "01772731958",
+    id: student?.id || "N/A",
+    fatherName: student?.guardian?.father?.name?.englishName || "N/A",
+    motherName: student?.guardian?.mother?.name?.englishName || "N/A",
+    phone: student?.WhatsappNumber || "N/A",
     photo:
+      student?.image?.url ||
       "https://images.unsplash.com/photo-1595152772835-219674b2a8a6?q=80&w=300&h=300&fit=crop",
-    company: "COMPANY NAME",
-    tagline: "TAGLINE GOES HERE",
-    joinDate: "02-01-2023",
-    expireDate: "31-12-2025",
+    tagline: "GAZIPUR SHAHEEN CADET ACADEMY",
+  };
+
+  // প্রিন্টিংয়ের জন্য আল্ট্রা-হাই রেজোলিউশন এক্সপোর্ট ফাংশন
+  const handleExportPNG = async () => {
+    const cardElement = document.getElementById(`id-card-${studentData.id}`);
+    if (!cardElement) return;
+
+    try {
+      const dataUrl = await domToPng(cardElement, {
+        scale: 12, // রেজোলিউশন সর্বোচ্চ (Ultra HD 4K+)
+        quality: 1,
+        backgroundColor: "#ffffff",
+        style: {
+          borderRadius: "0px",
+          overflow: "hidden",
+          background: "#ffffff",
+          textRendering: "optimizeLegibility",
+          WebkitFontSmoothing: "antialiased",
+          MozOsxFontSmoothing: "grayscale",
+          imageRendering: "auto", // হাই-স্কেলের জন্য অটো রেন্ডারিং সেরা কাজ করে
+          WebkitMaskImage: "none",
+        } as any,
+      });
+
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = `${studentData.id}_${studentData.name.replace(/\s+/g, "_")}_HQ.png`;
+      link.click();
+    } catch (error) {
+      console.error("PNG এক্সপোর্ট করতে সমস্যা হয়েছে:", error);
+    }
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-16 min-h-screen bg-gray-200 p-10 font-sans uppercase">
-      {/* --- FRONT SIDE --- */}
-      <div className="relative w-[320px] h-[500px] bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-300">
+    <div className="flex flex-col items-center justify-center p-4 font-sans uppercase select-none">
+      {/* ID Card Main Wrapper */}
+      <div
+        id={`id-card-${studentData.id}`}
+        className="relative w-[320px] h-[500px] bg-white text-gray-900 shrink-0"
+        style={
+          {
+            borderRadius: "0px",
+            overflow: "hidden",
+            backgroundColor: "#ffffff",
+            color: "#111827",
+            WebkitMaskImage: "-webkit-radial-gradient(white, black)",
+            textRendering: "optimizeLegibility",
+            WebkitFontSmoothing: "antialiased",
+          } as React.CSSProperties
+        }
+      >
         {/* Top Header Geometry */}
         <div className="absolute top-0 w-full h-[220px] overflow-hidden">
-          {/* Main Navy Background */}
           <div
             className="absolute z-20 inset-0 bg-[#002e5d]"
             style={{ clipPath: "polygon(0 0, 100% 0, 100% 65%, 0% 100%)" }}
           ></div>
-          {/* Lighter Blue Geometric Shard Overlay */}
           <div
             className="absolute z-20 inset-0 bg-gradient-to-br from-[#2769bb] to-[#002e5d]"
             style={{ clipPath: "polygon(100% 0, 100% 100%, 25% 0)" }}
@@ -41,14 +90,18 @@ const StudentIdCard = () => {
             style={{ clipPath: "polygon(100% 0, 100% 100%, -45% 0)" }}
           ></div>
 
-          {/* Company Branding */}
+          {/* Academy Branding */}
           <div className="relative z-40 pt-10 text-center">
+            {/* unoptimized এবং style যোগ করা হয়েছে যাতে ইমেজ হাই রেজোলিউশনে না ফাটে */}
             <Image
-              src={logo}
+              src={brand}
               alt="Gazipurshaheen Cadet Academy Mymensingh"
-              width={250}
+              width={280}
               height={100}
               className="mx-auto"
+              style={{ imageRendering: "auto" }}
+              priority
+              unoptimized
             />
             <p className="text-white text-[7px] tracking-[0.4em] opacity-80 mt-1">
               {studentData.tagline}
@@ -61,72 +114,104 @@ const StudentIdCard = () => {
           <div className="w-32 h-32 rounded-full border-[6px] border-white shadow-xl overflow-hidden bg-white">
             <Image
               src={studentData.photo}
-              alt="Profile"
+              alt={studentData.name}
               className="w-full h-full object-cover"
               width={200}
               height={200}
+              unoptimized
             />
           </div>
         </div>
 
-        {/* Info Content Section - FIXED ALIGNMENT HERE */}
-        <div className="mt-64 text-center px-6">
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight leading-none">
+        {/* Info Content Section */}
+        <div className="absolute top-[255px] left-0 w-full text-center px-4 bg-white">
+          <h1 className="text-base font-black text-gray-900 tracking-tight leading-tight px-2 whitespace-normal break-words max-h-[40px] overflow-hidden flex items-center justify-center">
             {studentData.name}
           </h1>
-          <p className="text-[10px] font-bold text-gray-400 mt-2 mb-6 tracking-[0.2em]">
+          <p className="text-[10px] font-bold text-gray-400 mt-1 mb-3 tracking-[0.2em]">
             {studentData.role}
           </p>
 
-          {/* Two Column Layout - Left: Details, Right: QR Code */}
-          <div className="flex gap-3 items-start text-sm px-2">
-            {/* Left Column - Student Details */}
-            <div className="flex-1 text-[10px] text-left space-y-2 font-bold text-gray-700">
+          {/* Grid Layout - Left: Details, Right: QR Code */}
+          <div className="grid grid-cols-[65%_35%] items-center gap-1 border border-gray-100 rounded-xl p-2 bg-gray-50/50">
+            <div className="text-[9px] text-left space-y-1.5 font-bold text-gray-700 min-w-0 pr-1">
               <div className="flex items-start">
-                <span className="w-[45px] text-gray-400 ">ID NO</span>
-                <span className="ml-1">: {studentData.id}</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex items-start">
-                  <span className="w-[45px] text-gray-400 ">CLASS</span>
-                  <span className="ml-1 lowercase">: {studentData.class}</span>
-                </div>
-                <div className="flex items-start">
-                  <span className="w-[45px] text-gray-400 ">ROLL</span>
-                  <span className="ml-1">: {studentData.roll}</span>
-                </div>
+                <span className="w-[50px] text-gray-400 shrink-0">ID NO</span>
+                <span className="text-gray-900 break-all">
+                  : {studentData.id}
+                </span>
               </div>
               <div className="flex items-start">
-                <span className="w-[45px] text-gray-400 ">PHONE</span>
-                <span className="ml-1">: {studentData.phone}</span>
+                <span className="w-[50px] text-gray-400 shrink-0">FATHER</span>
+                <span className="text-gray-900 whitespace-normal break-words leading-tight">
+                  : {studentData.fatherName}
+                </span>
               </div>
               <div className="flex items-start">
-                <span className="w-[80px] text-gray-400 ">BLOOD GROUP</span>
-                <span className="ml-1">: {studentData.bloodGroup}</span>
+                <span className="w-[50px] text-gray-400 shrink-0">MOTHER</span>
+                <span className="text-gray-900 whitespace-normal break-words leading-tight">
+                  : {studentData.motherName}
+                </span>
+              </div>
+              <div className="flex items-start">
+                <span className="w-[50px] text-gray-400 shrink-0">PHONE</span>
+                <span className="text-gray-900 break-all">
+                  : {studentData.phone}
+                </span>
               </div>
             </div>
 
-            {/* Right Column - QR Code (Perfectly Aligned) */}
-            <div className="flex flex-col items-center justify-center ">
-              <div className="bg-white p-1 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex flex-col items-center justify-center border-l border-gray-200/80 pl-1 shrink-0 self-stretch">
+              <div className="bg-white p-1 rounded-lg shadow-xs border border-gray-100 my-auto w-[74px] h-[74px] flex items-center justify-center">
                 <QRCodeCanvas
                   value={`https://gscam.edu.bd/verify/${studentData.id}`}
-                  size={75}
+                  size={256}
+                  style={{ width: "100%", height: "100%" }}
                   bgColor="#ffffff"
                   fgColor="#000000"
                   level="H"
                   includeMargin={false}
                 />
               </div>
-              <span className="text-[6px] text-gray-400 mt-1 tracking-wider">
+              <span className="text-[5.5px] text-gray-400 mt-1 font-extrabold tracking-normal whitespace-nowrap">
                 SCAN TO VERIFY
               </span>
             </div>
           </div>
         </div>
 
-        {/* Bottom Accent - Precise Geometry */}
-        <div className="absolute bottom-0 w-full h-14 overflow-hidden">
+        {/* Footer Signature Section */}
+        <div className="absolute bottom-[35px] left-0 w-full px-6 flex justify-between items-end z-30 pointer-events-none bg-transparent">
+          <div className="flex flex-col items-center w-[90px]">
+            <Image
+              src={signature}
+              alt="Director Sign"
+              width={65}
+              height={25}
+              className="object-contain mix-blend-multiply h-[25px]"
+            />
+            <div className="w-full border-t border-gray-400 my-1"></div>
+            <span className="text-[7px] font-black text-gray-800 tracking-wider text-center">
+              Director
+            </span>
+          </div>
+          <div className="flex flex-col items-center w-[90px]">
+            <Image
+              src={signature}
+              alt="MD Sign"
+              width={65}
+              height={25}
+              className="object-contain mix-blend-multiply h-[25px]"
+            />
+            <div className="w-full border-t border-gray-400 my-1"></div>
+            <span className="text-[7px] font-black text-gray-800 tracking-wider text-center whitespace-nowrap">
+              Managing Director
+            </span>
+          </div>
+        </div>
+
+        {/* Bottom Accent */}
+        <div className="absolute bottom-0 left-0 w-full h-[45px] overflow-hidden z-10 pointer-events-none">
           <div
             className="absolute inset-0 bg-[#002e5d]"
             style={{ clipPath: "polygon(0 85%, 100% 20%, 100% 100%, 0 100%)" }}
@@ -139,81 +224,13 @@ const StudentIdCard = () => {
         </div>
       </div>
 
-      {/* --- BACK SIDE --- (পুরোপুরি অপরিবর্তিত) */}
-      <div className="relative w-[320px] h-[500px] bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-300">
-        {/* Top Slant Detail */}
-        <div
-          className="w-full h-14 bg-[#002e5d]"
-          style={{ clipPath: "polygon(0 0, 100% 0, 100% 30%, 0 100%)" }}
-        ></div>
-
-        <div className="px-10 py-6">
-          <h3 className="text-sm font-black text-gray-800 mb-3 normal-case">
-            Terms & Condition
-          </h3>
-          <ul className="space-y-3">
-            {[1, 2].map((item) => (
-              <li key={item} className="flex gap-2">
-                <div className="min-w-[6px] h-[6px] rounded-full bg-black mt-1"></div>
-                <p className="text-[9px] text-gray-500 leading-tight normal-case">
-                  Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed
-                  diam nonummy nibh euismod tincidunt ut laoreet dolore magna
-                  aliquam erat volutpat.
-                </p>
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-10 grid grid-cols-2 text-[10px] font-bold border-t border-gray-100 pt-4 text-gray-700">
-            <div>
-              <p className="text-gray-400 text-[8px]">JOIN DATE</p>
-              <p>: {studentData.joinDate}</p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-[8px]">EXPIRE DATE</p>
-              <p>: {studentData.expireDate}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Signature Area */}
-        <div className="mt-10 text-center">
-          <div className="inline-block border-t border-gray-400 px-8 pt-1">
-            <p className="text-[10px] italic font-serif text-gray-400 normal-case">
-              Your Signature
-            </p>
-            <p className="text-[9px] font-black text-gray-800">
-              Your Sincerely
-            </p>
-          </div>
-        </div>
-
-        {/* Bottom Geometric Footer */}
-        <div className="absolute bottom-0 w-full h-[150px] overflow-hidden">
-          <div
-            className="absolute inset-0 bg-[#002e5d]"
-            style={{ clipPath: "polygon(0 35%, 100% 0, 100% 100%, 0 100%)" }}
-          >
-            {/* Internal Geometry */}
-            <div
-              className="w-full h-full bg-gradient-to-tr from-[#002e5d] to-[#005cc2]"
-              style={{
-                clipPath: "polygon(0 100%, 100% 100%, 100% 0, 35% 100%)",
-              }}
-            ></div>
-
-            {/* Logo & Text in Footer */}
-            <div className="absolute bottom-8 left-10 text-white">
-              <h2 className="font-black text-base tracking-tighter leading-none">
-                {studentData.company}
-              </h2>
-              <p className="text-[7px] tracking-[0.3em] opacity-80 mt-1 uppercase">
-                {studentData.tagline}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Export Button */}
+      <button
+        onClick={handleExportPNG}
+        className="mt-4 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-md flex items-center gap-2 transition-all print:hidden"
+      >
+        <FiDownload size={14} /> PNG ডাউনলোড
+      </button>
     </div>
   );
 };

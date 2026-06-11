@@ -13,3 +13,7 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+@theme {
+  /* Tailwind-কে আধুনিক oklch/lab এর বদলে srgb কালার ফরম্যাট ব্যবহার করতে বাধ্য করবে */
+  --color-space: srgb;
+}
