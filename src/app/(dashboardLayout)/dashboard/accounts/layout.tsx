@@ -33,7 +33,7 @@ const layout = ({ children }: { children: ReactNode }) => {
   ];
   return (
     <div>
-      <SubNavbar navItems={navItems} />
+      {/* <SubNavbar navItems={navItems} /> */}
       {children}
     </div>
   );

@@ -21,6 +21,13 @@ const accountsApi = baseApi.injectEndpoints({
         params: params, // This will add query parameters
       }),
     }),
+    getCurrentMonthPayments: builder.mutation({
+      query: (payload) => ({
+        url: "/overview/current-month-collection",
+        method: "POST",
+        body: payload, // This will add query parameters
+      }),
+    }),
   }),
 });
 
@@ -28,4 +35,5 @@ export const {
   useCreateMonthlyPaymentInfoMutation,
   useGetMonthlyPaymentInfoQuery,
   useGetPaymentHistoryQuery,
+  useGetCurrentMonthPaymentsMutation,
 } = accountsApi;

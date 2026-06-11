@@ -335,12 +335,12 @@ const DashboardHome = () => {
                     activity.type === "student"
                       ? "bg-blue-500"
                       : activity.type === "payment"
-                      ? "bg-green-500"
-                      : activity.type === "event"
-                      ? "bg-purple-500"
-                      : activity.type === "announcement"
-                      ? "bg-orange-500"
-                      : "bg-gray-500"
+                        ? "bg-green-500"
+                        : activity.type === "event"
+                          ? "bg-purple-500"
+                          : activity.type === "announcement"
+                            ? "bg-orange-500"
+                            : "bg-gray-500"
                   }`}
                 ></div>
                 <div className="flex-1">
@@ -393,10 +393,10 @@ const DashboardHome = () => {
                     event.type === "sports"
                       ? "bg-blue-100 text-blue-800"
                       : event.type === "meeting"
-                      ? "bg-green-100 text-green-800"
-                      : event.type === "academic"
-                      ? "bg-purple-100 text-purple-800"
-                      : "bg-orange-100 text-orange-800"
+                        ? "bg-green-100 text-green-800"
+                        : event.type === "academic"
+                          ? "bg-purple-100 text-purple-800"
+                          : "bg-orange-100 text-orange-800"
                   }`}
                 >
                   {event.type.charAt(0).toUpperCase() + event.type.slice(1)}

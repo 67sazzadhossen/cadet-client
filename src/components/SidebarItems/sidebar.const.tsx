@@ -125,8 +125,8 @@ export const teacherPaths: TSidebarItem[] = [
 
 export const adminPaths: TSidebarItem[] = [
   {
-    name: "Dashboard",
-    link: "/dashboard/admin",
+    name: "Overview",
+    link: "/dashboard",
     icon: <BiHome />,
   },
   {
@@ -163,6 +163,12 @@ export const adminPaths: TSidebarItem[] = [
         link: "/dashboard/accounts/payment-history",
         icon: <MdClass />,
       },
+      {
+        name: "Monthly Payment History",
+        link: "/dashboard/accounts/monthly-payment-history",
+        icon: <MdClass />,
+      },
+
       {
         name: "Subjects",
         link: "/dashboard/academic/subjects",
