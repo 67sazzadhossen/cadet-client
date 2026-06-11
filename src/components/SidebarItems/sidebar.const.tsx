@@ -135,6 +135,42 @@ export const adminPaths: TSidebarItem[] = [
     icon: <FaUserCog />,
   },
   {
+    name: "Accounts",
+    icon: <IoSchool />,
+    children: [
+      {
+        name: "Collect Fee",
+        link: "/dashboard/fee/reports",
+        icon: <BiSolidReport />,
+      },
+      {
+        name: "Income",
+        link: "/dashboard/accounts/income",
+        icon: <FaMoneyBillWave />,
+      },
+      {
+        name: "Expenses",
+        link: "/dashboard/accounts/expenses",
+        icon: <IoCash />,
+      },
+      {
+        name: "Add Monthly Fee Info",
+        link: "/dashboard/accounts/create-monthly-fee",
+        icon: <MdClass />,
+      },
+      {
+        name: "Payment History",
+        link: "/dashboard/accounts/payment-history",
+        icon: <MdClass />,
+      },
+      {
+        name: "Subjects",
+        link: "/dashboard/academic/subjects",
+        icon: <MdSubject />,
+      },
+    ],
+  },
+  {
     name: "Manage Students",
     icon: <FaUsers />,
     children: [
@@ -187,43 +223,7 @@ export const adminPaths: TSidebarItem[] = [
     link: "/dashboard/sms",
     icon: <MdSms />,
   },
-  {
-    name: "Accounts",
-    icon: <IoWallet />,
-    children: [
-      {
-        name: "Income",
-        link: "/dashboard/accounts/income",
-        icon: <FaMoneyBillWave />,
-      },
-      {
-        name: "Expenses",
-        link: "/dashboard/accounts/expenses",
-        icon: <IoCash />,
-      },
-    ],
-  },
-  {
-    name: "Fee Collection",
-    icon: <MdReceipt />,
-    children: [
-      {
-        name: "Collect Fee",
-        link: "/dashboard/fee/collect",
-        icon: <FaHandHoldingDollar />,
-      },
-      {
-        name: "Fee Reports",
-        link: "/dashboard/fee/reports",
-        icon: <BiSolidReport />,
-      },
-      {
-        name: "Session Fee Reports",
-        link: "/dashboard/fee/session-reports",
-        icon: <BiSolidReport />,
-      },
-    ],
-  },
+
   {
     name: "Student Reports",
     icon: <FaClipboardList />,
@@ -281,32 +281,7 @@ export const adminPaths: TSidebarItem[] = [
       },
     ],
   },
-  {
-    name: "Accounts",
-    icon: <IoSchool />,
-    children: [
-      {
-        name: "Add Monthly Fee Info",
-        link: "/dashboard/accounts/create-monthly-fee",
-        icon: <MdClass />,
-      },
-      {
-        name: "Payment History",
-        link: "/dashboard/accounts/payment-history",
-        icon: <MdClass />,
-      },
-      {
-        name: "Subjects",
-        link: "/dashboard/academic/subjects",
-        icon: <MdSubject />,
-      },
-      {
-        name: "Routines",
-        link: "/dashboard/academic/routines",
-        icon: <BiTime />,
-      },
-    ],
-  },
+
   {
     name: "Id Cards",
     link: "/dashboard/id-cards",
