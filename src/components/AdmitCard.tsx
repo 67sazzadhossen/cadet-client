@@ -5,7 +5,7 @@
 const AdmitCard = ({ student }: { student: any }) => {
   // ছবির মতো একই ডেটা ফর্ম্যাট ব্যবহার করার জন্য
   const isBangla = student.version === "bangla";
-  const examName = "1st Semester"; // Pictures use this, let's keep it constant or dynamic from props
+  const examName = "Monthly Test 3 - May 2026"; // Pictures use this, let's keep it constant or dynamic from props
   const session = "2026";
   const date = "2026-03-01";
 
