@@ -436,7 +436,7 @@ const SeatPlan = () => {
                   <SeatCard
                     key={student.id}
                     student={student}
-                    examName="1st Semester - 2026"
+                    examName="3rd Monthly Test - May 2026"
                   />
                 ))}
               </div>
