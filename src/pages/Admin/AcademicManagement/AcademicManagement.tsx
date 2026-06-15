@@ -14,6 +14,7 @@ import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 const AcademicManagement: React.FC = () => {
   const router = useRouter();
   const [selectedClass, setSelectedClass] = useState<string>("");
+  const [isCadet, setIsCadet] = useState<boolean>(false); // Pure boolean state
   const [subjects, setSubjects] = useState<string[]>([]);
   const [currentSubject, setCurrentSubject] = useState<string>("");
   const { refetch } = useGetAllSubjectsQuery(undefined);
@@ -79,6 +80,7 @@ const AcademicManagement: React.FC = () => {
       ) {
         setSelectedClass(newClass);
         setSubjects([]);
+        setIsCadet(false); // Reset to false on class change
         setError(null);
         toast.success(`Switched to ${newClass || "no class"}`, {
           duration: 2000,
@@ -90,6 +92,7 @@ const AcademicManagement: React.FC = () => {
       }
     } else {
       setSelectedClass(newClass);
+      setIsCadet(false); // Reset to false if no subjects are there
       if (newClass) {
         toast.success(`Selected ${newClass}`, { duration: 1500 });
       }
@@ -109,6 +112,7 @@ const AcademicManagement: React.FC = () => {
   // Reset form after successful submission
   const resetForm = (): void => {
     setSelectedClass("");
+    setIsCadet(false);
     setSubjects([]);
     setCurrentSubject("");
     setError(null);
@@ -135,10 +139,11 @@ const AcademicManagement: React.FC = () => {
     const loadingToast = toast.loading("Saving subjects...");
 
     try {
-      // Prepare the data for API
+      // Prepare the data for API with pure boolean value
       const payload = {
         className: selectedClass,
         subjects: subjects,
+        isCadet: isCadet, // Directly passing boolean (true/false) matching your schema
       };
 
       const res = await createSubjects(payload).unwrap();
@@ -153,7 +158,7 @@ const AcademicManagement: React.FC = () => {
             <p className="font-bold text-green-600">✓ Success!</p>
             <p className="text-sm text-gray-600">
               {subjects.length} subject{subjects.length > 1 ? "s" : ""} saved
-              for {selectedClass}
+              for {selectedClass} {isCadet ? "(Cadet)" : ""}
             </p>
           </div>,
           { duration: 4000, icon: "✅" },
@@ -316,6 +321,26 @@ const AcademicManagement: React.FC = () => {
                 </p>
               )}
             </div>
+
+            {/* Conditional Cadet Checkbox - Appears only when Class 6 is selected */}
+            {selectedClass === "6" && (
+              <div className="mb-6 p-3.5 bg-purple-50 border border-purple-100 rounded-xl animate-fadeIn flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="isCadet"
+                  checked={isCadet}
+                  onChange={(e) => setIsCadet(e.target.checked)}
+                  className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500 cursor-pointer"
+                  disabled={isLoading}
+                />
+                <label
+                  htmlFor="isCadet"
+                  className="text-sm font-medium text-purple-900 cursor-pointer select-none"
+                >
+                  Is this for Cadet Batch?
+                </label>
+              </div>
+            )}
 
             {/* Subject Input */}
             {selectedClass && (
@@ -496,7 +521,7 @@ const AcademicManagement: React.FC = () => {
                       <p className="text-sm text-gray-600">
                         <span className="font-medium">Selected Class:</span>{" "}
                         <span className="text-blue-600 font-semibold text-lg">
-                          {selectedClass}
+                          {selectedClass} {isCadet ? "(Cadet)" : ""}
                         </span>
                       </p>
                       <p className="text-sm text-gray-600 mt-1">
@@ -578,7 +603,7 @@ const AcademicManagement: React.FC = () => {
                       Saving {subjects.length} subjects...
                     </span>
                   ) : (
-                    `Save Subjects for ${selectedClass} (${subjects.length})`
+                    `Save Subjects for ${selectedClass} ${isCadet ? "(Cadet)" : ""} (${subjects.length})`
                   )}
                 </button>
               </div>
@@ -610,7 +635,7 @@ const AcademicManagement: React.FC = () => {
                   <p className="text-sm text-gray-600">Ready to save</p>
                   <p className="text-lg font-semibold text-gray-800">
                     {subjects.length} Subject{subjects.length !== 1 ? "s" : ""}{" "}
-                    for {selectedClass}
+                    for {selectedClass} {isCadet ? "(Cadet)" : ""}
                   </p>
                 </div>
               </div>

@@ -14,15 +14,11 @@ interface Subject {
   _id: string;
   className: string;
   subjects: string[];
+  isCadet: boolean;
   __v: number;
 }
 
-interface EditedSubject {
-  _id: string;
-  className: string;
-  subjects: string[];
-  __v: number;
-}
+type EditedSubject = Subject;
 
 const AllAcademicSubjects: React.FC = () => {
   const { data, isLoading, error, refetch } = useGetAllSubjectsQuery(undefined);
@@ -504,6 +500,11 @@ const AllAcademicSubjects: React.FC = () => {
                         <div className="flex-1 min-w-0">
                           {isEditing ? (
                             <div className="flex flex-wrap items-center gap-2">
+                              {classData.isCadet && (
+                                <span className="text-xs px-2 py-1 bg-yellow-400 text-black rounded-md">
+                                  Cadet
+                                </span>
+                              )}
                               <input
                                 type="text"
                                 value={classData.className}
@@ -523,8 +524,13 @@ const AllAcademicSubjects: React.FC = () => {
                               )}
                             </div>
                           ) : (
-                            <h2 className="text-lg sm:text-xl font-bold text-white truncate">
+                            <h2 className="text-lg sm:text-xl font-bold text-white truncate flex items-center gap-2">
                               {classData.className}
+                              {classData.isCadet && (
+                                <span className="text-xs px-2 py-1 bg-yellow-400 text-black rounded-md">
+                                  Cadet
+                                </span>
+                              )}
                             </h2>
                           )}
                           <p className="text-xs sm:text-sm text-blue-100 mt-0.5">
