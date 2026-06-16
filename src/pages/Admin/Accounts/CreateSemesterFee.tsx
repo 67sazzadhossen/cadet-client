@@ -623,3 +623,8 @@ const CreateSemesterFee = () => {
 };
 
 export default CreateSemesterFee;
+export async function getServerSideProps() {
+  return {
+    props: {}, // Page will render only on client
+  };
+}

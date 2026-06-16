@@ -144,6 +144,11 @@ export const adminPaths: TSidebarItem[] = [
         icon: <BiSolidReport />,
       },
       {
+        name: "Collect Semester Fee",
+        link: "/dashboard/fee/semester-fee-reports",
+        icon: <BiSolidReport />,
+      },
+      {
         name: "Income",
         link: "/dashboard/accounts/income",
         icon: <FaMoneyBillWave />,
