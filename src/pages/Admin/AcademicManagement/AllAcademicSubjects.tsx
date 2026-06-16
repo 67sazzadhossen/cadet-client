@@ -323,7 +323,7 @@ const AllAcademicSubjects: React.FC = () => {
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-1">
                 All Academic Subjects
               </h1>
-              <p className="text-sm sm:text-base text-gray-500">
+              <p className="text-sm sm:text-base text-gray-500 hidden">
                 Total {totalSubjects} subjects across {allSubjects.length}{" "}
                 classes
               </p>
@@ -332,7 +332,7 @@ const AllAcademicSubjects: React.FC = () => {
             {/* Stats and Add Button - Responsive Grid */}
             <div className="w-full lg:w-auto flex flex-col sm:flex-row gap-3">
               {/* Stats Cards */}
-              <div className="flex gap-2 sm:gap-3">
+              <div className="hidden gap-2 sm:gap-3">
                 <div className="flex-1 sm:flex-none bg-blue-50 rounded-xl px-4 py-2.5 text-center">
                   <span className="block text-xl sm:text-2xl font-bold text-blue-600">
                     {allSubjects.length}

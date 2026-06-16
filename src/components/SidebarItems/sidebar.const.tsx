@@ -159,6 +159,11 @@ export const adminPaths: TSidebarItem[] = [
         icon: <MdClass />,
       },
       {
+        name: "Add Semester Fee Info",
+        link: "/dashboard/accounts/create-semester-fee",
+        icon: <MdClass />,
+      },
+      {
         name: "Payment History",
         link: "/dashboard/accounts/payment-history",
         icon: <MdClass />,

@@ -217,13 +217,17 @@ const AddMark = () => {
   const allSubjects = subjectsData?.data?.data || [];
   const rawStudents = studentData?.data?.data?.data || [];
 
+  console.log(allSubjects);
+
   // ক্লায়েন্ট-সাইডে Cadet Status এর উপর ভিত্তি করে ফিল্টারিং করা হয়েছে
   const students = rawStudents.filter(
     (student: any) => (student.isCadet ?? false) === selectedIsCadet,
   );
 
   const selectedClassData = allSubjects.find(
-    (item: any) => item.className === selectedClass,
+    (item: any) =>
+      item.className === selectedClass &&
+      (item.isCadet ?? false) === selectedIsCadet,
   );
   const classSubjects = selectedClassData?.subjects || [];
   const years = Array.from({ length: 6 }, (_, i) =>
