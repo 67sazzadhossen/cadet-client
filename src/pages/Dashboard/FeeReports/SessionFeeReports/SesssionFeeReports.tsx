@@ -104,7 +104,7 @@ const SessionFeeReports = () => {
     skip: !selectedYear,
   });
 
-  console.log(data?.data?.data);
+  // console.log(data?.data?.data);
 
   // Type casting data
   const reportData = data?.data?.data as SessionFeeReportResponse | undefined;
@@ -142,9 +142,9 @@ const SessionFeeReports = () => {
   };
 
   const handlePayNow = (studentId: string) => {
-    console.log(
-      `Pay session fee for student ${studentId} for year ${selectedYear}`,
-    );
+    // console.log(
+    //   `Pay session fee for student ${studentId} for year ${selectedYear}`,
+    // );
   };
 
   const handleSearch = (value: string) => {

@@ -226,7 +226,7 @@ const Performance: React.FC = () => {
 
     try {
       const res = await addReport(payload).unwrap();
-      console.log(res.data);
+      // console.log(res.data);
       toast.success("Performance saved successfully!", { id: toastId });
       refetch(); // Refresh data to show new report
       // Clear the selection

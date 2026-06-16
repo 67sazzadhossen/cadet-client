@@ -222,9 +222,9 @@ const AllAcademicSubjects: React.FC = () => {
 
       try {
         const res = await deleteSubjects(payload).unwrap();
-        console.log("Delete Response:", res);
+        // console.log("Delete Response:", res);
 
-        console.log(res.data.success);
+        // console.log(res.data.success);
 
         if (res.data.success) {
           toast.success(

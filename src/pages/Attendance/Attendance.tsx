@@ -73,7 +73,7 @@ const Attendance = () => {
     month: activeFilter === "month" ? queryMonth : "",
   };
 
-  console.log("Sending query:", query);
+  // console.log("Sending query:", query);
 
   const { data: attendance, isLoading: attendanceLoading } =
     useGetMyAttendanceQuery(query, {
@@ -81,7 +81,7 @@ const Attendance = () => {
     });
 
   const myAttendance = attendance?.data?.data || [];
-  console.log("My Attendance:", myAttendance);
+  // console.log("My Attendance:", myAttendance);
 
   // Get today's attendance (for the selected date)
   const todayAttendance = useMemo(() => {

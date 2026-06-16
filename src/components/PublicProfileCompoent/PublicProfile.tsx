@@ -27,33 +27,33 @@ export type TPublicUser = {
 
 const PublicProfile = ({ userData }: { userData: TPublicUser }) => {
   const calculateAge = (dateOfBirth: string) => {
-    console.log("Input dateOfBirth:", dateOfBirth);
+    // console.log("Input dateOfBirth:", dateOfBirth);
 
     const birthDate = new Date(dateOfBirth);
-    console.log("Parsed birthDate:", birthDate);
-    console.log("Is valid date?", !isNaN(birthDate.getTime()));
+    // console.log("Parsed birthDate:", birthDate);
+    // console.log("Is valid date?", !isNaN(birthDate.getTime()));
 
     const today = new Date();
-    console.log("Today:", today);
+    // console.log("Today:", today);
 
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
 
-    console.log("Initial age:", age);
-    console.log("Month difference:", monthDiff);
-    console.log(
-      "Today date:",
-      today.getDate(),
-      "Birth date:",
-      birthDate.getDate()
-    );
+    // console.log("Initial age:", age);
+    // console.log("Month difference:", monthDiff);
+    // console.log(
+    //   "Today date:",
+    //   today.getDate(),
+    //   "Birth date:",
+    //   birthDate.getDate()
+    // );
 
     if (
       monthDiff < 0 ||
       (monthDiff === 0 && today.getDate() < birthDate.getDate())
     ) {
       age--;
-      console.log("Age after adjustment:", age);
+      // console.log("Age after adjustment:", age);
     }
 
     return age;

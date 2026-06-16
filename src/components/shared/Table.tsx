@@ -39,7 +39,7 @@ const Table = ({
         alert("Teacher deleted successfully");
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       alert("Error deleting teacher");
     }
   };
@@ -253,7 +253,7 @@ const Table = ({
                       <label className="font-medium">Date of Birth:</label>
                       <p>
                         {new Date(
-                          selectedUser.dateOfBirth
+                          selectedUser.dateOfBirth,
                         ).toLocaleDateString()}
                       </p>
                     </div>
@@ -298,7 +298,7 @@ const Table = ({
                       <label className="font-medium">Joining Date:</label>
                       <p>
                         {new Date(
-                          selectedUser.joiningDate
+                          selectedUser.joiningDate,
                         ).toLocaleDateString()}
                       </p>
                     </div>

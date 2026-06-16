@@ -58,7 +58,7 @@ const Result = () => {
 
   const rawResults: StudentResult[] = response?.data?.data?.data || [];
 
-  console.log(response?.data?.data.totalExamMarks);
+  // console.log(response?.data?.data.totalExamMarks);
 
   const results = rawResults.filter((student: StudentResult) => {
     return (
@@ -449,7 +449,7 @@ const Result = () => {
 
   const totalExamMarks = response?.data?.data.totalExamMarks;
 
-  console.log("Calculated Total Mark:", totalExamMarks);
+  // console.log("Calculated Total Mark:", totalExamMarks);
 
   return (
     <div className="p-4 md:p-8 bg-gray-100 min-h-screen">

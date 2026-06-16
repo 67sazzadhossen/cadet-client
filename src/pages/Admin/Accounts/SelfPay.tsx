@@ -35,7 +35,7 @@ const SelfPay = () => {
   );
 
   const paymentInfo = data?.data?.data;
-  console.log(paymentInfo);
+  // console.log(paymentInfo);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -71,9 +71,9 @@ const SelfPay = () => {
       paymentType,
       id,
     };
-    console.log(payload);
+    // console.log(payload);
     const res = await savePayment(payload).unwrap();
-    console.log(res.data.data);
+    // console.log(res.data.data);
     if (res.data.success) {
       refetch();
       handlePrintInvoice(res.data.data.paymentInfo);

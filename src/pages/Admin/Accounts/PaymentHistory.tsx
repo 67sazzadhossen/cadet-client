@@ -67,7 +67,7 @@ const PaymentHistory: React.FC = () => {
   const semesterFee = paymentHistoryData?.semesterFee || [];
   const annualFee = paymentHistoryData?.annualFee || [];
 
-  console.log("Payment Data:", paymentHistoryData);
+  // console.log("Payment Data:", paymentHistoryData);
 
   const handleFilterChange = useCallback((newFilters: Filters): void => {
     setFilters(newFilters);

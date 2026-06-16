@@ -5,7 +5,7 @@ import React from "react";
 
 const CreateAdmin = () => {
   const { data, refetch } = useGetAllAdmisQuery(undefined);
-  console.log(data);
+  // console.log(data);
   return (
     <div>
       <CreateForm

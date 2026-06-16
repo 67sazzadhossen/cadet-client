@@ -31,7 +31,7 @@ const ChangePasswordPage = () => {
   const newPassword = watch("newPassword");
 
   const onSubmit: SubmitHandler<TChangePassword> = async (data) => {
-    console.log(data);
+    // console.log(data);
 
     // Reset messages
     setErrorMessage("");
@@ -39,7 +39,7 @@ const ChangePasswordPage = () => {
 
     try {
       const res = await changePassword(data).unwrap();
-      console.log(res);
+      // console.log(res);
 
       // Success handling
       if (res?.success) {
@@ -48,17 +48,17 @@ const ChangePasswordPage = () => {
       } else {
         // Handle API error response
         setErrorMessage(
-          res?.message || "Failed to change password. Please try again."
+          res?.message || "Failed to change password. Please try again.",
         );
       }
     } catch (error: any) {
-      console.log(error);
+      // console.log(error);
 
       // Error handling
       setErrorMessage(
         error?.data?.message ||
           error?.error ||
-          "An error occurred while changing password. Please try again."
+          "An error occurred while changing password. Please try again.",
       );
     }
   };

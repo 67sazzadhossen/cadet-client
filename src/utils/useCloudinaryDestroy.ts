@@ -16,7 +16,7 @@ export const useCloudinaryDestroy = () => {
       formData.append("public_id", publicId);
       formData.append(
         "upload_preset",
-        process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!
+        process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!,
       );
 
       const response = await fetch(
@@ -24,13 +24,13 @@ export const useCloudinaryDestroy = () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await response.json();
 
       if (result.result === "ok") {
-        console.log("✅ Image destroyed successfully");
+        // console.log("✅ Image destroyed successfully");
         return true;
       } else {
         throw new Error(result.error?.message || "Destroy failed");

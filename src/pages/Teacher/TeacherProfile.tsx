@@ -6,7 +6,7 @@ import { useGetSingleTeacherForPublicQuery } from "@/redux/features/teachers/tea
 import React from "react";
 
 const TeacherProfile = ({ teacherId }: { teacherId: string }) => {
-  console.log(teacherId);
+  // console.log(teacherId);
   const { data, isLoading } = useGetSingleTeacherForPublicQuery(teacherId);
   const teacherData = data?.data?.data;
   if (isLoading) {

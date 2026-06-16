@@ -114,7 +114,7 @@ const CreateForm = ({
   // Show toast message
   const showToast = (
     message: string,
-    type: "success" | "error" | "warning" = "success"
+    type: "success" | "error" | "warning" = "success",
   ) => {
     setToast({ message, type });
   };
@@ -141,7 +141,7 @@ const CreateForm = ({
 
   const onSubmit: SubmitHandler<TAdmin | TTeacher> = async (data) => {
     try {
-      console.log("Form data:", data);
+      // console.log("Form data:", data);
 
       // Validate ID and Email
       const idValidation = validateId(data.id);
@@ -165,7 +165,7 @@ const CreateForm = ({
       const imageFile = (data.image as any)?.[0];
       if (imageFile) {
         imageData = await uploadToCloudinary(imageFile);
-        console.log("📸 Image uploaded:", imageData);
+        // console.log("📸 Image uploaded:", imageData);
       }
 
       // Create admin or teacher based on route
@@ -181,7 +181,7 @@ const CreateForm = ({
 
         // Handle response
         if ("data" in res && res.data) {
-          console.log("✅ Admin created successfully:", res.data);
+          // console.log("✅ Admin created successfully:", res.data);
           showToast("Admin created successfully! 🎉", "success");
           reset();
           setImagePreview(null);
@@ -196,23 +196,23 @@ const CreateForm = ({
             // Check for duplicate key errors
             const duplicateIdError = errorSources.find(
               (err: any) =>
-                err.message?.includes("id") || err.path?.includes("id")
+                err.message?.includes("id") || err.path?.includes("id"),
             );
             const duplicateEmailError = errorSources.find(
               (err: any) =>
-                err.message?.includes("email") || err.path?.includes("email")
+                err.message?.includes("email") || err.path?.includes("email"),
             );
 
             if (duplicateIdError) {
               showToast(
                 "This ID is already taken. Please use a different ID.",
-                "error"
+                "error",
               );
               setError("id", { message: "This ID is already registered" });
             } else if (duplicateEmailError) {
               showToast(
                 "This email is already registered. Please use a different email.",
-                "error"
+                "error",
               );
               setError("contact.email", {
                 message: "This email is already registered",
@@ -243,7 +243,7 @@ const CreateForm = ({
 
         // Handle response
         if ("data" in res && res.data) {
-          console.log("✅ Teacher created successfully:", res.data);
+          // console.log("✅ Teacher created successfully:", res.data);
           showToast("Teacher created successfully! 🎉", "success");
           reset();
           setImagePreview(null);
@@ -258,23 +258,23 @@ const CreateForm = ({
             // Check for duplicate key errors
             const duplicateIdError = errorSources.find(
               (err: any) =>
-                err.message?.includes("id") || err.path?.includes("id")
+                err.message?.includes("id") || err.path?.includes("id"),
             );
             const duplicateEmailError = errorSources.find(
               (err: any) =>
-                err.message?.includes("email") || err.path?.includes("email")
+                err.message?.includes("email") || err.path?.includes("email"),
             );
 
             if (duplicateIdError) {
               showToast(
                 "This ID is already taken. Please use a different ID.",
-                "error"
+                "error",
               );
               setError("id", { message: "This ID is already registered" });
             } else if (duplicateEmailError) {
               showToast(
                 "This email is already registered. Please use a different email.",
-                "error"
+                "error",
               );
               setError("contact.email", {
                 message: "This email is already registered",
@@ -292,7 +292,7 @@ const CreateForm = ({
         }
       }
     } catch (err: any) {
-      console.log("❌ Unexpected error:", err);
+      // console.log("❌ Unexpected error:", err);
       showToast("An unexpected error occurred! Please try again.", "error");
     }
   };
@@ -304,7 +304,7 @@ const CreateForm = ({
       if (file.size > 5 * 1024 * 1024) {
         showToast(
           "File size too large. Please select an image under 5MB.",
-          "warning"
+          "warning",
         );
         return;
       }
@@ -314,7 +314,7 @@ const CreateForm = ({
       if (!validTypes.includes(file.type)) {
         showToast(
           "Please select a valid image file (JPEG, PNG, WebP).",
-          "warning"
+          "warning",
         );
         return;
       }

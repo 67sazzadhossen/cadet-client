@@ -8,7 +8,7 @@ import ShowProfile from "@/components/shared/ShowProfile";
 const Profile = () => {
   const { data, isLoading } = useGetMeQuery(undefined);
   const currentUserData: TCurrentUser = data?.data?.data;
-  console.log(currentUserData);
+  // console.log(currentUserData);
 
   return (
     <div>

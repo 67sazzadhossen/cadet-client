@@ -217,7 +217,7 @@ const AddMark = () => {
   const allSubjects = subjectsData?.data?.data || [];
   const rawStudents = studentData?.data?.data?.data || [];
 
-  console.log(allSubjects);
+  // console.log(allSubjects);
 
   // ক্লায়েন্ট-সাইডে Cadet Status এর উপর ভিত্তি করে ফিল্টারিং করা হয়েছে
   const students = rawStudents.filter(

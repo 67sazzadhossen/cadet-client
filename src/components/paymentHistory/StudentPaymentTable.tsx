@@ -132,7 +132,7 @@ const StudentPaymentTable: React.FC<StudentPaymentTableProps> = ({
   studentWisePayments,
 }) => {
   // Debug logging
-  console.log("StudentWisePayments:", studentWisePayments);
+  // console.log("StudentWisePayments:", studentWisePayments);
 
   if (!studentWisePayments || studentWisePayments.length === 0) {
     return (

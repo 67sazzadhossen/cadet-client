@@ -291,7 +291,7 @@ const CreateSemesterFee = () => {
         },
       ];
 
-      console.log("Submitting 4 Semester records:", recordsToSubmit);
+      // console.log("Submitting 4 Semester records:", recordsToSubmit);
       const res = await createSemesterFeeInfo(recordsToSubmit).unwrap();
       if (res?.success || res?.data?.success) {
         setMessage({

@@ -138,7 +138,7 @@ const DashboardHome = () => {
   const currentUserData: TCurrentUser = data?.data?.data;
 
   const [isSearchOpen, setIsSearchOpen] = React.useState(false);
-  console.log(currentUserData);
+  // console.log(currentUserData);
 
   if (isLoading) {
     return <LoadingAnimation />;

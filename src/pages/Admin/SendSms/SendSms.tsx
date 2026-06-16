@@ -163,8 +163,8 @@ const SendSms = () => {
       prev.map((student) =>
         student.id === id
           ? { ...student, selected: !student.selected }
-          : student
-      )
+          : student,
+      ),
     );
   };
 
@@ -177,7 +177,7 @@ const SendSms = () => {
       prev.map((student) => {
         const isFiltered = filteredStudents.some((s) => s.id === student.id);
         return isFiltered ? { ...student, selected: !allSelected } : student;
-      })
+      }),
     );
   };
 
@@ -187,7 +187,7 @@ const SendSms = () => {
       prev.map((student) => ({
         ...student,
         selected: className === "all" || student.className === className,
-      }))
+      })),
     );
   };
 
@@ -234,7 +234,7 @@ const SendSms = () => {
 
       const phoneCount = selectedStudents.reduce(
         (total, student) => total + (student.allPhones?.length || 0),
-        0
+        0,
       );
 
       // Create message with student IDs
@@ -252,10 +252,10 @@ const SendSms = () => {
         whatsappNumbers: whatsappNumbers, // WhatsApp numbers array
       };
 
-      console.log("SMS Data to send to backend:", smsPayload);
+      // console.log("SMS Data to send to backend:", smsPayload);
 
       const res = await sendSms(smsPayload).unwrap();
-      console.log("API Response:", res);
+      // console.log("API Response:", res);
 
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
@@ -299,7 +299,7 @@ const SendSms = () => {
           s.allPhones?.join("; ") || "N/A",
         ]
           .map((field) => `"${field}"`)
-          .join(",")
+          .join(","),
       ),
     ];
 
@@ -309,7 +309,7 @@ const SendSms = () => {
     link.setAttribute("href", encodedUri);
     link.setAttribute(
       "download",
-      `students_contacts_${new Date().toISOString().split("T")[0]}.csv`
+      `students_contacts_${new Date().toISOString().split("T")[0]}.csv`,
     );
     document.body.appendChild(link);
     link.click();
@@ -436,8 +436,8 @@ const SendSms = () => {
                             smsData.selectedClass === cls
                               ? "bg-blue-600 text-white"
                               : cls === "all"
-                              ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
-                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                           }`}
                         >
                           {cls === "all" ? "All Classes" : cls}
@@ -552,7 +552,7 @@ const SendSms = () => {
                                           </div>
                                           <div className="font-mono">
                                             {formatPhoneNumber(
-                                              student.fatherPhone
+                                              student.fatherPhone,
                                             )}
                                           </div>
                                         </div>
@@ -571,7 +571,7 @@ const SendSms = () => {
                                           </div>
                                           <div className="font-mono">
                                             {formatPhoneNumber(
-                                              student.motherPhone
+                                              student.motherPhone,
                                             )}
                                           </div>
                                         </div>

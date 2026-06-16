@@ -49,7 +49,7 @@ const CreateMonthlyFee = () => {
     isLoading: infoLoading,
   } = useGetMonthlyPaymentInfoQuery(undefined);
   const createdInfos = data?.data?.data;
-  console.log(createdInfos);
+  // console.log(createdInfos);
 
   // Group createdInfos by month and year without duplicates
   const groupedByMonthYear = useMemo(() => {
@@ -361,7 +361,7 @@ const CreateMonthlyFee = () => {
         },
       ];
 
-      console.log("Submitting 4 records:", recordsToSubmit);
+      // console.log("Submitting 4 records:", recordsToSubmit);
       const res = await createMonthlyFeeInfo(recordsToSubmit).unwrap();
       if (res.data.success) {
         refetch();
