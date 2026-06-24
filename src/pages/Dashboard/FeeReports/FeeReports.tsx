@@ -23,6 +23,7 @@ import { HiOutlineAcademicCap } from "react-icons/hi";
 import { FaGraduationCap, FaMoneyBillWave, FaDownload } from "react-icons/fa";
 import dayjs from "dayjs";
 import { getInvoiceHTML } from "@/components/Invoice/Invoice";
+import * as XLSX from "xlsx";
 
 // Month names array
 const months = [
@@ -211,6 +212,64 @@ const FeeReports = () => {
   const reportData = data?.data?.data;
   const isLoadingState = isLoading || isSearching;
 
+  const handleExportExcel = () => {
+    if (!tableData || tableData.length === 0) {
+      message.warning("No data available to export");
+      return;
+    }
+
+    // ১. এক্সেলের জন্য ডেটা স্ট্রাকচার বা রো (Rows) তৈরি করা
+    const excelRows = tableData.map((student) => {
+      const row: Record<string, any> = {
+        "Student ID": student.id,
+        "Student Name (English)": student.nameEnglish,
+        "Roll No": student.rollNo,
+        Class: student.class,
+        Waiver: `${student.waiver}%`,
+      };
+
+      // ১২ মাসের পেমেন্ট স্ট্যাটাস ডাইনামিকালি যুক্ত করা
+      months.forEach((month) => {
+        // আপনার ডিজাইনের প্রথম ৩ অক্ষর (JAN, FEB) অনুযায়ী কী (Key) সেট করা
+        const shortMonth = month.substring(0, 3).toUpperCase();
+        const payment = student.monthlyPayments[month];
+
+        if (payment) {
+          row[shortMonth] = payment.status === "paid"
+            ? `Paid (৳${payment.paidAmount || payment.amount})`
+            : `Due (৳${payment.amount})`;
+        } else {
+          row[shortMonth] = "-";
+        }
+      });
+
+      // সেশন ফি এবং টোটাল ডিউ যুক্ত করা
+
+      row["Session Fee Required"] = student.sessionTotalRequired;
+      row["Session Fee Paid"] = student.sessionPaid;
+      row["Session Fee Due"] = student.sessionDue;
+      row["Total Due"] = student.totalDue;
+
+      return row;
+    });
+
+    // ২. Worksheet এবং Workbook তৈরি করা
+    const worksheet = XLSX.utils.json_to_sheet(excelRows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Fee Reports");
+
+    // ৩. কলামগুলোর উইডথ (Width) কিছুটা অটো-ফিট বা সুন্দর করা
+    const maxW = [{ wch: 9 }, { wch: 25 }, { wch: 5 }, { wch: 8 }, { wch: 8 }, { wch: 10 }, { wch: 10 }, { wch: 8 }];
+    // বাকি ১২ মাস ও সেশন ফির জন্য উইডথ পুশ করা
+    for (let i = 0; i < 17; i++) maxW.push({ wch: 12 });
+    worksheet["!cols"] = maxW;
+
+    // ৪. এক্সেল ফাইলটি ডাউনলোড ট্রিগার করা
+    const fileName = `Fee_Report_Class_${selectedClass || "All"}_Year_${selectedYear}_${dayjs().format("YYYY-MM-DD")}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+    message.success("Excel report exported successfully!");
+  };
+
   // Function to print invoice
   const printInvoice = (
     student: any,
@@ -237,16 +296,16 @@ const FeeReports = () => {
           year: selectedYear,
           breakdown: payment.breakdown
             ? {
-                baseMonthlyFee: payment.breakdown.baseMonthlyFee ?? 0,
-                waiver: payment.breakdown.waiver,
-                monthlyFeeAfterWaiver:
-                  payment.breakdown.monthlyFeeAfterWaiver ?? 0,
-                itCharge: payment.breakdown.itCharge ?? 0,
-                electricityBill: payment.breakdown.electricityBill ?? 0,
-                transportationFee: payment.breakdown.transportationFee ?? 0,
-                othersFee: payment.breakdown.othersFee ?? 0,
-                total: payment.breakdown.total ?? 0,
-              }
+              baseMonthlyFee: payment.breakdown.baseMonthlyFee ?? 0,
+              waiver: payment.breakdown.waiver,
+              monthlyFeeAfterWaiver:
+                payment.breakdown.monthlyFeeAfterWaiver ?? 0,
+              itCharge: payment.breakdown.itCharge ?? 0,
+              electricityBill: payment.breakdown.electricityBill ?? 0,
+              transportationFee: payment.breakdown.transportationFee ?? 0,
+              othersFee: payment.breakdown.othersFee ?? 0,
+              total: payment.breakdown.total ?? 0,
+            }
             : undefined,
         },
         monthlyFee: {
@@ -312,13 +371,13 @@ const FeeReports = () => {
           status: "due",
           breakdown: monthlyInfo?.additionalCharges
             ? {
-                itCharge: monthlyInfo.additionalCharges.itCharge,
-                electricityBill: monthlyInfo.additionalCharges.electricityBill,
-                transportationFee:
-                  monthlyInfo.additionalCharges.transportationFee,
-                othersFee: 0,
-                total: 0,
-              }
+              itCharge: monthlyInfo.additionalCharges.itCharge,
+              electricityBill: monthlyInfo.additionalCharges.electricityBill,
+              transportationFee:
+                monthlyInfo.additionalCharges.transportationFee,
+              othersFee: 0,
+              total: 0,
+            }
             : undefined,
         };
       });
@@ -570,7 +629,11 @@ const FeeReports = () => {
                 </p>
               </div>
               <div className="flex gap-3">
-                <button className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-sm font-medium backdrop-blur-sm">
+                {/* Export Button */}
+                <button
+                  onClick={handleExportExcel}
+                  className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-sm font-medium backdrop-blur-sm"
+                >
                   <FiDownload className="text-lg" />
                   Export
                 </button>
@@ -670,13 +733,13 @@ const FeeReports = () => {
                 </p>
                 <p className="text-white text-xl font-bold">
                   {summary.payments?.monthly?.totalCollected &&
-                  summary.payments?.monthly?.totalDue
+                    summary.payments?.monthly?.totalDue
                     ? Math.round(
-                        (summary.payments.monthly.totalCollected /
-                          (summary.payments.monthly.totalCollected +
-                            summary.payments.monthly.totalDue)) *
-                          100,
-                      )
+                      (summary.payments.monthly.totalCollected /
+                        (summary.payments.monthly.totalCollected +
+                          summary.payments.monthly.totalDue)) *
+                      100,
+                    )
                     : 0}
                   %
                 </p>
@@ -945,11 +1008,10 @@ const FeeReports = () => {
                     {months.map((month, idx) => (
                       <th
                         key={month}
-                        className={`px-2 py-3 text-center text-xs font-semibold text-white uppercase tracking-wider border-r border-blue-500 whitespace-nowrap ${
-                          idx === currentMonthIndex
-                            ? "bg-indigo-600"
-                            : "bg-gradient-to-r from-blue-600 to-indigo-600"
-                        }`}
+                        className={`px-2 py-3 text-center text-xs font-semibold text-white uppercase tracking-wider border-r border-blue-500 whitespace-nowrap ${idx === currentMonthIndex
+                          ? "bg-indigo-600"
+                          : "bg-gradient-to-r from-blue-600 to-indigo-600"
+                          }`}
                         style={{ minWidth: "75px" }}
                       >
                         {month.slice(0, 3)}
@@ -1218,13 +1280,13 @@ const FeeReports = () => {
                         )}
                       {paymentModal.breakdown.monthlyFeeAfterWaiver !==
                         undefined && (
-                        <div className="flex justify-between text-sm">
-                          <span>After Waiver:</span>
-                          <span>
-                            ৳{paymentModal.breakdown.monthlyFeeAfterWaiver}
-                          </span>
-                        </div>
-                      )}
+                          <div className="flex justify-between text-sm">
+                            <span>After Waiver:</span>
+                            <span>
+                              ৳{paymentModal.breakdown.monthlyFeeAfterWaiver}
+                            </span>
+                          </div>
+                        )}
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">IT Charge:</span>
                         <span>৳{paymentModal.breakdown.itCharge}</span>
@@ -1419,14 +1481,14 @@ const FeeReports = () => {
                   </div>
                   {sessionPaymentModal.paymentAmount <
                     sessionPaymentModal.dueAmount && (
-                    <p className="text-xs text-orange-600 mt-1">
-                      * Remaining due after this payment: ৳
-                      {(
-                        sessionPaymentModal.dueAmount -
-                        sessionPaymentModal.paymentAmount
-                      ).toLocaleString()}
-                    </p>
-                  )}
+                      <p className="text-xs text-orange-600 mt-1">
+                        * Remaining due after this payment: ৳
+                        {(
+                          sessionPaymentModal.dueAmount -
+                          sessionPaymentModal.paymentAmount
+                        ).toLocaleString()}
+                      </p>
+                    )}
                 </div>
               </div>
             </div>
