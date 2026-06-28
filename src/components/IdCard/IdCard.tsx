@@ -83,7 +83,7 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
           ></div>
           <div
             className="absolute z-20 inset-0 bg-gradient-to-br from-[#f1c511] to-[#f3af03]"
-            style={{ clipPath: "polygon(100% 0, 100% 100%, 17% 0)" }}
+            style={{ clipPath: "polygon(100% 0, 100% 100%, 10% 0)" }}
           ></div>
           <div
             className="absolute z-10 inset-0 bg-gradient-to-br from-[#f7db3c] to-[#001f3f]"
@@ -134,25 +134,6 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
           {/* Grid Layout - Updated border color */}
           <div className=" items-center gap-1 border border-[#001f3f]/20 rounded-xl text-[12px] p-2 bg-gray-50/50">
             <div className=" text-left space-y-1.5 font-bold text-gray-700 min-w-0 pr-1">
-              <div className="flex justify-between items-center">
-                <div className="hidden items-start">
-                  <span className="w-[50px] text-[#001f3f] shrink-0">
-                    ID NO
-                  </span>
-                  <span className="text-gray-900 break-all">
-                    : {studentData.id}
-                  </span>
-                </div>
-                {/* <div className="w-[2px] h-3 bg-[#001f3f]/50"></div> */}
-                <div className="flex items-start">
-                  <span className="w-[65px] text-[#001f3f] shrink-0">
-                    PHONE
-                  </span>
-                  <span className="text-gray-900 break-all">
-                    : {studentData.phone}
-                  </span>
-                </div>
-              </div>
               <div className="flex items-center">
                 <span className="w-[65px] text-[#001f3f] shrink-0">FATHER</span>
                 <span className="text-gray-900 whitespace-normal break-words leading-tight">
@@ -163,6 +144,12 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
                 <span className="w-[65px] text-[#001f3f] shrink-0">MOTHER</span>
                 <span className="text-gray-900 whitespace-normal break-words leading-tight">
                   : {studentData.motherName}
+                </span>
+              </div>
+              <div className="flex items-start">
+                <span className="w-[65px] text-[#001f3f] shrink-0">PHONE</span>
+                <span className="text-gray-900 break-all">
+                  : {studentData.phone}
                 </span>
               </div>
             </div>
@@ -189,12 +176,12 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
           </div>
           {/* directors sign */}
           <div className="flex gap-2">
-            <div className="flex flex-col items-center w-[80px]">
+            <div className="flex flex-col items-center w-[90px]">
               <Image
                 src={jubayet}
                 alt="Director Sign"
-                width={65}
-                height={25}
+                width={80}
+                height={30}
                 className="object-contain mix-blend-multiply h-[25px]"
               />
               <div className="w-full border-t border-[#001f3f] my-1"></div>
@@ -202,12 +189,12 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
                 Director
               </span>
             </div>
-            <div className="flex flex-col items-center w-[80px]">
+            <div className="flex flex-col items-center w-[90px]">
               <Image
                 src={fahima}
                 alt="MD Sign"
-                width={65}
-                height={25}
+                width={80}
+                height={30}
                 className="object-contain mix-blend-multiply h-[25px]"
               />
               <div className="w-full border-t border-[#001f3f] my-1"></div>
