@@ -6,6 +6,8 @@ import signature from "@/assets/sign.jpg";
 import { domToPng } from "modern-screenshot";
 import { FiDownload } from "react-icons/fi";
 import { TStudent } from "@/types/index.type";
+import fahima from "@/assets/signatures/fahima.png";
+import jubayet from "@/assets/signatures/jubayet.png";
 
 interface StudentIdCardProps {
   student: TStudent;
@@ -181,7 +183,7 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
         <div className="absolute bottom-[35px] left-0 w-full px-6 flex justify-between items-end z-30 pointer-events-none bg-transparent">
           <div className="flex flex-col items-center w-[90px]">
             <Image
-              src={signature}
+              src={jubayet}
               alt="Director Sign"
               width={65}
               height={25}
@@ -194,7 +196,7 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
           </div>
           <div className="flex flex-col items-center w-[90px]">
             <Image
-              src={signature}
+              src={fahima}
               alt="MD Sign"
               width={65}
               height={25}
@@ -202,7 +204,7 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
             />
             <div className="w-full border-t border-[#001f3f] my-1"></div>
             <span className="text-[7px] font-black text-[#001f3f] tracking-wider text-center whitespace-nowrap">
-              Managing Director
+              Director
             </span>
           </div>
         </div>
