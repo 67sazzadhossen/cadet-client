@@ -145,7 +145,7 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
                 </div>
                 {/* <div className="w-[2px] h-3 bg-[#001f3f]/50"></div> */}
                 <div className="flex items-start">
-                  <span className="w-[50px] text-[#001f3f] shrink-0">
+                  <span className="w-[65px] text-[#001f3f] shrink-0">
                     PHONE
                   </span>
                   <span className="text-gray-900 break-all">
@@ -154,13 +154,13 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
                 </div>
               </div>
               <div className="flex items-center">
-                <span className="w-[50px] text-[#001f3f] shrink-0">FATHER</span>
+                <span className="w-[65px] text-[#001f3f] shrink-0">FATHER</span>
                 <span className="text-gray-900 whitespace-normal break-words leading-tight">
                   : {studentData.fatherName}
                 </span>
               </div>
               <div className="flex items-center">
-                <span className="w-[50px] text-[#001f3f] shrink-0">MOTHER</span>
+                <span className="w-[65px] text-[#001f3f] shrink-0">MOTHER</span>
                 <span className="text-gray-900 whitespace-normal break-words leading-tight">
                   : {studentData.motherName}
                 </span>
