@@ -140,10 +140,10 @@ const AdmitCard = ({ student }: { student: any }) => {
           {/* Row 4 - Parents Name */}
           <div className="flex">
             <div className="w-1/2 p-1.5 border-r border-gray-400">
-              <b>Father&apos;s Name</b> : {student.parent?.fatherName}
+              <b>Father&apos;s Name</b> : {student.parent?.fatherName?.englishName}
             </div>
             <div className="w-1/2 p-1.5">
-              <b>Mother&apos;s Name</b> : {student.parent?.motherName}
+              <b>Mother&apos;s Name</b> : {student.parent?.motherName?.englishName}
             </div>
           </div>
         </div>
