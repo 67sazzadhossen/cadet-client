@@ -132,55 +132,45 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
           </p>
 
           {/* Grid Layout - Updated border color */}
-          <div className="grid grid-cols-[65%_35%] items-center gap-1 border border-[#001f3f]/20 rounded-xl p-2 bg-gray-50/50">
-            <div className="text-[9px] text-left space-y-1.5 font-bold text-gray-700 min-w-0 pr-1">
-              <div className="flex items-start">
-                <span className="w-[50px] text-[#001f3f] shrink-0">ID NO</span>
-                <span className="text-gray-900 break-all">
-                  : {studentData.id}
-                </span>
+          <div className=" items-center gap-1 border border-[#001f3f]/20 rounded-xl text-[12px] p-2 bg-gray-50/50">
+            <div className=" text-left space-y-1.5 font-bold text-gray-700 min-w-0 pr-1">
+              <div className="flex justify-between items-center">
+                <div className="flex items-start">
+                  <span className="w-[50px] text-[#001f3f] shrink-0">
+                    ID NO
+                  </span>
+                  <span className="text-gray-900 break-all">
+                    : {studentData.id}
+                  </span>
+                </div>
+                <div className="w-[2px] h-3 bg-[#001f3f]/50"></div>
+                <div className="flex items-start">
+                  <span className="w-[50px] text-[#001f3f] shrink-0">
+                    PHONE
+                  </span>
+                  <span className="text-gray-900 break-all">
+                    : {studentData.phone}
+                  </span>
+                </div>
               </div>
-              <div className="flex items-start">
+              <div className="flex items-center">
                 <span className="w-[50px] text-[#001f3f] shrink-0">FATHER</span>
                 <span className="text-gray-900 whitespace-normal break-words leading-tight">
                   : {studentData.fatherName}
                 </span>
               </div>
-              <div className="flex items-start">
+              <div className="flex items-center">
                 <span className="w-[50px] text-[#001f3f] shrink-0">MOTHER</span>
                 <span className="text-gray-900 whitespace-normal break-words leading-tight">
                   : {studentData.motherName}
                 </span>
               </div>
-              <div className="flex items-start">
-                <span className="w-[50px] text-[#001f3f] shrink-0">PHONE</span>
-                <span className="text-gray-900 break-all">
-                  : {studentData.phone}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center justify-center border-l border-[#001f3f]/20 pl-1 shrink-0 self-stretch">
-              <div className="bg-white p-1 rounded-lg shadow-xs border border-[#001f3f]/20 my-auto w-[74px] h-[74px] flex items-center justify-center">
-                <QRCodeCanvas
-                  value={`https://gscam.edu.bd/verify/${studentData.id}`}
-                  size={256}
-                  style={{ width: "100%", height: "100%" }}
-                  bgColor="#ffffff"
-                  fgColor="#001f3f"
-                  level="H"
-                  includeMargin={false}
-                />
-              </div>
-              <span className="text-[5.5px] text-[#001f3f] mt-1 font-extrabold tracking-normal whitespace-nowrap">
-                SCAN TO VERIFY
-              </span>
             </div>
           </div>
         </div>
 
         {/* Footer Signature Section - Text colors updated */}
-        <div className="absolute bottom-[35px] left-0 w-full px-6 flex justify-between items-end z-30 pointer-events-none bg-transparent">
+        <div className="absolute bottom-[35px] left-0 w-full px-6  items-end z-30 pointer-events-none bg-transparent flex justify-between">
           <div className="flex flex-col items-center w-[90px]">
             <Image
               src={jubayet}
@@ -192,6 +182,22 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
             <div className="w-full border-t border-[#001f3f] my-1"></div>
             <span className="text-[7px] font-black text-[#001f3f] tracking-wider text-center">
               Director
+            </span>
+          </div>
+          <div className="flex flex-col items-center justify-center  border-[#001f3f]/20 pl-1 shrink-0 self-stretch">
+            <div className="bg-white p-1 rounded-lg shadow-xs border border-[#001f3f]/20 my-auto w-[50px] h-[50px] flex items-center justify-center">
+              <QRCodeCanvas
+                value={`https://gscam.edu.bd/verify/${studentData.id}`}
+                size={256}
+                style={{ width: "100%", height: "100%" }}
+                bgColor="#ffffff"
+                fgColor="#001f3f"
+                level="H"
+                includeMargin={false}
+              />
+            </div>
+            <span className="text-[5.5px] text-[#001f3f] mt-1 font-extrabold tracking-normal whitespace-nowrap">
+              SCAN TO VERIFY
             </span>
           </div>
           <div className="flex flex-col items-center w-[90px]">
