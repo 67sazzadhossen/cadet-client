@@ -127,15 +127,15 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
           <h1 className="text-base font-black text-[#001f3f] tracking-tight leading-tight px-2 whitespace-normal break-words max-h-[40px] overflow-hidden flex items-center justify-center">
             {studentData.name}
           </h1>
-          <p className="text-[10px] font-bold text-[#b8860b] mt-1 mb-3 tracking-[0.2em]">
-            {studentData.role}
+          <p className="text-[12px] font-extrabold inline-block border border-blue-950 px-6 text-blue-950 rounded-full mt-1 mb-3 tracking-[0.2em]">
+            ID: {studentData.id}
           </p>
 
           {/* Grid Layout - Updated border color */}
           <div className=" items-center gap-1 border border-[#001f3f]/20 rounded-xl text-[12px] p-2 bg-gray-50/50">
             <div className=" text-left space-y-1.5 font-bold text-gray-700 min-w-0 pr-1">
               <div className="flex justify-between items-center">
-                <div className="flex items-start">
+                <div className="hidden items-start">
                   <span className="w-[50px] text-[#001f3f] shrink-0">
                     ID NO
                   </span>
@@ -143,7 +143,7 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
                     : {studentData.id}
                   </span>
                 </div>
-                <div className="w-[2px] h-3 bg-[#001f3f]/50"></div>
+                {/* <div className="w-[2px] h-3 bg-[#001f3f]/50"></div> */}
                 <div className="flex items-start">
                   <span className="w-[50px] text-[#001f3f] shrink-0">
                     PHONE
@@ -171,21 +171,8 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
 
         {/* Footer Signature Section - Text colors updated */}
         <div className="absolute bottom-[35px] left-0 w-full px-6  items-end z-30 pointer-events-none bg-transparent flex justify-between">
-          <div className="flex flex-col items-center w-[90px]">
-            <Image
-              src={jubayet}
-              alt="Director Sign"
-              width={65}
-              height={25}
-              className="object-contain mix-blend-multiply h-[25px]"
-            />
-            <div className="w-full border-t border-[#001f3f] my-1"></div>
-            <span className="text-[7px] font-black text-[#001f3f] tracking-wider text-center">
-              Director
-            </span>
-          </div>
-          <div className="flex flex-col items-center justify-center  border-[#001f3f]/20 pl-1 shrink-0 self-stretch">
-            <div className="bg-white p-1 rounded-lg shadow-xs border border-[#001f3f]/20 my-auto w-[50px] h-[50px] flex items-center justify-center">
+          <div className="flex flex-col -mb-3 -ml-2  items-center  border-[#001f3f]/20">
+            <div className="bg-white p-1 rounded-lg shadow-xs border border-[#001f3f]/20 my-auto w-[74px] h-[74px] flex items-center justify-center">
               <QRCodeCanvas
                 value={`https://gscam.edu.bd/verify/${studentData.id}`}
                 size={256}
@@ -196,22 +183,38 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
                 includeMargin={false}
               />
             </div>
-            <span className="text-[5.5px] text-[#001f3f] mt-1 font-extrabold tracking-normal whitespace-nowrap">
+            <span className="text-[5.5px] text-[#001f3f] mt-1 font-extrabold tracking-normal whitespace-nowrap hidden">
               SCAN TO VERIFY
             </span>
           </div>
-          <div className="flex flex-col items-center w-[90px]">
-            <Image
-              src={fahima}
-              alt="MD Sign"
-              width={65}
-              height={25}
-              className="object-contain mix-blend-multiply h-[25px]"
-            />
-            <div className="w-full border-t border-[#001f3f] my-1"></div>
-            <span className="text-[7px] font-black text-[#001f3f] tracking-wider text-center whitespace-nowrap">
-              Director
-            </span>
+          {/* directors sign */}
+          <div className="flex gap-2">
+            <div className="flex flex-col items-center w-[80px]">
+              <Image
+                src={jubayet}
+                alt="Director Sign"
+                width={65}
+                height={25}
+                className="object-contain mix-blend-multiply h-[25px]"
+              />
+              <div className="w-full border-t border-[#001f3f] my-1"></div>
+              <span className="text-[7px] font-black text-[#001f3f] tracking-wider text-center">
+                Director
+              </span>
+            </div>
+            <div className="flex flex-col items-center w-[80px]">
+              <Image
+                src={fahima}
+                alt="MD Sign"
+                width={65}
+                height={25}
+                className="object-contain mix-blend-multiply h-[25px]"
+              />
+              <div className="w-full border-t border-[#001f3f] my-1"></div>
+              <span className="text-[7px] font-black text-[#001f3f] tracking-wider text-center whitespace-nowrap">
+                Director
+              </span>
+            </div>
           </div>
         </div>
 
