@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { QRCodeCanvas } from "qrcode.react";
 import logo from "@/assets/id_card_logo.png";
+import star from "@/assets/star_frolic.png";
 import signature from "@/assets/sign.jpg";
 import { domToPng } from "modern-screenshot";
 import { FiDownload } from "react-icons/fi";
@@ -14,6 +15,7 @@ interface StudentIdCardProps {
 }
 
 const StudentIdCard = ({ student }: StudentIdCardProps) => {
+  console.log(student);
   const studentData = {
     name: student?.name?.englishName || "N/A",
     role: "Student",
@@ -83,7 +85,7 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
           ></div>
           <div
             className="absolute z-20 inset-0 bg-gradient-to-br from-[#f1c511] to-[#f3af03]"
-            style={{ clipPath: "polygon(100% 0, 100% 100%, 10% 0)" }}
+            style={{ clipPath: "polygon(100% 0, 100% 100%, 0% 0)" }}
           ></div>
           <div
             className="absolute z-10 inset-0 bg-gradient-to-br from-[#f7db3c] to-[#001f3f]"
@@ -93,7 +95,7 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
           {/* Academy Branding */}
           <div className="relative z-40 pt-3 text-center">
             <Image
-              src={logo}
+              src={student.version === "english" ? star.src : logo.src}
               alt="Gazipurshaheen Cadet Academy Mymensingh"
               width={240}
               height={100}

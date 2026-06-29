@@ -1,6 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import star from "@/assets/star_frolic_logo.png";
+import gscam from "@/assets/logo copy.png";
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const AdmitCard = ({ student }: { student: any }) => {
   // ছবির মতো একই ডেটা ফর্ম্যাট ব্যবহার করার জন্য
@@ -18,6 +21,7 @@ const AdmitCard = ({ student }: { student: any }) => {
     { code: "109", name: isBangla ? "Mathematices" : "Mathematics" },
     { code: "111", name: isBangla ? "Religion" : "Religion" },
   ];
+  // console.log(student);
 
   const examDateTime = {
     date: "08/Mar/2026 (Sun)",
@@ -49,13 +53,18 @@ const AdmitCard = ({ student }: { student: any }) => {
         <div className="flex border-b border-black">
           {/* Logo Section */}
           <div className="w-[15%] p-2 flex justify-center items-center">
-            <img src="/logo.png" alt="logo" />
+            <img
+              src={student.version === "english" ? star.src : gscam.src}
+              alt="logo"
+            />
           </div>
 
           {/* School Name, Address, Admit Card Title */}
           <div className="w-[60%] text-center  flex flex-col justify-center py-2">
-            <h1 className="text-2xl font-black uppercase text-blue-900 m-0 p-0 leading-tight">
-              GazipurShaheen Cadet Academy
+            <h1 className="text-2xl whitespace-nowrap font-black uppercase text-blue-900 m-0 p-0 leading-tight">
+              {student.version === "english"
+                ? "Star Frolic English Version School"
+                : "GazipurShaheen Cadet Academy"}
             </h1>
             <p className="text-sm font-semibold text-black m-0 p-0">
               MYMENSINGH BRANCH
@@ -205,33 +214,41 @@ const AdmitCard = ({ student }: { student: any }) => {
 
         {/* RULES & SIGNATURE SECTION */}
         <div className="flex border-t border-black">
-          {/* Rules Section (Bangla Text as image dynamic handling dynamic or placeholder text) */}
+          {/* Rules Section */}
           <div className="w-[65%] border-r border-gray-400 p-2 text-xs leading-relaxed text-black">
             <div className="flex items-start gap-1">
               <span>★</span>
               <span>
-                পরীক্ষা শুরু হওয়ার কমপক্ষে ১৫ মিনিট পূর্বে পরীক্ষার হলে প্রবেশ
-                করতে হবে।
+                {student.version === "english"
+                  ? "Students must enter the examination hall at least 15 minutes before the examination begins."
+                  : "পরীক্ষা শুরু হওয়ার কমপক্ষে ১৫ মিনিট পূর্বে পরীক্ষার হলে প্রবেশ করতে হবে।"}
               </span>
             </div>
+
             <div className="flex items-start gap-1">
               <span>★</span>
               <span>
-                প্রবেশপত্র ছাড়া কোন কাগজপত্র পরীক্ষা কেন্দ্রে বহন করা যাবে না।
+                {student.version === "english"
+                  ? "No papers or documents other than the admit card shall be allowed inside the examination center."
+                  : "প্রবেশপত্র ছাড়া কোন কাগজপত্র পরীক্ষা কেন্দ্রে বহন করা যাবে না।"}
               </span>
             </div>
+
             <div className="flex items-start gap-1">
               <span>★</span>
               <span>
-                প্রত্যেক পরীক্ষার্থীকে প্রয়োজনীয় কলম, পেন্সিল ও জ্যামিতি বক্স
-                সঙ্গে আনতে হবে।
+                {student.version === "english"
+                  ? "Every candidate must bring the necessary pen, pencil, and geometry box."
+                  : "প্রত্যেক পরীক্ষার্থীকে প্রয়োজনীয় কলম, পেন্সিল ও জ্যামিতি বক্স সঙ্গে আনতে হবে।"}
               </span>
             </div>
+
             <div className="flex items-start gap-1">
               <span>★</span>
               <span>
-                পরীক্ষার হলে শিক্ষকের সাথে দুর্ব্যবহার করলে / অসৎ উপায় অবলম্বন
-                করলে / মোবাইল ফোন আনলে পরীক্ষা বাতিল বলে গণ্য হবে।
+                {student.version === "english"
+                  ? "Any candidate who misbehaves with teachers, adopts unfair means, or brings a mobile phone into the examination hall shall have their examination cancelled."
+                  : "পরীক্ষার হলে শিক্ষকের সাথে দুর্ব্যবহার করলে / অসৎ উপায় অবলম্বন করলে / মোবাইল ফোন আনলে পরীক্ষা বাতিল বলে গণ্য হবে।"}
               </span>
             </div>
           </div>
