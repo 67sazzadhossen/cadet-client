@@ -137,19 +137,19 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
           <div className=" items-center gap-1 border border-[#001f3f]/20 rounded-xl text-[12px] p-2 bg-gray-50/50">
             <div className=" text-left space-y-1.5 font-bold text-gray-700 min-w-0 pr-1">
               <div className="flex items-center">
-                <span className="w-[65px] text-[#001f3f] shrink-0">FATHER</span>
-                <span className="text-gray-900 whitespace-normal break-words leading-tight">
+                <span className="w-[55px] text-[#001f3f] shrink-0">FATHER</span>
+                <span className="text-gray-900 whitespace-nowrap break-words leading-tight">
                   : {studentData.fatherName}
                 </span>
               </div>
               <div className="flex items-center">
-                <span className="w-[65px] text-[#001f3f] shrink-0">MOTHER</span>
-                <span className="text-gray-900 whitespace-normal break-words leading-tight">
+                <span className="w-[55px] text-[#001f3f] shrink-0">MOTHER</span>
+                <span className="text-gray-900 whitespace-nowrap break-words leading-tight">
                   : {studentData.motherName}
                 </span>
               </div>
               <div className="flex items-start">
-                <span className="w-[65px] text-[#001f3f] shrink-0">PHONE</span>
+                <span className="w-[55px] text-[#001f3f] shrink-0">PHONE</span>
                 <span className="text-gray-900 break-all">
                   : {studentData.phone}
                 </span>
