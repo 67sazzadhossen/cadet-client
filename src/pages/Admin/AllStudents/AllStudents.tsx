@@ -150,12 +150,12 @@ const AllStudents = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-20">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-20 lg:flex">
         {/* Header - Enhanced Design */}
-        <div className="bg-white shadow-md border-b sticky top-0 z-20">
+        <div className="bg-white shadow-md rounded-2xl border-b lg:fixed z-20 to lg:right-10 lg:mt-5 lg:h-screen w-2/10">
           <div className="px-4 py-4">
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 ">
+              <div className="flex items-center justify-between ">
                 <div>
                   <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                     ছাত্রছাত্রী
@@ -308,7 +308,7 @@ const AllStudents = () => {
         </div>
 
         {/* Student List */}
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 lg:w-9/12">
           {allStudents.length === 0 ? (
             <div className="bg-white rounded-2xl p-12 text-center shadow-sm">
               <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">

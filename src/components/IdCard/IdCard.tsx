@@ -185,6 +185,8 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
                 width={80}
                 height={30}
                 className="object-contain mix-blend-multiply h-[40px] ml-3"
+                unoptimized
+                priority
               />
               <div className="w-full border-t border-[#001f3f] my-1"></div>
               <span className="text-[7px] font-black text-[#001f3f] tracking-wider text-center">
@@ -198,6 +200,8 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
                 width={80}
                 height={30}
                 className="object-contain mix-blend-multiply h-[30px]"
+                unoptimized
+                priority
               />
               <div className="w-full border-t border-[#001f3f] my-1"></div>
               <span className="text-[7px] font-black text-[#001f3f] tracking-wider text-center whitespace-nowrap">
