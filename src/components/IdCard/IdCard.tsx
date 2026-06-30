@@ -177,14 +177,14 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
             </span>
           </div>
           {/* directors sign */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 justify-end items-end">
             <div className="flex flex-col items-center w-[90px]">
               <Image
                 src={jubayet}
                 alt="Director Sign"
                 width={80}
                 height={30}
-                className="object-contain mix-blend-multiply h-[25px]"
+                className="object-contain mix-blend-multiply h-[40px] ml-3"
               />
               <div className="w-full border-t border-[#001f3f] my-1"></div>
               <span className="text-[7px] font-black text-[#001f3f] tracking-wider text-center">
@@ -197,7 +197,7 @@ const StudentIdCard = ({ student }: StudentIdCardProps) => {
                 alt="MD Sign"
                 width={80}
                 height={30}
-                className="object-contain mix-blend-multiply h-[25px]"
+                className="object-contain mix-blend-multiply h-[30px]"
               />
               <div className="w-full border-t border-[#001f3f] my-1"></div>
               <span className="text-[7px] font-black text-[#001f3f] tracking-wider text-center whitespace-nowrap">
