@@ -49,8 +49,8 @@ const IdCards = () => {
   return (
     <div className="min-h-screen bg-gray-100 pb-20 print:bg-white print:p-0">
       {/* --- Filter & Header Panel (Print এ হাইড থাকবে) --- */}
-      <div className="bg-white shadow-md border-b sticky top-0 z-20 p-4 print:hidden">
-        <div className="max-w-7xl mx-auto flex flex-col gap-4">
+      <div className="bg-white shadow-md rounded-2xl border-b lg:fixed z-20 to lg:right-10 lg:mt-5 lg:h-screen w-2/10 print:hidden">
+        <div className="max-w-7xl mx-auto flex flex-col gap-4 p-4">
           {/* Top Title */}
           <div className="flex items-center justify-between">
             <div>
@@ -196,7 +196,7 @@ const IdCards = () => {
       </div>
 
       {/* --- ID Cards Display Section --- */}
-      <div className="max-w-7xl mx-auto p-6 print:p-0">
+      <div className="p-4 space-y-4 lg:w-9/12 print:p-0">
         {allStudents.length === 0 ? (
           <div className="bg-white rounded-2xl p-12 text-center shadow-sm max-w-xl mx-auto mt-10">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
