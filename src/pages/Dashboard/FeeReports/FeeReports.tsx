@@ -24,128 +24,26 @@ import { FaGraduationCap, FaMoneyBillWave, FaDownload } from "react-icons/fa";
 import dayjs from "dayjs";
 import { getInvoiceHTML } from "@/components/Invoice/Invoice";
 import * as XLSX from "xlsx";
+import {
+  MonthlyPayment,
+  PaymentModalData,
+  SessionPaymentModalData,
+  StudentDataType,
+} from "@/types/index.type";
+import {
+  classOptions,
+  months,
+  studentTypeOptions,
+  versionOptions,
+} from "@/const/index.const";
+import { processTableData } from "@/utils/processTableData";
+import { handleExportExcel } from "@/utils/handleExport";
 
 // Month names array
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
 
 // Class options
-const classOptions = [
-  "Play",
-  "Nursery",
-  "KG",
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "10",
-];
 
 // Version options
-const versionOptions = [
-  { value: "", label: "All Versions", color: "gray" },
-  { value: "bangla", label: "Bangla", color: "green" },
-  { value: "english", label: "English", color: "blue" },
-];
-
-// Student type options
-const studentTypeOptions = [
-  { value: "", label: "All Students", color: "gray" },
-  { value: "false", label: "Regular", color: "blue" },
-  { value: "true", label: "Cadet", color: "red" },
-];
-
-interface Breakdown {
-  baseMonthlyFee?: number;
-  monthlyFee?: number;
-  monthlyFeeAfterWaiver?: number;
-  waiver?: { percentage: number; amount: number };
-
-  itCharge?: number;
-  electricityBill?: number;
-  transportationFee?: number;
-
-  sessionFee?: number;
-  admissionFee?: number;
-
-  othersFee?: number;
-  total: number;
-}
-
-interface MonthlyPayment {
-  month: string;
-  amount: number;
-  status: "paid" | "due";
-  paidAmount?: number;
-  due?: number;
-  date?: string;
-  invoiceNo?: string;
-  breakdown?: Breakdown;
-}
-
-interface StudentDataType {
-  key: string;
-  id: string;
-  nameBangla: string;
-  nameEnglish: string;
-  rollNo: string;
-  class: string;
-  version: string;
-  isCadet: boolean;
-  waiver: number;
-  sessionFee: number;
-  admissionFee: number;
-  sessionTotalRequired: number;
-  sessionPaid: number;
-  sessionDue: number;
-  sessionStatus: string;
-  monthlyDue: number;
-  totalDue: number;
-  monthlyPayments: Record<string, MonthlyPayment>;
-}
-
-interface PaymentModalData {
-  isOpen: boolean;
-  studentId: string;
-  studentName: string;
-  studentRollNo: string;
-  studentClass: string;
-  month: string;
-  year: string;
-  amount: number;
-  breakdown?: Breakdown;
-  paymentType: "monthly" | "session";
-}
-
-interface SessionPaymentModalData {
-  isOpen: boolean;
-  studentId: string;
-  studentName: string;
-  studentRollNo: string;
-  studentClass: string;
-  year: string;
-  totalAmount: number;
-  paidAmount: number;
-  dueAmount: number;
-  paymentAmount: number;
-}
 
 const FeeReports = () => {
   const [selectedYear, setSelectedYear] = useState<string>(
@@ -212,70 +110,16 @@ const FeeReports = () => {
   const reportData = data?.data?.data;
   const isLoadingState = isLoading || isSearching;
 
-  const handleExportExcel = () => {
-    if (!tableData || tableData.length === 0) {
-      message.warning("No data available to export");
-      return;
-    }
-
-    // ১. এক্সেলের জন্য ডেটা স্ট্রাকচার বা রো (Rows) তৈরি করা
-    const excelRows = tableData.map((student) => {
-      const row: Record<string, any> = {
-        "Student ID": student.id,
-        "Student Name (English)": student.nameEnglish,
-        "Roll No": student.rollNo,
-        Class: student.class,
-        Waiver: `${student.waiver}%`,
-      };
-
-      // ১২ মাসের পেমেন্ট স্ট্যাটাস ডাইনামিকালি যুক্ত করা
-      months.forEach((month) => {
-        // আপনার ডিজাইনের প্রথম ৩ অক্ষর (JAN, FEB) অনুযায়ী কী (Key) সেট করা
-        const shortMonth = month.substring(0, 3).toUpperCase();
-        const payment = student.monthlyPayments[month];
-
-        if (payment) {
-          row[shortMonth] = payment.status === "paid"
-            ? `Paid (৳${payment.paidAmount || payment.amount})`
-            : `Due (৳${payment.amount})`;
-        } else {
-          row[shortMonth] = "-";
-        }
-      });
-
-      // সেশন ফি এবং টোটাল ডিউ যুক্ত করা
-
-      row["Session Fee Required"] = student.sessionTotalRequired;
-      row["Session Fee Paid"] = student.sessionPaid;
-      row["Session Fee Due"] = student.sessionDue;
-      row["Total Due"] = student.totalDue;
-
-      return row;
-    });
-
-    // ২. Worksheet এবং Workbook তৈরি করা
-    const worksheet = XLSX.utils.json_to_sheet(excelRows);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Fee Reports");
-
-    // ৩. কলামগুলোর উইডথ (Width) কিছুটা অটো-ফিট বা সুন্দর করা
-    const maxW = [{ wch: 9 }, { wch: 25 }, { wch: 5 }, { wch: 8 }, { wch: 8 }, { wch: 10 }, { wch: 10 }, { wch: 8 }];
-    // বাকি ১২ মাস ও সেশন ফির জন্য উইডথ পুশ করা
-    for (let i = 0; i < 17; i++) maxW.push({ wch: 12 });
-    worksheet["!cols"] = maxW;
-
-    // ৪. এক্সেল ফাইলটি ডাউনলোড ট্রিগার করা
-    const fileName = `Fee_Report_Class_${selectedClass || "All"}_Year_${selectedYear}_${dayjs().format("YYYY-MM-DD")}.xlsx`;
-    XLSX.writeFile(workbook, fileName);
-    message.success("Excel report exported successfully!");
+  const handleExport = () => {
+    handleExportExcel(tableData, selectedClass, selectedYear);
   };
 
-  // Function to print invoice
   const printInvoice = (
     student: any,
     payment: MonthlyPayment,
     invoiceNo: string,
   ) => {
+    // console.log(payment);
     try {
       const studentDataForInvoice = {
         student: {
@@ -296,16 +140,16 @@ const FeeReports = () => {
           year: selectedYear,
           breakdown: payment.breakdown
             ? {
-              baseMonthlyFee: payment.breakdown.baseMonthlyFee ?? 0,
-              waiver: payment.breakdown.waiver,
-              monthlyFeeAfterWaiver:
-                payment.breakdown.monthlyFeeAfterWaiver ?? 0,
-              itCharge: payment.breakdown.itCharge ?? 0,
-              electricityBill: payment.breakdown.electricityBill ?? 0,
-              transportationFee: payment.breakdown.transportationFee ?? 0,
-              othersFee: payment.breakdown.othersFee ?? 0,
-              total: payment.breakdown.total ?? 0,
-            }
+                baseMonthlyFee: payment.breakdown.baseMonthlyFee ?? 0,
+                waiver: payment.breakdown.waiver,
+                monthlyFeeAfterWaiver:
+                  payment.breakdown.monthlyFeeAfterWaiver ?? 0,
+                itCharge: payment.breakdown.itCharge ?? 0,
+                electricityBill: payment.breakdown.electricityBill ?? 0,
+                transportationFee: payment.breakdown.transportationFee ?? 0,
+                othersFee: payment.breakdown.othersFee ?? 0,
+                total: payment.breakdown.total ?? 0,
+              }
             : undefined,
         },
         monthlyFee: {
@@ -352,74 +196,6 @@ const FeeReports = () => {
       payment,
       payment.invoiceNo || `INV-${student.id}-${payment.month}`,
     );
-  };
-
-  const processTableData = (): StudentDataType[] => {
-    if (!reportData?.students) return [];
-
-    return reportData.students.map((studentGroup: any) => {
-      const student = studentGroup.studentInfo;
-      const monthlyInfo = studentGroup.monthlyFeeInfo;
-      const sessionInfo = studentGroup.sessionFeeInfo;
-
-      const monthlyPaymentsMap: Record<string, MonthlyPayment> = {};
-
-      months.forEach((month) => {
-        monthlyPaymentsMap[month] = {
-          month,
-          amount: 0,
-          status: "due",
-          breakdown: monthlyInfo?.additionalCharges
-            ? {
-              itCharge: monthlyInfo.additionalCharges.itCharge,
-              electricityBill: monthlyInfo.additionalCharges.electricityBill,
-              transportationFee:
-                monthlyInfo.additionalCharges.transportationFee,
-              othersFee: 0,
-              total: 0,
-            }
-            : undefined,
-        };
-      });
-
-      if (monthlyInfo?.paidMonths) {
-        monthlyInfo.paidMonths.forEach((paidMonth: MonthlyPayment) => {
-          monthlyPaymentsMap[paidMonth.month] = {
-            ...paidMonth,
-            status: "paid",
-          };
-        });
-      }
-
-      if (monthlyInfo?.dueMonths) {
-        monthlyInfo.dueMonths.forEach((dueMonth: MonthlyPayment) => {
-          if (monthlyPaymentsMap[dueMonth.month]?.status !== "paid") {
-            monthlyPaymentsMap[dueMonth.month] = { ...dueMonth, status: "due" };
-          }
-        });
-      }
-
-      return {
-        key: student?.id || Math.random().toString(),
-        id: student?.id || "N/A",
-        nameBangla: student?.name?.bengaliName || "N/A",
-        nameEnglish: student?.name?.englishName || "N/A",
-        rollNo: student?.rollNo || "N/A",
-        class: student?.currentClass || "N/A",
-        version: student?.version || "N/A",
-        isCadet: student?.isCadet || false,
-        waiver: student?.waiver || 0,
-        sessionFee: sessionInfo?.sessionFee || 0,
-        admissionFee: sessionInfo?.admissionFee || 0,
-        sessionTotalRequired: sessionInfo?.totalRequired || 0,
-        sessionPaid: sessionInfo?.paidAmount || 0,
-        sessionDue: sessionInfo?.dueAmount || 0,
-        sessionStatus: sessionInfo?.status || "due",
-        monthlyDue: monthlyInfo?.totalDue || 0,
-        totalDue: studentGroup.totalDue || 0,
-        monthlyPayments: monthlyPaymentsMap,
-      };
-    });
   };
 
   const summary = reportData?.summary || {
@@ -602,7 +378,7 @@ const FeeReports = () => {
     );
   }
 
-  const tableData = processTableData();
+  const tableData = processTableData(reportData);
   const activeFilterCount = [
     selectedClass,
     selectedVersion,
@@ -614,9 +390,9 @@ const FeeReports = () => {
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen p-4 md:p-6">
-      <div className="max-w-[1600px] mx-auto">
+      <div className="max-w-[1600px] mx-auto relative">
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-2xl shadow-lg mb-6 overflow-hidden">
+        <div className="bg-gradient-to-r hidden from-blue-600 via-purple-600 to-indigo-600 rounded-2xl shadow-lg mb-6 overflow-hidden">
           <div className="p-6 md:p-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
@@ -628,26 +404,12 @@ const FeeReports = () => {
                   Manage and track all fee collections
                 </p>
               </div>
-              <div className="flex gap-3">
-                {/* Export Button */}
-                <button
-                  onClick={handleExportExcel}
-                  className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-sm font-medium backdrop-blur-sm"
-                >
-                  <FiDownload className="text-lg" />
-                  Export
-                </button>
-                <button className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-sm font-medium backdrop-blur-sm">
-                  <FiPrinter className="text-lg" />
-                  Print
-                </button>
-              </div>
             </div>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between">
               <div>
@@ -733,19 +495,28 @@ const FeeReports = () => {
                 </p>
                 <p className="text-white text-xl font-bold">
                   {summary.payments?.monthly?.totalCollected &&
-                    summary.payments?.monthly?.totalDue
+                  summary.payments?.monthly?.totalDue
                     ? Math.round(
-                      (summary.payments.monthly.totalCollected /
-                        (summary.payments.monthly.totalCollected +
-                          summary.payments.monthly.totalDue)) *
-                      100,
-                    )
+                        (summary.payments.monthly.totalCollected /
+                          (summary.payments.monthly.totalCollected +
+                            summary.payments.monthly.totalDue)) *
+                          100,
+                      )
                     : 0}
                   %
                 </p>
               </div>
               <FiTrendingUp className="text-teal-200 text-3xl" />
             </div>
+          </div>
+          <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow flex flex-col items-center">
+            <button
+              onClick={handleExport}
+              className="flex flex-col items-center"
+            >
+              <FiDownload className="text-xl text-white" />
+              Export
+            </button>
           </div>
         </div>
 
@@ -994,13 +765,13 @@ const FeeReports = () => {
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
+          <div className="bg-white rounded-xl shadow-md overflow-hidden relative">
+            <div className="bg-white rounded-xl shadow-md relative h-[800px] overflow-auto">
+              <table className="w-full border-collapse">
+                <thead className="sticky top-0 z-30">
                   <tr className="bg-gradient-to-r from-blue-600 to-indigo-600">
                     <th
-                      className="sticky left-0 bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider border-r border-blue-500"
+                      className="sticky left-0 z-40 bg-indigo-600 px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider border-r border-blue-500"
                       style={{ minWidth: "200px" }}
                     >
                       Student Info
@@ -1008,10 +779,11 @@ const FeeReports = () => {
                     {months.map((month, idx) => (
                       <th
                         key={month}
-                        className={`px-2 py-3 text-center text-xs font-semibold text-white uppercase tracking-wider border-r border-blue-500 whitespace-nowrap ${idx === currentMonthIndex
-                          ? "bg-indigo-600"
-                          : "bg-gradient-to-r from-blue-600 to-indigo-600"
-                          }`}
+                        className={`px-2 py-3 text-center text-xs font-semibold text-white uppercase tracking-wider border-r border-blue-500 whitespace-nowrap ${
+                          idx === currentMonthIndex
+                            ? "bg-indigo-600"
+                            : "bg-gradient-to-r from-blue-600 to-indigo-600"
+                        }`}
                         style={{ minWidth: "75px" }}
                       >
                         {month.slice(0, 3)}
@@ -1033,15 +805,8 @@ const FeeReports = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {tableData.map((student, index) => (
-                    <tr
-                      key={student.key}
-                      className={
-                        index % 2 === 0
-                          ? "bg-white hover:bg-blue-50 transition-colors"
-                          : "bg-gray-50 hover:bg-blue-50 transition-colors"
-                      }
-                    >
-                      <td className="sticky left-0 bg-inherit px-4 py-3 border-r border-gray-100">
+                    <tr key={student.key}>
+                      <td className="sticky left-0 z-20 bg-white px-4 py-3 border-r border-gray-100">
                         <div className="flex flex-col">
                           <span className="font-semibold text-gray-800">
                             {student.nameEnglish}
@@ -1280,13 +1045,13 @@ const FeeReports = () => {
                         )}
                       {paymentModal.breakdown.monthlyFeeAfterWaiver !==
                         undefined && (
-                          <div className="flex justify-between text-sm">
-                            <span>After Waiver:</span>
-                            <span>
-                              ৳{paymentModal.breakdown.monthlyFeeAfterWaiver}
-                            </span>
-                          </div>
-                        )}
+                        <div className="flex justify-between text-sm">
+                          <span>After Waiver:</span>
+                          <span>
+                            ৳{paymentModal.breakdown.monthlyFeeAfterWaiver}
+                          </span>
+                        </div>
+                      )}
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">IT Charge:</span>
                         <span>৳{paymentModal.breakdown.itCharge}</span>
@@ -1481,14 +1246,14 @@ const FeeReports = () => {
                   </div>
                   {sessionPaymentModal.paymentAmount <
                     sessionPaymentModal.dueAmount && (
-                      <p className="text-xs text-orange-600 mt-1">
-                        * Remaining due after this payment: ৳
-                        {(
-                          sessionPaymentModal.dueAmount -
-                          sessionPaymentModal.paymentAmount
-                        ).toLocaleString()}
-                      </p>
-                    )}
+                    <p className="text-xs text-orange-600 mt-1">
+                      * Remaining due after this payment: ৳
+                      {(
+                        sessionPaymentModal.dueAmount -
+                        sessionPaymentModal.paymentAmount
+                      ).toLocaleString()}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

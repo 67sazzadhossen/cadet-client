@@ -59,6 +59,7 @@ export const getInvoiceHTML = (
     };
   },
 ) => {
+  // console.log(result);
   const numberToWords = (num: number): string => {
     const units = [
       "",
@@ -122,7 +123,7 @@ export const getInvoiceHTML = (
     });
   };
 
-  const totalAmount = result.paybleamount;
+  const totalAmount = result.paidAmount;
   const currentDate = new Date();
   const breakdown = result.breakdown;
 

@@ -257,3 +257,106 @@ export type TTeacherForm = {
     district: string;
   };
 };
+
+export interface Breakdown {
+  baseMonthlyFee?: number;
+  monthlyFee?: number;
+  monthlyFeeAfterWaiver?: number;
+
+  waiver?: {
+    percentage: number;
+    amount: number;
+  };
+
+  itCharge?: number;
+  electricityBill?: number;
+  transportationFee?: number;
+
+  sessionFee?: number;
+  admissionFee?: number;
+
+  othersFee?: number;
+
+  total: number;
+}
+
+export interface MonthlyPayment {
+  month: string;
+  amount: number;
+
+  status: "paid" | "due";
+
+  paidAmount?: number;
+  due?: number;
+
+  date?: string;
+  invoiceNo?: string;
+
+  breakdown?: Breakdown;
+}
+
+export interface StudentDataType {
+  key: string;
+
+  id: string;
+
+  nameBangla: string;
+  nameEnglish: string;
+
+  rollNo: string;
+
+  class: string;
+  version: string;
+
+  isCadet: boolean;
+
+  waiver: number;
+
+  sessionFee: number;
+  admissionFee: number;
+
+  sessionTotalRequired: number;
+  sessionPaid: number;
+  sessionDue: number;
+  sessionStatus: string;
+
+  monthlyDue: number;
+  totalDue: number;
+
+  monthlyPayments: Record<string, MonthlyPayment>;
+}
+
+export interface PaymentModalData {
+  isOpen: boolean;
+
+  studentId: string;
+  studentName: string;
+  studentRollNo: string;
+  studentClass: string;
+
+  month: string;
+  year: string;
+
+  amount: number;
+
+  breakdown?: Breakdown;
+
+  paymentType: "monthly" | "session";
+}
+
+export interface SessionPaymentModalData {
+  isOpen: boolean;
+
+  studentId: string;
+  studentName: string;
+  studentRollNo: string;
+  studentClass: string;
+
+  year: string;
+
+  totalAmount: number;
+  paidAmount: number;
+  dueAmount: number;
+
+  paymentAmount: number;
+}

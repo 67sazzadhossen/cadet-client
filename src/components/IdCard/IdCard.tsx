@@ -15,7 +15,7 @@ interface StudentIdCardProps {
 }
 
 const StudentIdCard = ({ student }: StudentIdCardProps) => {
-  console.log(student);
+  // console.log(student);
   const studentData = {
     name: student?.name?.englishName || "N/A",
     role: "Student",
