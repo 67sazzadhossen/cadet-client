@@ -18,7 +18,8 @@ const TeachersAttendance = () => {
 
   // API parameters
   const params = {
-    date: selectedDate,
+    month: "june",
+    year: "2026",
   };
 
   const { data, isLoading, error, refetch } =
@@ -27,6 +28,8 @@ const TeachersAttendance = () => {
   useEffect(() => {
     refetch();
   }, [selectedDate, refetch]);
+
+  console.log(data?.data?.data);
 
   if (isLoading) {
     return (

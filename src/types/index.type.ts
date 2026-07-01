@@ -360,3 +360,23 @@ export interface SessionPaymentModalData {
 
   paymentAmount: number;
 }
+
+export type TTeacherAttendance = {
+  teacherId: string;
+  teacherName: string;
+  designation: string;
+  attendance: TAttendanceRecord[];
+};
+
+export type TAttendanceRecord = {
+  _id: string;
+  id: string;
+  time: string;
+  date: string;
+  role: "teacher";
+  status: "in" | "out";
+  verifyType: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+};

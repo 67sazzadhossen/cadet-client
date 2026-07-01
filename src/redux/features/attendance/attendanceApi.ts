@@ -9,9 +9,13 @@ const attendanceApi = baseApi.injectEndpoints({
     }),
 
     getTeachersAttendance: builder.query({
-      query: () => ({
-        method: "GET",
+      query: ({ month, year }) => ({
         url: `/attendance/teachers-attendance`,
+        method: "GET",
+        params: {
+          month,
+          year,
+        },
       }),
     }),
   }),
