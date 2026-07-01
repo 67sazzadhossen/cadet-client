@@ -74,6 +74,8 @@ const AdmitCards = () => {
         const dataUrl = await toPng(pageElement, {
           pixelRatio: 2,
           backgroundColor: "#ffffff",
+          cacheBust: true, // এটি যোগ করুন
+          skipAutoScale: true,
         });
 
         if (i > 0) pdf.addPage();

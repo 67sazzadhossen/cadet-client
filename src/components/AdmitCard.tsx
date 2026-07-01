@@ -164,7 +164,7 @@ const AdmitCard = ({ student }: { student: any }) => {
             />
             <div className="border-t-2 border-blue-900 w-[80%] mt-1">
               <p className="font-black text-xs uppercase text-blue-900">
-                Director & Principal
+                Director
               </p>
             </div>
           </div>
