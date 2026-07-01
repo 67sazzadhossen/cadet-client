@@ -7,6 +7,7 @@ import React, { useRef, useState } from "react";
 import { FiSearch, FiFilter, FiPrinter, FiDownload } from "react-icons/fi";
 
 import jsPDF from "jspdf";
+import { toPng } from "html-to-image";
 
 import AdmitCard from "@/components/AdmitCard";
 import { toJpeg } from "html-to-image"; // toPng এর বদলে toJpeg
@@ -50,73 +51,53 @@ const AdmitCards = () => {
     );
   });
 
-  // ✅ PDF Download with working fix
   const handleDownloadPDF = async () => {
     if (filteredStudents.length === 0) return;
     setIsDownloading(true);
 
     try {
       const pdf = new jsPDF({
+        orientation: "p",
         unit: "mm",
         format: "a4",
-        orientation: "portrait",
+        compress: true,
       });
 
-      const cards = printRef.current?.querySelectorAll(".admit-card-container");
-      if (!cards || cards.length === 0) return;
+      // `.a4-page` ক্লাস যুক্ত সব কন্টেইনার ধরুন
+      const pages = printRef.current?.querySelectorAll(".a4-page");
+      if (!pages) return;
 
-      const pdfWidth = 210; // A4 Width in mm
-      const pdfHeight = 297; // A4 Height in mm
-      const halfHeight = pdfHeight / 2; // 148.5mm
+      for (let i = 0; i < pages.length; i++) {
+        const pageElement = pages[i] as HTMLElement;
 
-      // 5px প্যাডিং mm এ কনভার্ট করুন (96dpi তে 1px = 0.264583mm)
-      const paddingMM = 5; // 5px ≈ 2.5mm
-
-      // কার্ডের জন্য ইউজেবল এলাকা (প্যাডিং বাদে)
-      const usableWidth = pdfWidth - paddingMM * 2;
-      const usableHeight = halfHeight - paddingMM * 2;
-
-      for (let i = 0; i < cards.length; i++) {
-        const element = cards[i] as HTMLElement;
-
-        const dataUrl = await toJpeg(element, {
-          quality: 1,
-          pixelRatio: 3, // হাই কোয়ালিটির জন্য ৩ রাখতে পারেন
+        // প্রতিটি পেজকে ইমেজে রূপান্তর করুন
+        const dataUrl = await toPng(pageElement, {
+          pixelRatio: 2,
           backgroundColor: "#ffffff",
-          cacheBust: true,
-          style: {
-            transform: "scale(1)",
-            margin: "0",
-            padding: "0",
-            width: "100%",
-            height: "100%",
-          },
         });
 
-        // নতুন পেজ যোগ করার লজিক
-        if (i > 0 && i % 2 === 0) {
-          pdf.addPage();
-        }
+        if (i > 0) pdf.addPage();
 
-        // Y পজিশন: প্রথমটার জন্য প্যাডিং সহ, দ্বিতীয়টার জন্য অর্ধেক + প্যাডিং
-        const y = i % 2 === 0 ? paddingMM : halfHeight + paddingMM;
-        const x = paddingMM; // বামে প্যাডিং
+        // A4 সাইজ (210x297mm)
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
 
         pdf.addImage(
           dataUrl,
-          "JPEG",
-          x,
-          y,
-          usableWidth, // প্যাডিং বাদে উইডথ
-          usableHeight, // প্যাডিং বাদে হাইট
+          "PNG",
+          0,
+          0,
+          pageWidth,
+          pageHeight,
           undefined,
           "FAST",
         );
       }
 
-      pdf.save("Admit_Cards_With_Padding.pdf");
+      pdf.save("Admit_Cards.pdf");
     } catch (error) {
-      console.error("PDF Fail:", error);
+      console.error("PDF Generation Error:", error);
+      alert("PDF তৈরিতে সমস্যা হয়েছে।");
     } finally {
       setIsDownloading(false);
     }
@@ -167,10 +148,10 @@ const AdmitCards = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Header - Only visible on screen */}
-      <div className="no-print bg-white shadow-md border-b sticky top-0 z-20">
+      <div className="bg-white shadow-md rounded-2xl border-b lg:fixed z-20 to lg:right-10 lg:mt-5 lg:h-screen w-2/10 print:hidden">
         <div className="px-4 py-4">
           <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-2">
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                   অ্যাডমিট কার্ড
@@ -405,29 +386,18 @@ const AdmitCards = () => {
                   key={pageIndex}
                   className="a4-page"
                   style={{
-                    pageBreakAfter:
-                      pageIndex < Math.ceil(filteredStudents.length / 2) - 1
-                        ? "always"
-                        : "auto",
-                    minHeight: "297mm",
-                    padding: "10mm",
-                    backgroundColor: "white",
+                    width: "210mm",
+                    height: "297mm",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "5mm", // কাটার জন্য gap
+                    background: "#fff",
+                    overflow: "hidden",
+                    padding: "5px",
                   }}
                 >
-                  {pageStudents.map((student, idx) => (
-                    <div
-                      key={student._id}
-                      style={{
-                        marginBottom:
-                          idx === 0 && pageStudents.length === 2 ? "20px" : "0",
-                        height:
-                          pageStudents.length === 2
-                            ? "calc(50% - 10px)"
-                            : "100%",
-                      }}
-                    >
-                      <AdmitCard student={student} />
-                    </div>
+                  {pageStudents.map((student) => (
+                    <AdmitCard key={student._id} student={student} />
                   ))}
                 </div>
               );
