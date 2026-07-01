@@ -123,10 +123,10 @@ const AdmitCard = ({ student }: { student: any }) => {
 
           <div className="flex">
             <div className="w-1/2 p-2 font-bold border-gray-300">
-              Father's Name: {student.guardian?.father?.name?.englishName}
+              Father&apos;s Name: {student.guardian?.father?.name?.englishName}
             </div>
             <div className="w-1/2 p-2 font-bold border-l border-gray-300">
-              Mother's Name: {student.guardian?.mother?.name?.englishName}
+              Mother&apos;s Name: {student.guardian?.mother?.name?.englishName}
             </div>
           </div>
         </div>
