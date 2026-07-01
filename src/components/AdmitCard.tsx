@@ -13,26 +13,41 @@ const AdmitCard = ({ student }: { student: any }) => {
 
   return (
     <div
-      className="m-4"
+      className="m-4 relative overflow-hidden"
       style={{
         width: "100%",
         height: "146mm",
         margin: 0,
         boxSizing: "border-box",
         border: "6px double #1e3a8a",
+        backgroundColor: "white",
       }}
     >
+      {/* জলছাপ (Watermark) লেয়ার */}
       <div
-        className=""
+        className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none"
+        style={{ zIndex: 0 }}
+      >
+        <img
+          src={student.version === "english" ? star.src : gscam.src}
+          alt="watermark"
+          className="w-[60%] h-auto"
+        />
+      </div>
+
+      {/* মূল কন্টেন্ট */}
+      <div
+        className="relative"
         style={{
           height: "100%",
           width: "100%",
           boxSizing: "border-box",
           display: "flex",
           flexDirection: "column",
+          zIndex: 1,
         }}
       >
-        {/* TOP HEADER - সুন্দর ডিজাইনের হেডার */}
+        {/* TOP HEADER */}
         <div className="flex border-b-4 border-blue-900 bg-blue-50 py-2">
           <div className="w-[15%] p-2 flex justify-center items-center">
             <img
@@ -72,8 +87,8 @@ const AdmitCard = ({ student }: { student: any }) => {
           </div>
         </div>
 
-        {/* INFO GRID SECTION - আগের মতো রাখা হয়েছে */}
-        <div className="text-black text-sm p-2">
+        {/* INFO GRID SECTION */}
+        <div className="text-black text-sm p-2 flex-grow">
           <div className="flex border-b border-gray-300">
             <div className="w-1/2 p-2 font-bold">Session: {session}</div>
             <div className="w-1/2 p-2 font-bold border-l border-gray-300">
@@ -94,32 +109,31 @@ const AdmitCard = ({ student }: { student: any }) => {
             <div className="flex border-b border-gray-300 w-1/2">
               <div className="w-full p-2 font-bold">
                 Student Name:{" "}
-                <span className="uppercase  text-blue-900">
+                <span className="uppercase text-blue-900">
                   {student.name.englishName}
                 </span>
               </div>
             </div>
             <div className="flex border-b border-gray-300 w-1/2 border-l">
               <div className="w-full p-2 font-bold">
-                Student Name:{" "}
-                <span className="ml-10">Class Roll No.: {student.rollNo}</span>
+                Class Roll No.: {student.rollNo}
               </div>
             </div>
           </div>
 
           <div className="flex">
-            <div className="w-1/2 p-2 font-bold border-gray-300 ">
-              Father&apos;s Name: {student.guardian?.father?.name?.englishName}
+            <div className="w-1/2 p-2 font-bold border-gray-300">
+              Father's Name: {student.guardian?.father?.name?.englishName}
             </div>
             <div className="w-1/2 p-2 font-bold border-l border-gray-300">
-              Mother&apos;s Name: {student.guardian?.mother?.name?.englishName}
+              Mother's Name: {student.guardian?.mother?.name?.englishName}
             </div>
           </div>
         </div>
 
         {/* RULES & SIGNATURE SECTION */}
-        <div className="flex flex-col h-full border-t-2 border-blue-900  bg-gray-50">
-          <div className=" p-3 text-[12px] font-semibold text-gray-800 border-r border-gray-300">
+        <div className="flex h-[130px] border-t-2 border-blue-900 bg-gray-50">
+          <div className="w-[65%] p-3 text-[12px] font-semibold text-gray-800 border-r border-gray-300">
             <p>
               ★{" "}
               {student.version === "english"
