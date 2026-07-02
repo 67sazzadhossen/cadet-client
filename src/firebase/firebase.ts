@@ -1,6 +1,5 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getMessaging } from "firebase/messaging";
-
+import { getMessaging, isSupported, Messaging } from "firebase/messaging";
 const firebaseConfig = {
   apiKey: "AIzaSyCKBO1qOPL9wKvN3iPbCVVDzEbVAEMJV_k",
   authDomain: "gscam-29846.firebaseapp.com",
@@ -10,8 +9,20 @@ const firebaseConfig = {
   appId: "1:740534750751:web:96770d827c51f144e18f2a",
 };
 
-// অ্যাপটি একবারই ইনিশিয়ালাইজ হয়েছে কি না তা চেক করা
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Messaging সার্ভিস এক্সপোর্ট করা
-export const messaging = getMessaging(app);
+export { app };
+
+export const getFirebaseMessaging = async (): Promise<Messaging | null> => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const supported = await isSupported();
+
+  if (!supported) {
+    return null;
+  }
+
+  return getMessaging(app);
+};

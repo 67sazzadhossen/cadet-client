@@ -18,7 +18,7 @@ import { useGetMeQuery } from "@/redux/features/user/userApi";
 
 import Link from "next/link";
 import Image from "next/image";
-import { messaging } from "@/firebase/firebase";
+import { getFirebaseMessaging } from "@/firebase/firebase";
 import { getToken } from "firebase/messaging";
 
 type LoginFormInputs = {
@@ -63,20 +63,28 @@ const Login = () => {
         try {
           if (typeof window !== "undefined" && "Notification" in window) {
             const permission = await Notification.requestPermission();
-            if (permission === "granted") {
+
+            if (permission !== "granted") {
+              console.log("Notification permission denied");
+              return;
+            }
+
+            const messaging = await getFirebaseMessaging();
+
+            if (messaging) {
               const currentToken = await getToken(messaging, {
                 vapidKey:
                   "BO90PoK1LY7j8LCCtxw8sO2s5gO92a2JLS4hBfNjKqWPQaSWflxANY4Jmja7Uj_nyt6FA_hIlFx9T8TlYeR12dU",
               });
 
               if (currentToken) {
-                // এখন RTK Query দিয়ে ব্যাকএন্ডে টোকেন পাঠান
-                await saveFcmToken({ fcmToken: currentToken }).unwrap();
+                await saveFcmToken({
+                  fcmToken: currentToken,
+                }).unwrap();
               }
             }
           }
-        } catch (err: any) {
-          // AbortError বা অন্য যেকোনো এরর এখানে হ্যান্ডেল হবে
+        } catch (err) {
           console.error("FCM Registration/Save failed:", err);
         }
 
