@@ -3,7 +3,10 @@
 export const dynamic = "force-dynamic";
 import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useLoginMutation } from "@/redux/features/auth/authApi";
+import {
+  useLoginMutation,
+  useSaveFcmTokenMutation,
+} from "@/redux/features/auth/authApi";
 import { useDispatch } from "react-redux";
 import { logout, setUser } from "@/redux/features/auth/authSlice";
 import { verifyToken } from "@/utils/verifyToken";
@@ -15,6 +18,8 @@ import { useGetMeQuery } from "@/redux/features/user/userApi";
 
 import Link from "next/link";
 import Image from "next/image";
+import { messaging } from "@/firebase/firebase";
+import { getToken } from "firebase/messaging";
 
 type LoginFormInputs = {
   id: string;
@@ -29,6 +34,7 @@ const Login = () => {
   const { refetch } = useGetMeQuery(undefined);
   const [showPassword, setShowPassword] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [saveFcmToken] = useSaveFcmTokenMutation();
 
   const {
     register,
@@ -51,8 +57,28 @@ const Login = () => {
           setUser({
             user: user,
             accessToken: res.data.data.accessToken,
-          })
+          }),
         );
+
+        try {
+          if (typeof window !== "undefined" && "Notification" in window) {
+            const permission = await Notification.requestPermission();
+            if (permission === "granted") {
+              const currentToken = await getToken(messaging, {
+                vapidKey:
+                  "BO90PoK1LY7j8LCCtxw8sO2s5gO92a2JLS4hBfNjKqWPQaSWflxANY4Jmja7Uj_nyt6FA_hIlFx9T8TlYeR12dU",
+              });
+
+              if (currentToken) {
+                // এখন RTK Query দিয়ে ব্যাকএন্ডে টোকেন পাঠান
+                await saveFcmToken({ fcmToken: currentToken }).unwrap();
+              }
+            }
+          }
+        } catch (err: any) {
+          // AbortError বা অন্য যেকোনো এরর এখানে হ্যান্ডেল হবে
+          console.error("FCM Registration/Save failed:", err);
+        }
 
         // Set cookies for middleware
         if (res.data.data.refreshToken) {
@@ -82,7 +108,6 @@ const Login = () => {
       }
     }
   };
-
   useEffect(() => {
     const redirectPath = searchParams?.get("redirect");
     const autoLogout = searchParams?.get("auto_logout");

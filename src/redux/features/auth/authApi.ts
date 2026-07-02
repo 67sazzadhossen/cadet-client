@@ -21,6 +21,13 @@ const authApi = baseApi.injectEndpoints({
         body: payload,
       }),
     }),
+    saveFcmToken: builder.mutation({
+      query: (payload) => ({
+        method: "POST",
+        url: "/users/save-fcm-token",
+        body: payload,
+      }),
+    }),
   }),
 });
 
@@ -28,4 +35,5 @@ export const {
   useLoginMutation,
   useLogoutMutation,
   useChangeYourPasswordMutation,
+  useSaveFcmTokenMutation,
 } = authApi;

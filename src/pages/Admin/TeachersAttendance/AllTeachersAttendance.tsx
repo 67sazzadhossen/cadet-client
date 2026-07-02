@@ -33,6 +33,8 @@ const AllTeachersAttendance = () => {
 
   const teacherData = data?.data?.data || [];
 
+  console.log(teacherData);
+
   return (
     <div className="p-4">
       {/* Dropdowns */}
