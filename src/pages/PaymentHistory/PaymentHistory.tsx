@@ -65,7 +65,7 @@ const PaymentHistory = () => {
               >
                 <span>{new Date(item.date).toLocaleDateString()}</span>
                 <span className="font-bold text-blue-700 w-32 ">
-                  ৳{item.paidAmount}{" "}
+                  {/* ৳{item.paidAmount}{" "} */}
                   <span
                     className={
                       item.status === "paid"
@@ -93,7 +93,7 @@ const PaymentHistory = () => {
               >
                 <span>{item.month}</span>
                 <span className="font-bold text-blue-700 w-32 ">
-                  ৳{item.paidAmount}{" "}
+                  {/* ৳{item.paidAmount}{" "} */}
                   <span
                     className={
                       item.status === "paid"
