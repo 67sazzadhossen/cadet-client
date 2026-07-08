@@ -5,12 +5,14 @@ import { useGetMeQuery } from "@/redux/features/user/userApi";
 import { useAppSelector } from "@/redux/hook";
 import { TCurrentUser } from "@/types/index.type";
 import { useRouter } from "next/navigation";
-import React, { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const currentUser = useAppSelector(selectCurrentUser);
   const router = useRouter();
-  const { data } = useGetMeQuery(undefined);
+  const { data } = useGetMeQuery(undefined, {
+    skip: !currentUser,
+  });
   const currentUserData: TCurrentUser = data?.data?.data;
   const needsPasswordChanged = currentUserData?.user?.needsPasswordChanged;
 
@@ -28,7 +30,7 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
       if (currentPath.includes("/dashboard/change-password")) {
         currentPath = currentPath.replace(
           "/dashboard/change-password",
-          "/dashboard"
+          "/dashboard",
         );
       }
 
@@ -39,13 +41,20 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
     }
   }, [currentUser, router, needsPasswordChanged, data]);
 
+  useEffect(() => {
+    if (!currentUser) {
+      router.replace("/login");
+      return;
+    }
+
+    if (needsPasswordChanged) {
+      router.replace("/dashboard/change-password");
+    }
+  }, [currentUser, needsPasswordChanged, router]);
+
   // Show loading state or nothing while checking authentication
   if (!currentUser) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-      </div>
-    );
+    return null;
   }
 
   return <>{children}</>;

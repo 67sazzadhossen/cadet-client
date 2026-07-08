@@ -47,6 +47,13 @@ const paymentApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["SemesterPayment"], // পেমেন্ট সফল হলে টেবিল অটো রিফ্রেশ হবে
     }),
+    paymentHistory: builder.query({
+      query: (params) => ({
+        url: `/payment/payment-history`,
+        method: "GET",
+        params,
+      }),
+    }),
   }),
 });
 
@@ -57,4 +64,5 @@ export const {
   useSessionFeeReportsQuery,
   useSemesterFeeReportsQuery,
   useSaveSemesterPaymentInfoMutation, // 👈 এটি এক্সপোর্ট করা হলো
+  usePaymentHistoryQuery,
 } = paymentApi;

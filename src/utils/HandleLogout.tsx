@@ -9,9 +9,14 @@ const HandleLogout = () => {
   const router = useRouter();
 
   const handleLogout = async () => {
-    await loggingOut({});
-    dispatch(logout());
-    router.push("/login");
+    try {
+      await loggingOut({}).unwrap();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      dispatch(logout());
+      router.push("/login");
+    }
   };
   return handleLogout;
 };

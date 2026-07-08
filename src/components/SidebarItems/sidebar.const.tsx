@@ -2,55 +2,26 @@ import { JSX } from "react";
 import {
   BiHome,
   BiSolidReport,
-  BiUser,
   BiCalendarCheck,
-  BiMoney,
-  BiGroup,
-  BiCreditCard,
-  BiBookOpen,
   BiTime,
   BiIdCard,
 } from "react-icons/bi";
 import {
   FaChalkboardTeacher,
+  FaDollarSign,
   FaExclamationTriangle,
   FaUserCog,
 } from "react-icons/fa";
 import {
-  FaHandHoldingDollar,
-  FaMessage,
   FaUsers,
   FaUserGraduate,
   FaMoneyBillWave,
-  FaFileInvoiceDollar,
   FaBookOpen,
   FaClipboardList,
-  FaUserShield,
   FaChartLine,
 } from "react-icons/fa6";
-import {
-  IoPerson,
-  IoSettings,
-  IoPeople,
-  IoCalendar,
-  IoDocumentText,
-  IoCash,
-  IoWallet,
-  IoBusiness,
-  IoSchool,
-} from "react-icons/io5";
-import {
-  MdPayments,
-  MdAttachMoney,
-  MdReceipt,
-  MdAssignment,
-  MdClass,
-  MdSubject,
-  MdSchedule,
-  MdReport,
-  MdEmail,
-  MdSms,
-} from "react-icons/md";
+import { IoPerson, IoPeople, IoCash, IoSchool } from "react-icons/io5";
+import { MdClass, MdSubject, MdSms } from "react-icons/md";
 
 export interface TSidebarItem {
   name: string;
@@ -74,6 +45,11 @@ export const studentPaths: TSidebarItem[] = [
     name: "Attendance",
     link: "/dashboard/my-attendance",
     icon: <BiCalendarCheck />,
+  },
+  {
+    name: "Payment History",
+    link: "/dashboard/payment-history",
+    icon: <FaDollarSign />,
   },
 ];
 

@@ -2,12 +2,17 @@
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 import { monthMap } from "@/const/index.const";
 import { useGetTeachersAttendanceQuery } from "@/redux/features/attendance/attendanceApi";
-import { TTeacherAttendance } from "@/types/index.type";
 import React, { useState, useMemo } from "react";
 
 const AllTeachersAttendance = () => {
-  const [selectedMonth, setSelectedMonth] = useState("june");
-  const [selectedYear, setSelectedYear] = useState("2026");
+  const today = new Date();
+  const [selectedMonth, setSelectedMonth] = useState(
+    today.toLocaleString("default", { month: "long" }).toLowerCase(),
+  );
+  const [selectedYear, setSelectedYear] = useState(
+    today.getFullYear().toString(),
+  );
+  const [isTimeView, setIsTimeView] = useState(false);
 
   const params = { month: selectedMonth, year: selectedYear };
   const { data, isLoading, isFetching } = useGetTeachersAttendanceQuery(params);
@@ -24,6 +29,19 @@ const AllTeachersAttendance = () => {
     return Array.from({ length: 5 }, (_, i) => (currentYear - i).toString());
   }, []);
 
+  const formatToAmPm = (timeStr: string) => {
+    if (!timeStr) return "-";
+    const [hours, minutes] = timeStr.split(":");
+    const h = parseInt(hours);
+    const ampm = h >= 12 ? "PM" : "AM";
+    const formattedHour = h % 12 || 12;
+    return `${formattedHour}:${minutes} ${ampm}`;
+  };
+
+  const isFriday = (year: number, monthIndex: number, day: number) => {
+    return new Date(year, monthIndex - 1, day).getDay() === 5;
+  };
+
   if (isLoading || isFetching)
     return (
       <div>
@@ -33,16 +51,13 @@ const AllTeachersAttendance = () => {
 
   const teacherData = data?.data?.data || [];
 
-  console.log(teacherData);
-
   return (
     <div className="p-4">
-      {/* Dropdowns */}
-      <div className="mb-6 flex gap-4">
+      <div className="mb-6 flex gap-4 items-center">
         <select
           value={selectedMonth}
           onChange={(e) => setSelectedMonth(e.target.value)}
-          className="border-b-2 border-gray-300 p-2 outline-none uppercase font-semibold"
+          className="border-b-2 p-2 uppercase font-semibold"
         >
           {Object.keys(monthMap).map((m) => (
             <option key={m} value={m}>
@@ -53,7 +68,7 @@ const AllTeachersAttendance = () => {
         <select
           value={selectedYear}
           onChange={(e) => setSelectedYear(e.target.value)}
-          className="border-b-2 border-gray-300 p-2 outline-none font-semibold"
+          className="border-b-2 p-2 font-semibold"
         >
           {years.map((y) => (
             <option key={y} value={y}>
@@ -61,9 +76,14 @@ const AllTeachersAttendance = () => {
             </option>
           ))}
         </select>
+        <button
+          onClick={() => setIsTimeView(!isTimeView)}
+          className={`px-4 py-2 rounded font-bold text-sm ${isTimeView ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+        >
+          {isTimeView ? "Status View" : "Time View"}
+        </button>
       </div>
 
-      {/* Table Container */}
       <div className="overflow-auto max-h-[80vh] shadow-sm rounded-lg">
         <table className="w-full text-sm border-separate border-spacing-0">
           <thead className="sticky top-0 bg-gray-100 z-20">
@@ -72,63 +92,77 @@ const AllTeachersAttendance = () => {
                 Teacher Name
               </th>
               {Array.from({ length: daysInMonth }, (_, i) => (
-                <th
-                  key={i}
-                  className="p-2 text-center min-w-[30px] font-medium text-gray-600"
-                >
+                <th key={i} className="p-2 text-center min-w-[50px]">
                   {i + 1}
                 </th>
               ))}
-              <th className="p-3 text-center">P</th>
-              <th className="p-3 text-center">A</th>
             </tr>
           </thead>
           <tbody>
-            {teacherData.map((teacher: TTeacherAttendance, index: number) => {
-              let presentCount = 0;
-              const isEven = index % 2 === 0;
+            {teacherData.map((teacher: any) => (
+              <tr key={teacher.teacherId} className="hover:bg-blue-50 border-b">
+                <td className="p-3 font-semibold sticky left-0 bg-white z-10 whitespace-nowrap">
+                  {teacher.teacherName}
+                </td>
+                {Array.from({ length: daysInMonth }, (_, i) => {
+                  const day = i + 1;
+                  const dateStr = `${selectedYear}-${String(monthIndex).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
-              return (
-                <tr
-                  key={teacher.teacherId}
-                  className={`${isEven ? "bg-white" : "bg-gray-50"} hover:bg-blue-50 transition-colors`}
-                >
-                  <td
-                    className={`p-3 font-semibold whitespace-nowrap sticky left-0 z-10 ${isEven ? "bg-white" : "bg-gray-50"} shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]`}
-                  >
-                    {teacher.teacherName}{" "}
-                    <span className="text-xs text-gray-400 font-normal">
-                      ({teacher.teacherId})
-                    </span>
-                  </td>
-                  {Array.from({ length: daysInMonth }, (_, i) => {
-                    const day = String(i + 1).padStart(2, "0");
-                    const month = String(monthIndex).padStart(2, "0");
-                    const dateStr = `${selectedYear}-${month}-${day}`;
-                    const isPresent = teacher.attendance.find(
-                      (a) => a.date === dateStr,
-                    );
-                    if (isPresent) presentCount++;
+                  const todayDate = new Date();
+                  todayDate.setHours(0, 0, 0, 0);
+                  const checkDate = new Date(
+                    parseInt(selectedYear),
+                    monthIndex - 1,
+                    day,
+                  );
 
-                    return (
-                      <td key={i} className="p-2 text-center">
+                  const isFutureDate = checkDate > todayDate;
+                  const isHoliday = isFriday(
+                    parseInt(selectedYear),
+                    monthIndex,
+                    day,
+                  );
+
+                  const dayRecords = teacher.attendance.filter(
+                    (a: any) => a.date === dateStr,
+                  );
+                  const inRecord = dayRecords.find(
+                    (a: any) => a.status === "in",
+                  );
+                  const outRecord = dayRecords.find(
+                    (a: any) => a.status === "out",
+                  );
+
+                  return (
+                    <td
+                      key={i}
+                      className={`p-2 text-center text-xs border border-gray-100 ${isHoliday ? "bg-gray-50" : ""}`}
+                    >
+                      {isFutureDate ? (
+                        <span className="text-gray-400">-</span>
+                      ) : isHoliday ? (
+                        <span className="text-gray-400 font-bold">F</span>
+                      ) : isTimeView ? (
+                        <div className="flex flex-col">
+                          <span className="text-[10px] text-green-600 font-bold">
+                            {inRecord ? formatToAmPm(inRecord.time) : "-"}
+                          </span>
+                          <span className="text-[10px] text-red-500 font-bold">
+                            {outRecord ? formatToAmPm(outRecord.time) : "-"}
+                          </span>
+                        </div>
+                      ) : (
                         <span
-                          className={`px-2 py-1 rounded-md text-xs font-bold ${isPresent ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}
+                          className={`px-2 py-1 rounded-md text-[10px] font-bold ${inRecord ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}
                         >
-                          {isPresent ? "P" : "A"}
+                          {inRecord ? "P" : "A"}
                         </span>
-                      </td>
-                    );
-                  })}
-                  <td className="p-3 text-center font-bold text-green-600">
-                    {presentCount}
-                  </td>
-                  <td className="p-3 text-center font-bold text-red-500">
-                    {daysInMonth - presentCount}
-                  </td>
-                </tr>
-              );
-            })}
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -137,7 +171,6 @@ const AllTeachersAttendance = () => {
 };
 
 export default AllTeachersAttendance;
-
 export async function getServerSideProps() {
   return {
     props: {}, // Page will render only on client
