@@ -144,10 +144,11 @@ const AllTeachersAttendance = () => {
                         <span className="text-gray-400 font-bold">F</span>
                       ) : isTimeView ? (
                         <div className="flex flex-col">
-                          <span className="text-[10px] text-green-600 font-bold">
-                            {inRecord ? formatToAmPm(inRecord.time) : "-"}
+                          <span className="text-[10px] text-green-600 font-bold whitespace-nowrap">
+                            In - {inRecord ? formatToAmPm(inRecord.time) : "-"}
                           </span>
                           <span className="text-[10px] text-red-500 font-bold">
+                            Out -{" "}
                             {outRecord ? formatToAmPm(outRecord.time) : "-"}
                           </span>
                         </div>
