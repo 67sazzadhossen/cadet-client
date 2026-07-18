@@ -237,6 +237,11 @@ export const adminPaths: TSidebarItem[] = [
     icon: <IoSchool />,
     children: [
       {
+        name: "Create Subject",
+        link: "/dashboard/academic/create-subject",
+        icon: <MdClass />,
+      },
+      {
         name: "Add Subject",
         link: "/dashboard/academic-management",
         icon: <MdClass />,
@@ -269,6 +274,22 @@ export const adminPaths: TSidebarItem[] = [
       {
         name: "Result",
         link: "/dashboard/academic/result",
+        icon: <BiTime />,
+      },
+    ],
+  },
+  {
+    name: "Examination Management",
+    icon: <IoSchool />,
+    children: [
+      {
+        name: "Create Examination",
+        link: "/dashboard/academic/create-exam",
+        icon: <BiTime />,
+      },
+      {
+        name: "Mark Entry",
+        link: "/dashboard/academic/mark-entry",
         icon: <BiTime />,
       },
     ],
