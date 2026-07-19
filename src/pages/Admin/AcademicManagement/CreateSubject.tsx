@@ -69,7 +69,8 @@ const CreateSubject = () => {
   const onSubmit = async (data: any) => {
     try {
       const payload = { ...data, isCadet: data.isCadet === "true" };
-      await addSubject(payload).unwrap();
+      const res = await addSubject(payload).unwrap();
+      console.log(res.data);
       toast.success("Subject added successfully!");
       reset();
       refetch();
@@ -107,7 +108,7 @@ const CreateSubject = () => {
           placeholder="Subject Name"
           className="border p-2 rounded"
         />
-        <select {...register("className")} className="border p-2 rounded">
+        <select {...register("class")} className="border p-2 rounded">
           {classOptions.map((cls) => (
             <option key={cls} value={cls}>
               {cls}
