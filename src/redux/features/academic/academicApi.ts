@@ -182,6 +182,24 @@ const academicApi = baseApi.injectEndpoints({
         };
       },
     }),
+
+    // নতুন: Generate Combined Exam Mutation
+    generateCombinedExam: builder.mutation({
+      query: (payload) => ({
+        method: "POST",
+        url: `/academic/generate-combined-exam`,
+        body: payload,
+      }),
+    }),
+
+    // নতুন: Get Dynamic Exam Result Query (Combined or Regular)
+    getDynamicExamResult: builder.query({
+      query: (payload) => ({
+        url: `/academic/dynamic-result`,
+        method: "POST", // যেহেতু আমরা body তে ডাটা পাঠাচ্ছি
+        body: payload,
+      }),
+    }),
   }),
 });
 
@@ -207,4 +225,6 @@ export const {
   useDeleteExamMutation,
   useInputMarksMutation, // নতুন এন্ডপয়েন্ট এক্সপোর্ট করা হলো
   useGetInputMarksQuery, // নতুন যোগ করা হয়েছে
+  useGenerateCombinedExamMutation, // নতুন যোগ করা হলো
+  useGetDynamicExamResultQuery, // নতুন যোগ করা হলো
 } = academicApi;
