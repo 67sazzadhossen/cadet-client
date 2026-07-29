@@ -86,8 +86,8 @@ export const teacherPaths: TSidebarItem[] = [
     icon: <IoSchool />,
     children: [
       {
-        name: "Add Mark",
-        link: "/dashboard/academic/add-mark",
+        name: "Mark Entry",
+        link: "/dashboard/academic/mark-entry",
         icon: <BiTime />,
       },
       {
