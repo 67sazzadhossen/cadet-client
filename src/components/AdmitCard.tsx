@@ -7,7 +7,7 @@ import signature from "@/assets/signatures/jubayet.png";
 import Image from "next/image";
 
 const AdmitCard = ({ student }: { student: any }) => {
-  const examName = "Monthly Test 4 - June 2026";
+  const examName = "Monthly Test 5 - July 2026";
   const session = "2026";
   const studentPhoto = student.image?.url || "/student-placeholder.png";
 
