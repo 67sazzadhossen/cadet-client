@@ -6,17 +6,18 @@ import { DynamicUserFields } from "@/components/dashboard/DynamicUserFields";
 import { DashboardButton, GlassPanel } from "@/components/dashboard/GlassUI";
 import {
   useCreateAdminUserMutation,
+  useDeleteAdminUserMutation,
   useGetAdminUsersQuery,
   useResetAdminUserPasswordMutation,
   useUpdateAdminUserMutation,
 } from "@/redux/features/users/adminUserApi";
 
-const emptyAddress = () => ({ address: "", district: "", village: "", thana: "", postOffice: "" });
+const emptyAddress = () => ({ address: "", district: "" });
 const emptyName = () => ({ englishName: "", bengaliName: "" });
 const emptyImage = () => ({ url: "", publicId: "" });
 
 const createTemplate = (role: string) => {
-  const common = { id: "", role, name: emptyName(), image: emptyImage(), dateOfBirth: "", bloodGroup: "unknown" };
+  const common = { id: "", role, name: emptyName(), image: emptyImage(), dateOfBirth: "", bloodGroup: "A+" };
   if (role === "student") return {
     ...common, email: "", admissionDate: "", admissionClass: "Play", currentClass: "Play",
     religion: "", nationality: "Bangladeshi", birthCertificateNo: "", previousSchool: "",
@@ -28,7 +29,7 @@ const createTemplate = (role: string) => {
       localGuardian: { name: "", email: "", relation: "", phone: "" },
     },
   };
-  const staff = { ...common, contact: { email: "", phone: "", mobile: "", whatsapp: "" }, designation: "", qualification: "", gender: "male", address: emptyAddress() };
+  const staff = { ...common, contact: { email: "", mobile: "", whatsapp: "" }, designation: "", qualification: "", gender: "male", address: emptyAddress() };
   return role === "teacher" ? { ...staff, joiningDate: "", subjects: [] } : staff;
 };
 
@@ -52,22 +53,49 @@ const unwrapUsers = (response: any): ManagedUser[] =>
   [response, response?.data, response?.data?.data, response?.data?.data?.data]
     .find(Array.isArray) || [];
 
+const mergeProfileFields = (defaults: Record<string, any>, saved: Record<string, any>) =>
+  Object.keys({ ...defaults, ...saved }).reduce<Record<string, any>>((merged, key) => {
+    const defaultValue = defaults[key];
+    const savedValue = saved[key];
+    const canMerge = defaultValue && savedValue
+      && typeof defaultValue === "object" && typeof savedValue === "object"
+      && !Array.isArray(defaultValue) && !Array.isArray(savedValue);
+    merged[key] = canMerge
+      ? mergeProfileFields(defaultValue, savedValue)
+      : savedValue === undefined || savedValue === null ? defaultValue : savedValue;
+    return merged;
+  }, {});
+
 const editableProfile = (managedUser: ManagedUser) => {
   const { user, _id, __v, createdAt, updatedAt, ...profile } = managedUser;
   void _id; void __v; void createdAt; void updatedAt;
-  const editable = {
-    ...profile,
-    email: user?.email || profile.email || profile.contact?.email || "",
+  const role = user?.role || String(profile.role || "admin");
+  const editable = mergeProfileFields(createTemplate(role), profile);
+  if (role === "student") {
+    editable.email = user?.email || profile.email || "";
+  } else {
+    editable.contact.email = user?.email || profile.contact?.email || "";
+  }
+  return {
+    ...editable,
     status: user?.status || "active",
     needsPasswordChanged: Boolean(user?.needsPasswordChanged),
   };
-  return user?.role === "student"
-    ? { ...editable, admissionFee: profile.admissionFee ?? 0, sessionFee: profile.sessionFee ?? 0 }
-    : editable;
 };
 
 const humanize = (key: string) =>
   key.replace(/([A-Z])/g, " $1").replace(/[_-]/g, " ").trim();
+
+const apiErrorMessage = (error: any, fallback: string) =>
+  error?.data?.errorSources?.[0]?.message
+  || error?.data?.message
+  || error?.error
+  || fallback;
+
+const validateRequiredProfileFields = (profile: Record<string, any>) => {
+  if (!String(profile.dateOfBirth || "").trim()) return "Date of birth is required";
+  return null;
+};
 
 const DetailValue = ({ value }: { value: any }) => {
   if (value === null || value === undefined || value === "") return <span className="text-blue-100/40">Not set</span>;
@@ -96,10 +124,12 @@ const UniversalUserManagement = ({ initialRole = "student" }: { initialRole?: st
   const [selected, setSelected] = useState<ManagedUser | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
   const [draft, setDraft] = useState<Record<string, any>>({});
   const { data, isLoading, isError, error, refetch } = useGetAdminUsersQuery(showDeleted);
   const [createUser, createState] = useCreateAdminUserMutation();
   const [update, updateState] = useUpdateAdminUserMutation();
+  const [deleteUser, deleteState] = useDeleteAdminUserMutation();
   const [resetPassword, resetState] = useResetAdminUserPasswordMutation();
   const users = unwrapUsers(data);
 
@@ -140,12 +170,21 @@ const UniversalUserManagement = ({ initialRole = "student" }: { initialRole?: st
 
   const save = async () => {
     if (!selected) return;
-    const result = await update({ targetId: selected.id, ...draft }).unwrap();
-    const updated = result?.data?.data || { ...selected, ...draft };
-    toast.success("User profile updated successfully");
-    setSelected(updated);
-    setIsEditing(false);
-    await refetch();
+    const validationError = validateRequiredProfileFields(draft);
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+    try {
+      const result = await update({ targetId: selected.id, ...draft }).unwrap();
+      const updated = result?.data?.data || { ...selected, ...draft };
+      toast.success("User profile updated successfully");
+      setSelected(updated);
+      setIsEditing(false);
+      await refetch();
+    } catch (error) {
+      toast.error(apiErrorMessage(error, "Could not update this user"));
+    }
   };
 
   const openCreate = () => {
@@ -156,17 +195,39 @@ const UniversalUserManagement = ({ initialRole = "student" }: { initialRole?: st
   };
 
   const createNewUser = async () => {
-    await createUser(draft).unwrap();
-    toast.success(`${role} created successfully`);
-    setIsCreating(false);
-    setIsEditing(false);
-    await refetch();
+    const validationError = validateRequiredProfileFields(draft);
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+    try {
+      await createUser({ ...draft, role }).unwrap();
+      toast.success(`${role} created successfully`);
+      setIsCreating(false);
+      setIsEditing(false);
+      await refetch();
+    } catch (error) {
+      toast.error(apiErrorMessage(error, `Could not create ${role}`));
+    }
   };
 
   const resetSelectedPassword = async () => {
     if (!selected) return;
     const result = await resetPassword(selected.id).unwrap();
     toast.success(`Default password: ${result.data.data.defaultPassword}`);
+  };
+
+  const deleteSelectedUser = async () => {
+    if (!selected || !window.confirm(`Delete ${selected.name?.englishName || selected.id}? The user will be moved to the recycle bin.`)) return;
+    try {
+      await deleteUser(selected.id).unwrap();
+      toast.success(`${selected.user?.role || "User"} moved to the recycle bin`);
+      setSelected(null);
+      setIsEditing(false);
+      await refetch();
+    } catch (error) {
+      toast.error(apiErrorMessage(error, "Could not delete this user"));
+    }
   };
 
   return <section className="space-y-3 py-2 sm:py-3">
@@ -195,9 +256,9 @@ const UniversalUserManagement = ({ initialRole = "student" }: { initialRole?: st
       <div className="flex items-center justify-between border-t border-blue-200/15 p-3 text-xs text-blue-100/60"><span>Showing {filteredUsers.length ? (page - 1) * pageSize + 1 : 0} to {Math.min(page * pageSize, filteredUsers.length)} of {filteredUsers.length}</span><div className="flex gap-2"><DashboardButton tone="muted" disabled={page === 1} onClick={() => setPage((value) => value - 1)}>Previous</DashboardButton><span className="grid min-w-9 place-items-center rounded-lg bg-white/10 px-2">{page}/{totalPages}</span><DashboardButton tone="muted" disabled={page === totalPages} onClick={() => setPage((value) => value + 1)}>Next</DashboardButton></div></div>
     </GlassPanel>
 
-    {isCreating && <div className="fixed inset-0 z-[70] flex items-end justify-center bg-slate-950/70 backdrop-blur-md sm:items-center sm:p-4" onMouseDown={(event) => event.target === event.currentTarget && setIsCreating(false)}><GlassPanel className="flex max-h-[94dvh] w-full max-w-5xl flex-col rounded-b-none p-4 sm:rounded-2xl sm:p-5"><div className="mb-4 flex items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-wider text-cyan-200/70">New {role}</p><h2 className="text-xl font-black capitalize text-white">Add {role}</h2><p className="text-xs text-blue-100/55">Complete the role-specific fields below.</p></div><button className="text-2xl text-blue-100/70 hover:text-white" onClick={() => setIsCreating(false)} aria-label="Close">×</button></div><div className="overflow-y-auto pr-1"><DynamicUserFields value={draft} onChange={setDraft} /></div><div className="mt-4 flex justify-end gap-2 border-t border-blue-200/15 pt-4"><DashboardButton tone="muted" onClick={() => setIsCreating(false)}>Cancel</DashboardButton><DashboardButton disabled={createState.isLoading} onClick={createNewUser}>{createState.isLoading ? "Creating..." : `Add ${role}`}</DashboardButton></div></GlassPanel></div>}
+    {isCreating && <div className="fixed inset-0 z-[70] flex items-end justify-center bg-slate-950/70 backdrop-blur-md sm:items-center sm:p-4" onMouseDown={(event) => event.target === event.currentTarget && !imageUploading && setIsCreating(false)}><GlassPanel className="flex max-h-[94dvh] w-full max-w-5xl flex-col rounded-b-none p-4 sm:rounded-2xl sm:p-5"><div className="mb-4 flex items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-wider text-cyan-200/70">New {role}</p><h2 className="text-xl font-black capitalize text-white">Add {role}</h2><p className="text-xs text-blue-100/55">Complete the role-specific fields below.</p></div><button disabled={imageUploading} className="text-2xl text-blue-100/70 hover:text-white disabled:opacity-40" onClick={() => setIsCreating(false)} aria-label="Close">×</button></div><div className="overflow-y-auto pr-1"><DynamicUserFields value={draft} onChange={setDraft} onUploadStateChange={setImageUploading} /></div><div className="mt-4 flex justify-end gap-2 border-t border-blue-200/15 pt-4"><DashboardButton tone="muted" disabled={imageUploading} onClick={() => setIsCreating(false)}>Cancel</DashboardButton><DashboardButton disabled={createState.isLoading || imageUploading} onClick={createNewUser}>{imageUploading ? "Uploading image..." : createState.isLoading ? "Creating..." : `Add ${role}`}</DashboardButton></div></GlassPanel></div>}
 
-    {selected && <div className="fixed inset-0 z-[70] flex items-end justify-center bg-slate-950/70 backdrop-blur-md sm:items-center sm:p-4" onMouseDown={(event) => event.target === event.currentTarget && setSelected(null)}><GlassPanel className="flex max-h-[94dvh] w-full max-w-5xl flex-col rounded-b-none p-4 sm:rounded-2xl sm:p-5"><div className="mb-4 flex items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-wider text-cyan-200/70">{selected.user?.role} profile</p><h2 className="text-xl font-black text-white">{selected.name?.englishName || selected.name?.bengaliName || selected.id}</h2><p className="text-xs text-blue-100/55">User ID: {selected.id}</p></div><button className="text-2xl text-blue-100/70 hover:text-white" onClick={() => setSelected(null)} aria-label="Close">×</button></div><div className="overflow-y-auto pr-1">{isEditing ? <DynamicUserFields value={draft} onChange={setDraft} /> : <UserDetails user={selected} />}</div><div className="mt-4 flex flex-wrap justify-end gap-2 border-t border-blue-200/15 pt-4">{isEditing ? <><DashboardButton tone="muted" onClick={() => { setDraft(editableProfile(selected)); setIsEditing(false); }}>Cancel edit</DashboardButton><DashboardButton disabled={updateState.isLoading} onClick={save}>{updateState.isLoading ? "Saving..." : "Save changes"}</DashboardButton></> : <><DashboardButton tone="muted" disabled={resetState.isLoading} onClick={resetSelectedPassword}>{resetState.isLoading ? "Resetting..." : "Reset password"}</DashboardButton><DashboardButton onClick={() => setIsEditing(true)}>Update profile</DashboardButton></>}</div></GlassPanel></div>}
+    {selected && <div className="fixed inset-0 z-[70] flex items-end justify-center bg-slate-950/70 backdrop-blur-md sm:items-center sm:p-4" onMouseDown={(event) => event.target === event.currentTarget && !imageUploading && setSelected(null)}><GlassPanel className="flex max-h-[94dvh] w-full max-w-5xl flex-col rounded-b-none p-4 sm:rounded-2xl sm:p-5"><div className="mb-4 flex items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-wider text-cyan-200/70">{selected.user?.role} profile</p><h2 className="text-xl font-black text-white">{selected.name?.englishName || selected.name?.bengaliName || selected.id}</h2><p className="text-xs text-blue-100/55">User ID: {selected.id}</p></div><button disabled={imageUploading} className="text-2xl text-blue-100/70 hover:text-white disabled:opacity-40" onClick={() => setSelected(null)} aria-label="Close">×</button></div><div className="overflow-y-auto pr-1">{isEditing ? <DynamicUserFields value={draft} onChange={setDraft} onUploadStateChange={setImageUploading} /> : <UserDetails user={selected} />}</div><div className="mt-4 flex flex-wrap justify-end gap-2 border-t border-blue-200/15 pt-4">{isEditing ? <><DashboardButton tone="muted" disabled={imageUploading} onClick={() => { setDraft(editableProfile(selected)); setIsEditing(false); }}>Cancel edit</DashboardButton><DashboardButton disabled={updateState.isLoading || imageUploading} onClick={save}>{imageUploading ? "Uploading image..." : updateState.isLoading ? "Saving..." : "Save changes"}</DashboardButton></> : <><DashboardButton tone="danger" disabled={deleteState.isLoading || selected.user?.isDeleted} onClick={deleteSelectedUser}>{deleteState.isLoading ? "Deleting..." : "Delete user"}</DashboardButton><DashboardButton tone="muted" disabled={resetState.isLoading} onClick={resetSelectedPassword}>{resetState.isLoading ? "Resetting..." : "Reset password"}</DashboardButton><DashboardButton onClick={() => setIsEditing(true)}>Update profile</DashboardButton></>}</div></GlassPanel></div>}
   </section>;
 };
 

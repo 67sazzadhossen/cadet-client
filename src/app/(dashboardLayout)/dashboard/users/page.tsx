@@ -6,7 +6,7 @@ const UsersPage = async ({ searchParams }: { searchParams: Promise<{ role?: stri
   if (!["student", "teacher", "admin", "accountant"].includes(role || "")) {
     redirect("/dashboard/users?role=student");
   }
-  return <UniversalUserManagement initialRole={role} />;
+  return <UniversalUserManagement key={role} initialRole={role} />;
 };
 
 export default UsersPage;

@@ -15,7 +15,7 @@ import {
   useSemesterFeeReportsQuery,
   useSaveSemesterPaymentInfoMutation,
 } from "@/redux/features/payment/paymentApi";
-import toast, { Toaster } from "react-hot-toast"; // 🌟 টোস্ট ইমপোর্ট করা হলো
+import toast from "react-hot-toast";
 
 interface StudentReport {
   studentId: string;
@@ -117,7 +117,6 @@ const SemesterFeeReports = () => {
   return (
     <div className="p-6 bg-gray-50 min-h-screen relative">
       {/* 🌟 টোস্ট নোটিফিকেশন কন্টেইনার হোল্ডার */}
-      <Toaster position="top-center" reverseOrder={false} />
 
       {/* ৫. পার্পল হেডার ব্যানার */}
       <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 text-white flex justify-between items-center mb-6 shadow-md">
