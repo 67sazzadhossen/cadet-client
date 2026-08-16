@@ -1,0 +1,168 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+@theme {
+  /* Tailwind-কে আধুনিক oklch/lab এর বদলে srgb কালার ফরম্যাট ব্যবহার করতে বাধ্য করবে */
+  --color-space: srgb;
+}
+
+.dashboard-theme {
+  --dashboard-blue: 37 99 235;
+  min-height: 100vh;
+  color: #eff6ff;
+  background:
+    radial-gradient(circle at 12% 10%, rgba(239, 68, 68, 0.24), transparent 20rem),
+    radial-gradient(circle at 88% 82%, rgba(220, 38, 38, 0.2), transparent 22rem),
+    linear-gradient(135deg, #07152f 0%, #0a2a67 46%, #0752a8 100%);
+}
+
+.dashboard-accent-ball {
+  position: fixed;
+  z-index: 0;
+  width: 18rem;
+  height: 18rem;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: rgba(239, 68, 68, 0.34);
+  filter: blur(85px);
+}
+
+.dashboard-glass {
+  border: 1px solid rgba(191, 219, 254, 0.2);
+  border-radius: 1rem;
+  background: linear-gradient(145deg, rgba(30, 91, 190, 0.34), rgba(8, 29, 73, 0.52));
+  box-shadow: 0 18px 48px rgba(2, 12, 36, 0.24), inset 0 1px rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.dashboard-input {
+  width: 100%;
+  border: 1px solid rgba(147, 197, 253, 0.3);
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.8rem;
+  color: #eff6ff;
+  background: rgba(3, 20, 54, 0.56);
+  outline: none;
+}
+
+.dashboard-input:focus {
+  border-color: rgba(147, 197, 253, 0.85);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.dashboard-input option { color: #0f172a; background: #eff6ff; }
+
+.dashboard-button {
+  border-radius: 0.7rem;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: white;
+  transition: transform 160ms ease, filter 160ms ease;
+}
+.dashboard-button:hover { transform: translateY(-1px); filter: brightness(1.12); }
+.dashboard-button:disabled { cursor: not-allowed; opacity: 0.55; }
+.dashboard-button-primary { background: linear-gradient(135deg, #2563eb, #38bdf8); }
+.dashboard-button-success { background: linear-gradient(135deg, #059669, #22c55e); }
+.dashboard-button-danger { background: linear-gradient(135deg, #b91c1c, #ef4444); }
+.dashboard-button-muted { background: rgba(15, 23, 42, 0.58); border: 1px solid rgba(191, 219, 254, 0.2); }
+
+/* Common visual language for legacy feature pages. Print/PDF canvases opt out. */
+.dashboard-content > div:not(.print-container),
+.dashboard-content .dashboard-page { color: #eff6ff; }
+.dashboard-content .dashboard-page table { width: 100%; color: #eff6ff; }
+.dashboard-content .dashboard-page thead { background: rgba(3, 20, 54, .82); }
+.dashboard-content .dashboard-page th { color: #bfdbfe; font-weight: 700; }
+.dashboard-content .dashboard-page td,
+.dashboard-content .dashboard-page th { border-color: rgba(147, 197, 253, .14); }
+.dashboard-content .dashboard-page tbody tr { background: rgba(8, 29, 73, .28); }
+.dashboard-content .dashboard-page tbody tr:hover { background: rgba(37, 99, 235, .2); }
+.dashboard-content .dashboard-page input,
+.dashboard-content .dashboard-page select,
+.dashboard-content .dashboard-page textarea { color: #eff6ff; background: rgba(3, 20, 54, .62); border-color: rgba(147, 197, 253, .3); }
+.dashboard-content .dashboard-page select option { color: #0f172a; background: #eff6ff; }
+.dashboard-content .dashboard-page input::placeholder,
+.dashboard-content .dashboard-page textarea::placeholder { color: rgba(219, 234, 254, .55); }
+.dashboard-toolbar > * { min-width: 8rem; flex: 1 1 9rem; }
+.dashboard-toolbar > button { flex: 0 0 auto; min-width: auto; }
+.dashboard-page .result-card,
+.dashboard-page .a4-page,
+.dashboard-page .seat-plan-page { color: #111827; }
+.dashboard-page .result-card table,
+.dashboard-page .a4-page table,
+.dashboard-page .seat-plan-page table { color: #111827; }
+.dashboard-page .result-card thead,
+.dashboard-page .result-card tbody tr,
+.dashboard-page .a4-page thead,
+.dashboard-page .a4-page tbody tr,
+.dashboard-page .seat-plan-page thead,
+.dashboard-page .seat-plan-page tbody tr { background: white; }
+.fee-dashboard .bg-white,
+.fee-dashboard .bg-gray-50,
+.fee-dashboard .bg-gray-100 {
+  background: linear-gradient(145deg, rgba(30, 91, 190, .28), rgba(8, 29, 73, .5));
+}
+.fee-dashboard [class*="text-gray-"] { color: #dbeafe; }
+.fee-dashboard table tbody tr,
+.fee-dashboard table td { color: #eff6ff; border-color: rgba(147, 197, 253, .14); }
+.fee-dashboard table tbody tr:hover { background: rgba(37, 99, 235, .18); }
+.fee-student-table { color: #eff6ff; }
+.fee-student-table thead {
+  background: linear-gradient(135deg, rgba(30, 64, 175, .98), rgba(14, 116, 144, .94));
+}
+.fee-student-table th {
+  color: #dbeafe;
+  border-right: 1px solid rgba(191, 219, 254, .13);
+  border-bottom: 1px solid rgba(191, 219, 254, .2);
+}
+.fee-student-table td {
+  border-right: 1px solid rgba(191, 219, 254, .08);
+  border-bottom: 1px solid rgba(191, 219, 254, .11);
+  background: rgba(8, 29, 73, .3);
+}
+.fee-student-table tbody tr:nth-child(even) td { background: rgba(30, 64, 175, .1); }
+.fee-student-table tbody tr:hover td { background: rgba(59, 130, 246, .2); }
+.fee-student-table .fee-student-column {
+  background: linear-gradient(145deg, rgba(10, 36, 87, .98), rgba(16, 54, 119, .98));
+  box-shadow: 8px 0 18px rgba(2, 12, 36, .18);
+}
+.fee-student-table thead .fee-student-column {
+  background: linear-gradient(135deg, #1d4ed8, #075985);
+}
+.fee-student-table .fee-current-month {
+  background: rgba(96, 165, 250, .3);
+  box-shadow: inset 0 -3px #7dd3fc;
+}
+.fee-student-table .fee-summary-row td {
+  background: rgba(15, 23, 42, .78);
+  border-top: 1px solid rgba(147, 197, 253, .28);
+}
+.fee-table-scroll {
+  scrollbar-color: rgba(96, 165, 250, .85) rgba(3, 20, 54, .6);
+  scrollbar-width: thin;
+}
+.fee-table-scroll::-webkit-scrollbar { width: 10px; height: 10px; }
+.fee-table-scroll::-webkit-scrollbar-track { background: rgba(3, 20, 54, .6); }
+.fee-table-scroll::-webkit-scrollbar-thumb { background: rgba(96, 165, 250, .8); border-radius: 999px; }
+
+@media print {
+  .dashboard-theme { color: #111827; background: white; }
+  .dashboard-accent-ball, .no-print { display: none !important; }
+}
+
+@media (max-width: 640px) {
+  .dashboard-accent-ball { width: 11rem; height: 11rem; filter: blur(60px); }
+}
