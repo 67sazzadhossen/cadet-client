@@ -62,6 +62,7 @@ export const processTableData = (reportData: any): StudentDataType[] => {
       sessionPaid: sessionInfo?.paidAmount || 0,
       sessionDue: sessionInfo?.dueAmount || 0,
       sessionStatus: sessionInfo?.status || "due",
+      sessionPaymentHistory: sessionInfo?.paymentHistory || [],
       monthlyDue: monthlyInfo?.totalDue || 0,
       totalDue: studentGroup.totalDue || 0,
       monthlyPayments: monthlyPaymentsMap,

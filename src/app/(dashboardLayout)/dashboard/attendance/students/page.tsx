@@ -1,7 +1,7 @@
-import React from "react";
+import RoleAttendance from "@/pages/Admin/Attendance/RoleAttendance";
 
 const page = () => {
-  return <div>students</div>;
+  return <RoleAttendance role="student" />;
 };
 
 export default page;

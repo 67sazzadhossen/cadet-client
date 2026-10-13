@@ -1,15 +1,17 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getMessaging, isSupported, Messaging } from "firebase/messaging";
 const firebaseConfig = {
-  apiKey: "AIzaSyCKBO1qOPL9wKvN3iPbCVVDzEbVAEMJV_k",
-  authDomain: "gscam-29846.firebaseapp.com",
-  projectId: "gscam-29846",
-  storageBucket: "gscam-29846.firebasestorage.app",
-  messagingSenderId: "740534750751",
-  appId: "1:740534750751:web:96770d827c51f144e18f2a",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const app = Object.values(firebaseConfig).every(Boolean)
+  ? !getApps().length ? initializeApp(firebaseConfig) : getApp()
+  : null;
 
 export { app };
 
@@ -17,6 +19,7 @@ export const getFirebaseMessaging = async (): Promise<Messaging | null> => {
   if (typeof window === "undefined") {
     return null;
   }
+  if (!app) return null;
 
   const supported = await isSupported();
 

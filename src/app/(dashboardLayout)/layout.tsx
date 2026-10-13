@@ -19,7 +19,9 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <PrivateRoute>
-      <div className="flex h-screen bg-gray-50">
+      <div className="dashboard-theme relative flex h-dvh overflow-hidden">
+        <span className="dashboard-accent-ball -left-24 -top-20" />
+        <span className="dashboard-accent-ball -bottom-24 right-0" />
         {/* Sidebar with state */}
         <Sidebar
           isOpen={isSidebarOpen}
@@ -27,21 +29,21 @@ const Layout = ({ children }: LayoutProps) => {
         />
 
         {/* Main Content */}
-        <main className="flex-1 flex flex-col min-w-0 h-full">
+        <main className="relative z-10 flex h-full min-w-0 flex-1 flex-col">
           {/* Navbar */}
-          <nav className="bg-white shadow-sm border-b border-gray-200 h-16 flex items-center px-4 lg:px-6">
+          <nav className="m-2 flex h-14 items-center rounded-2xl border border-blue-200/20 bg-blue-950/35 px-3 shadow-xl backdrop-blur-xl sm:m-3 lg:px-5">
             {/* Menu Button - Left side */}
             <button
               onClick={toggleSidebar}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors mr-3"
+              className="mr-3 rounded-lg p-2 text-blue-100 transition-colors hover:bg-white/10 lg:hidden"
               aria-label="Toggle menu"
             >
-              <FiMenu className="w-6 h-6 text-gray-600" />
+              <FiMenu className="h-6 w-6" />
             </button>
 
             {/* Title - Centered on mobile, left aligned on desktop */}
             <div className="flex-1 text-center lg:text-left">
-              <h1 className="text-lg lg:text-xl font-bold text-gray-800 uppercase tracking-wide">
+              <h1 className="truncate text-sm font-bold uppercase tracking-[0.12em] text-blue-50 sm:text-lg lg:text-xl">
                 Gazipur Shaheen Cadet Academy
               </h1>
             </div>
@@ -53,8 +55,8 @@ const Layout = ({ children }: LayoutProps) => {
           </nav>
 
           {/* Page Content */}
-          <div className="flex-1 overflow-auto p-4 lg:p-6 bg-gray-50">
-            <div className="">{children}</div>
+          <div className="dashboard-content relative z-10 flex-1 overflow-auto px-2 pb-3 sm:px-3 lg:px-5 lg:pb-5">
+            <div className="mx-auto w-full max-w-[1800px]">{children}</div>
           </div>
         </main>
       </div>

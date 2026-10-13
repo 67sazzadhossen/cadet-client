@@ -4,14 +4,13 @@ import {
   useFeeReportsQuery,
   useSavePaymentInfoMutation,
 } from "@/redux/features/payment/paymentApi";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Spin, Modal, message, InputNumber } from "antd";
 import {
   FiFilter,
   FiSearch,
   FiX,
   FiDownload,
-  FiPrinter,
   FiUsers,
   FiCalendar,
   FiTrendingUp,
@@ -23,7 +22,6 @@ import { HiOutlineAcademicCap } from "react-icons/hi";
 import { FaGraduationCap, FaMoneyBillWave, FaDownload } from "react-icons/fa";
 import dayjs from "dayjs";
 import { getInvoiceHTML } from "@/components/Invoice/Invoice";
-import * as XLSX from "xlsx";
 import {
   MonthlyPayment,
   PaymentModalData,
@@ -38,6 +36,8 @@ import {
 } from "@/const/index.const";
 import { processTableData } from "@/utils/processTableData";
 import { handleExportExcel } from "@/utils/handleExport";
+import { useAppSelector } from "@/redux/hook";
+import { selectCurrentUser } from "@/redux/features/auth/authSlice";
 
 // Month names array
 
@@ -46,6 +46,10 @@ import { handleExportExcel } from "@/utils/handleExport";
 // Version options
 
 const FeeReports = () => {
+  const currentUser = useAppSelector(selectCurrentUser) as { role?: string } | null;
+  const isAccountant = currentUser?.role === "accountant";
+  const pageSize = 40;
+  const [page, setPage] = useState(1);
   const [selectedYear, setSelectedYear] = useState<string>(
     dayjs().format("YYYY"),
   );
@@ -190,11 +194,74 @@ const FeeReports = () => {
     }
   };
 
+  const printBackendReceipt = (response: any) => {
+    // sendResponse wraps the service payload; always unwrap the saved record
+    // instead of rebuilding financial values from stale table state.
+    const receipt =
+      response?.data?.data?.data || response?.data?.data || response?.data;
+    const student = receipt?.student;
+    const payment = receipt?.paymentInfo;
+    if (!student || !payment) {
+      message.error("Payment saved, but the backend receipt data is missing");
+      return;
+    }
+
+    printInvoice(
+      {
+        id: student.id,
+        nameEnglish: student.name?.englishName || "N/A",
+        nameBangla: student.name?.bengaliName || "N/A",
+        class: student.currentClass,
+        rollNo: student.rollNo,
+      },
+      {
+        month: payment.month || "Session Fee",
+        amount: payment.breakdown?.total ?? payment.breakdown?.totalAmount ?? payment.paidAmount,
+        paidAmount: payment.paidAmount,
+        due: payment.due,
+        status: payment.status,
+        invoiceNo: payment.invoiceNo,
+        date: payment.date,
+        breakdown: payment.breakdown,
+      },
+      payment.invoiceNo,
+    );
+  };
+
   const handlePrintInvoice = (student: any, payment: MonthlyPayment) => {
     printInvoice(
       student,
       payment,
       payment.invoiceNo || `INV-${student.id}-${payment.month}`,
+    );
+  };
+
+  const handleSessionReceipt = (student: StudentDataType) => {
+    const payment = student.sessionPaymentHistory?.[0];
+    if (!payment?.invoiceNo) {
+      message.error("No backend receipt record was found for this payment");
+      return;
+    }
+    printInvoice(
+      student,
+      {
+        month: "Session Fee",
+        amount: payment.totalAmount || payment.paidAmount,
+        paidAmount: payment.paidAmount,
+        due: payment.due,
+        status: payment.status as "paid" | "due",
+        invoiceNo: payment.invoiceNo,
+        date: payment.date,
+        breakdown: {
+          sessionFee: payment.sessionFee || 0,
+          admissionFee: payment.admissionFee || 0,
+          total: payment.totalAmount || 0,
+          totalAmount: payment.totalAmount || 0,
+          paidNow: payment.paidAmount,
+          dueAmount: payment.due,
+        },
+      },
+      payment.invoiceNo,
     );
   };
 
@@ -258,20 +325,8 @@ const FeeReports = () => {
       if (response.success) {
         message.success(response.message);
         setPaymentModal({ ...paymentModal, isOpen: false });
-
+        printBackendReceipt(response);
         await refetch();
-
-        const student = tableData.find((s) => s.id === paymentModal.studentId);
-        if (student) {
-          const payment = student.monthlyPayments[paymentModal.month];
-          if (payment) {
-            const invoiceNo =
-              response.data?.paymentInfo?.invoiceNo ||
-              response.paymentInfo?.invoiceNo ||
-              `INV-${paymentModal.studentId}-${paymentModal.month}`;
-            // printInvoice(student, payment, invoiceNo);
-          }
-        }
       } else {
         message.error(response.message || "Payment failed");
       }
@@ -311,33 +366,8 @@ const FeeReports = () => {
       if (response.success) {
         message.success(response.message);
         setSessionPaymentModal({ ...sessionPaymentModal, isOpen: false });
+        printBackendReceipt(response);
         await refetch();
-
-        const student = tableData.find(
-          (s) => s.id === sessionPaymentModal.studentId,
-        );
-        if (student && response.data?.paymentInfo?.breakdown?.isFullyPaid) {
-          const sessionPayment: MonthlyPayment = {
-            month: "Session Fee",
-            amount: paymentAmount,
-            paidAmount: paymentAmount,
-            status: "paid",
-            due: 0,
-            invoiceNo:
-              response.data?.paymentInfo?.invoiceNo ||
-              `INV-ANN-${sessionPaymentModal.studentId}-${selectedYear}`,
-            breakdown: {
-              sessionFee: student.sessionFee,
-              admissionFee: student.admissionFee,
-              total: sessionPaymentModal.totalAmount,
-            },
-          };
-          printInvoice(
-            student,
-            sessionPayment,
-            sessionPayment.invoiceNo as string,
-          );
-        }
       } else {
         message.error(response.message || "Session fee payment failed");
       }
@@ -359,6 +389,21 @@ const FeeReports = () => {
     setQuerySearch("");
   };
 
+  const tableData = processTableData(reportData);
+  const totalPages = Math.max(1, Math.ceil(tableData.length / pageSize));
+  const visibleTableData = tableData.slice(
+    (page - 1) * pageSize,
+    page * pageSize,
+  );
+
+  useEffect(() => {
+    setPage(1);
+  }, [selectedYear, selectedClass, selectedVersion, selectedCadet, querySearch]);
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
   if (isLoadingState) {
     return (
       <div className="flex justify-center items-center h-96 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl">
@@ -378,7 +423,6 @@ const FeeReports = () => {
     );
   }
 
-  const tableData = processTableData(reportData);
   const activeFilterCount = [
     selectedClass,
     selectedVersion,
@@ -389,7 +433,7 @@ const FeeReports = () => {
   const currentMonthIndex = months.indexOf(currentMonthName);
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen p-4 md:p-6">
+    <div className="dashboard-page fee-dashboard min-h-screen bg-transparent p-2 md:p-4">
       <div className="max-w-[1600px] mx-auto relative">
         {/* Header Section */}
         <div className="bg-gradient-to-r hidden from-blue-600 via-purple-600 to-indigo-600 rounded-2xl shadow-lg mb-6 overflow-hidden">
@@ -409,7 +453,7 @@ const FeeReports = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
+        {!isAccountant && <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between">
               <div>
@@ -518,10 +562,10 @@ const FeeReports = () => {
               Export
             </button>
           </div>
-        </div>
+        </div>}
 
         {/* Filter & Search Section */}
-        <div className="bg-white rounded-xl shadow-md mb-6 overflow-hidden">
+        <div className="dashboard-glass mb-4 overflow-hidden">
           {/* Desktop Filters */}
           <div className="hidden md:block p-5 border-b border-gray-100">
             <div className="flex flex-wrap items-end gap-3">
@@ -532,7 +576,7 @@ const FeeReports = () => {
                 <select
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="dashboard-input text-sm"
                 >
                   {[2024, 2025, 2026].map((year) => (
                     <option key={year} value={year}>
@@ -549,7 +593,7 @@ const FeeReports = () => {
                 <select
                   value={selectedClass}
                   onChange={(e) => setSelectedClass(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="dashboard-input text-sm"
                 >
                   <option value="">All Classes</option>
                   {classOptions.map((cls) => (
@@ -567,7 +611,7 @@ const FeeReports = () => {
                 <select
                   value={selectedVersion}
                   onChange={(e) => setSelectedVersion(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="dashboard-input text-sm"
                 >
                   {versionOptions.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -584,7 +628,7 @@ const FeeReports = () => {
                 <select
                   value={selectedCadet}
                   onChange={(e) => setSelectedCadet(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="dashboard-input text-sm"
                 >
                   {studentTypeOptions.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -605,7 +649,7 @@ const FeeReports = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.currentTarget.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="dashboard-input flex-1 text-sm"
                   />
                   <button
                     onClick={handleSearch}
@@ -765,13 +809,13 @@ const FeeReports = () => {
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-md overflow-hidden relative">
-            <div className="bg-white rounded-xl shadow-md relative h-[800px] overflow-auto">
-              <table className="w-full border-collapse">
+          <div className="dashboard-glass relative overflow-hidden">
+            <div className="fee-table-scroll relative max-h-[calc(100vh-15rem)] min-h-96 overflow-auto">
+              <table className="fee-student-table w-full min-w-[1500px] border-separate border-spacing-0">
                 <thead className="sticky top-0 z-30">
-                  <tr className="bg-gradient-to-r from-blue-600 to-indigo-600">
+                  <tr>
                     <th
-                      className="sticky left-0 z-40 bg-indigo-600 px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider border-r border-blue-500"
+                      className="fee-student-column sticky left-0 z-40 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider"
                       style={{ minWidth: "200px" }}
                     >
                       Student Info
@@ -779,10 +823,10 @@ const FeeReports = () => {
                     {months.map((month, idx) => (
                       <th
                         key={month}
-                        className={`px-2 py-3 text-center text-xs font-semibold text-white uppercase tracking-wider border-r border-blue-500 whitespace-nowrap ${
+                        className={`px-2 py-3 text-center text-xs font-semibold uppercase tracking-wider whitespace-nowrap ${
                           idx === currentMonthIndex
-                            ? "bg-indigo-600"
-                            : "bg-gradient-to-r from-blue-600 to-indigo-600"
+                            ? "fee-current-month"
+                            : ""
                         }`}
                         style={{ minWidth: "75px" }}
                       >
@@ -790,31 +834,31 @@ const FeeReports = () => {
                       </th>
                     ))}
                     <th
-                      className="px-3 py-3 text-center text-xs font-semibold text-white uppercase tracking-wider border-r border-purple-500 bg-purple-600"
+                      className="px-3 py-3 text-center text-xs font-semibold uppercase tracking-wider"
                       style={{ minWidth: "140px" }}
                     >
                       Session Fee
                     </th>
                     <th
-                      className="px-3 py-3 text-center text-xs font-semibold text-white uppercase tracking-wider bg-red-600"
+                      className="px-3 py-3 text-center text-xs font-semibold uppercase tracking-wider text-red-100"
                       style={{ minWidth: "90px" }}
                     >
                       Total Due
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {tableData.map((student, index) => (
+                <tbody>
+                  {visibleTableData.map((student) => (
                     <tr key={student.key}>
-                      <td className="sticky left-0 z-20 bg-white px-4 py-3 border-r border-gray-100">
+                      <td className="fee-student-column sticky left-0 z-20 px-4 py-3">
                         <div className="flex flex-col">
-                          <span className="font-semibold text-gray-800">
+                          <span className="font-semibold text-white">
                             {student.nameEnglish}
                           </span>
-                          <span className="text-gray-500 text-xs">
+                          <span className="text-blue-100/65 text-xs">
                             ID: {student.id} | Roll: {student.rollNo}
                           </span>
-                          <span className="text-gray-500 text-xs">
+                          <span className="text-blue-100/65 text-xs">
                             Class: {student.class} |{" "}
                             {student.version === "bangla" ? "বাংলা" : "English"}
                           </span>
@@ -830,28 +874,28 @@ const FeeReports = () => {
                         return (
                           <td
                             key={month}
-                            className="px-2 py-3 text-center border-r border-gray-100"
+                            className="px-2 py-3 text-center"
                           >
                             {payment?.status === "paid" ? (
                               <div className="flex flex-col items-center gap-1">
-                                <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                                <span className="rounded-full bg-emerald-400/15 px-2 py-0.5 text-xs font-semibold text-emerald-100">
                                   Paid
                                 </span>
-                                <span className="text-gray-600 text-xs">
+                                <span className="text-blue-100/70 text-xs">
                                   ৳{payment.paidAmount}
                                 </span>
                                 <button
                                   onClick={() =>
                                     handlePrintInvoice(student, payment)
                                   }
-                                  className="mt-1 px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded-md hover:bg-blue-100 transition-colors flex items-center gap-1"
+                                  className="mt-1 flex items-center gap-1 rounded-md bg-blue-400/15 px-2 py-1 text-xs text-blue-100 transition hover:bg-blue-400/25"
                                 >
                                   <FaDownload className="text-xs" /> Receipt
                                 </button>
                               </div>
                             ) : payment?.amount > 0 ? (
                               <div className="flex flex-col items-center gap-1">
-                                <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs font-medium">
+                                <span className="rounded-full bg-red-400/15 px-2 py-0.5 text-xs font-semibold text-red-100">
                                   ৳{payment.amount}
                                 </span>
                                 <button
@@ -869,14 +913,14 @@ const FeeReports = () => {
                                 </button>
                               </div>
                             ) : (
-                              <span className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full text-xs">
+                              <span className="rounded-full bg-slate-400/15 px-2 py-0.5 text-xs text-blue-100/60">
                                 No Fee
                               </span>
                             )}
                           </td>
                         );
                       })}
-                      <td className="px-3 py-3 text-center border-r border-gray-100">
+                      <td className="px-3 py-3 text-center">
                         {student.sessionTotalRequired > 0 ? (
                           <div className="flex flex-col items-center gap-1">
                             {student.sessionStatus === "paid" ? (
@@ -885,22 +929,7 @@ const FeeReports = () => {
                                   Paid
                                 </span>
                                 <button
-                                  onClick={() => {
-                                    const sessionPayment: MonthlyPayment = {
-                                      month: "Session Fee",
-                                      amount: student.sessionTotalRequired,
-                                      paidAmount: student.sessionPaid,
-                                      status: "paid",
-                                      due: 0,
-                                      invoiceNo: `INV-ANN-${student.id}-${selectedYear}`,
-                                      breakdown: {
-                                        sessionFee: student.sessionFee || 0,
-                                        admissionFee: student.admissionFee || 0,
-                                        total: student.sessionTotalRequired,
-                                      },
-                                    };
-                                    handlePrintInvoice(student, sessionPayment);
-                                  }}
+                                  onClick={() => handleSessionReceipt(student)}
                                   className="mt-1 px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded-md hover:bg-blue-100 transition-colors flex items-center gap-1"
                                 >
                                   <FaDownload className="text-xs" /> Receipt
@@ -924,6 +953,14 @@ const FeeReports = () => {
                                 >
                                   Pay Now
                                 </button>
+                                {!!student.sessionPaymentHistory?.length && (
+                                  <button
+                                    onClick={() => handleSessionReceipt(student)}
+                                    className="mt-1 flex items-center gap-1 rounded-md bg-blue-500/20 px-2 py-1 text-xs text-blue-100 hover:bg-blue-500/30"
+                                  >
+                                    <FaDownload className="text-xs" /> Latest Receipt
+                                  </button>
+                                )}
                               </>
                             )}
                           </div>
@@ -933,19 +970,19 @@ const FeeReports = () => {
                           </span>
                         )}
                       </td>
-                      <td className="px-3 py-3 text-center font-bold text-red-600">
+                      <td className="px-3 py-3 text-center font-bold text-red-200">
                         ৳{student.totalDue.toLocaleString()}
                       </td>
                     </tr>
                   ))}
-                  <tr className="bg-gradient-to-r from-gray-100 to-gray-200 font-bold">
-                    <td className="sticky left-0 bg-inherit px-4 py-3 border-r border-gray-200">
-                      <span className="text-gray-700">Total Summary</span>
+                  {!isAccountant && <tr className="fee-summary-row font-bold">
+                    <td className="fee-student-column sticky left-0 px-4 py-3">
+                      <span className="text-blue-50">Total Summary</span>
                     </td>
-                    {months.map(() => (
+                    {months.map((month) => (
                       <td
-                        key={Math.random()}
-                        className="px-2 py-3 text-center border-r border-gray-200 text-gray-500"
+                        key={month}
+                        className="px-2 py-3 text-center text-blue-100/40"
                       >
                         -
                       </td>
@@ -956,9 +993,39 @@ const FeeReports = () => {
                     <td className="px-3 py-3 text-center text-red-700 font-bold">
                       ৳{summary.due.overall.total.toLocaleString()}
                     </td>
-                  </tr>
+                  </tr>}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {tableData.length > 0 && (
+          <div className="dashboard-glass mt-3 flex flex-col gap-2 px-4 py-3 text-xs text-blue-100 sm:flex-row sm:items-center sm:justify-between">
+            <span>
+              Showing {(page - 1) * pageSize + 1}–
+              {Math.min(page * pageSize, tableData.length)} of {tableData.length} students
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                disabled={page === 1}
+                onClick={() => setPage((value) => value - 1)}
+                className="dashboard-button dashboard-button-muted disabled:opacity-40"
+              >
+                Previous
+              </button>
+              <span className="min-w-20 text-center">
+                Page {page} / {totalPages}
+              </span>
+              <button
+                type="button"
+                disabled={page === totalPages}
+                onClick={() => setPage((value) => value + 1)}
+                className="dashboard-button dashboard-button-muted disabled:opacity-40"
+              >
+                Next
+              </button>
             </div>
           </div>
         )}

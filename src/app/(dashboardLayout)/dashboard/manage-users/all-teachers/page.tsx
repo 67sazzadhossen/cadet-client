@@ -1,12 +1,5 @@
-import AllTeachers from "@/pages/Admin/AllTeachers/AllTeachers";
-import React from "react";
+import { redirect } from "next/navigation";
 
-const page = () => {
-  return (
-    <div>
-      <AllTeachers />
-    </div>
-  );
-};
+const AllTeachersPage = () => redirect("/dashboard/users?role=teacher");
 
-export default page;
+export default AllTeachersPage;

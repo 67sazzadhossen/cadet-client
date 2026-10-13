@@ -14,6 +14,8 @@ import {
   StudentWisePayment,
   PaymentHistoryData,
 } from "@/types/payment.types";
+import { useAppSelector } from "@/redux/hook";
+import { selectCurrentUser } from "@/redux/features/auth/authSlice";
 
 // Wrapper interface for the actual API response structure
 interface ApiResponseWrapper {
@@ -28,6 +30,8 @@ interface RTKQueryResponse {
 }
 
 const PaymentHistory: React.FC = () => {
+  const currentUser = useAppSelector(selectCurrentUser) as { role?: string } | null;
+  const isAccountant = currentUser?.role === "accountant";
   const [filters, setFilters] = useState<Filters>({
     fromDate: "",
     toDate: "",
@@ -122,21 +126,21 @@ const PaymentHistory: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="dashboard-page min-h-screen bg-transparent p-3 sm:p-5">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">
-          Payment History
+          {isAccountant ? "Current Month Daily Collections" : "Payment History"}
         </h1>
 
         {/* Date Filter Component */}
-        <DateFilter
+        {!isAccountant && <DateFilter
           filters={filters}
           onFilterChange={handleFilterChange}
           onClearFilters={handleClearFilters}
-        />
+        />}
 
         {/* Summary Cards */}
-        {summary && <PaymentSummary summary={summary} />}
+        {!isAccountant && summary && <PaymentSummary summary={summary} />}
 
         {/* Student Wise Payment Table */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">

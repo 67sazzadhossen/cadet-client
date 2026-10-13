@@ -18,8 +18,15 @@ const attendanceApi = baseApi.injectEndpoints({
         },
       }),
     }),
+    getRoleAttendance: builder.query({
+      query: ({ role, month, year }) => ({
+        url: `/attendance/role/${role}`,
+        method: "GET",
+        params: { month, year },
+      }),
+    }),
   }),
 });
 
-export const { useGetMyAttendanceQuery, useGetTeachersAttendanceQuery } =
+export const { useGetMyAttendanceQuery, useGetTeachersAttendanceQuery, useGetRoleAttendanceQuery } =
   attendanceApi;

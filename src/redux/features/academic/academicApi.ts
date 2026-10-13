@@ -1,4 +1,5 @@
 import { baseApi } from "@/redux/api/baseApi";
+import { toQueryString } from "@/lib/queryBuilder";
 const academicApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // নতুন: Add Subject Mutation
@@ -15,17 +16,15 @@ const academicApi = baseApi.injectEndpoints({
       query: (params) => {
         // ডাইনামিক কুয়েরি স্ট্রিং তৈরি করা
         const { search, className, version, isCadet } = params;
-        const queryString = new URLSearchParams();
-
-        if (className) queryString.append("class", className);
-        if (version) queryString.append("version", version);
-        if (isCadet !== undefined)
-          queryString.append("isCadet", isCadet.toString());
-        if (search) queryString.append("search", search);
 
         return {
           method: "GET",
-          url: `/academic/get-subjects?${queryString.toString()}`,
+          url: `/academic/get-subjects${toQueryString({
+            search,
+            class: className,
+            version,
+            isCadet,
+          })}`,
         };
       },
     }),
@@ -137,7 +136,7 @@ const academicApi = baseApi.injectEndpoints({
     getAllExams: builder.query({
       query: (year: string) => ({
         method: "GET",
-        url: `/academic/all-exams${year ? `?year=${year}` : ""}`,
+        url: `/academic/all-exams${toQueryString({ year })}`,
       }),
     }),
 
@@ -170,15 +169,10 @@ const academicApi = baseApi.injectEndpoints({
     getInputMarks: builder.query({
       query: (params) => {
         const { examId, subjectId, year } = params;
-        const queryString = new URLSearchParams();
-
-        if (examId) queryString.append("examId", examId);
-        if (subjectId) queryString.append("subjectId", subjectId);
-        if (year) queryString.append("year", year);
 
         return {
           method: "GET",
-          url: `/academic/input-marks?${queryString.toString()}`,
+          url: `/academic/input-marks${toQueryString({ examId, subjectId, year })}`,
         };
       },
     }),

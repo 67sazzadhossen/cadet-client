@@ -18,6 +18,7 @@ import { TCurrentUser } from "@/types/index.type";
 import { useGetMeQuery } from "@/redux/features/user/userApi";
 import Image from "next/image";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
+import Profile from "@/pages/Dashboard/Profile/Profile";
 
 // Mock data for the dashboard
 const statsData = [
@@ -144,6 +145,10 @@ const DashboardHome = () => {
     return <LoadingAnimation />;
   }
 
+  if (currentUserData?.user?.role === "accountant") {
+    return <Profile />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
       {/* Header */}
@@ -205,8 +210,8 @@ const DashboardHome = () => {
             <div className="flex items-center space-x-2 sm:space-x-3">
               <Image
                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
-                src={currentUserData?.image.url}
-                alt={currentUserData?.name.englishName}
+                src={currentUserData?.image?.url || "/logo.png"}
+                alt={currentUserData?.name?.englishName || "User profile"}
                 height={40}
                 width={40}
               />

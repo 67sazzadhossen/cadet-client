@@ -1,11 +1,5 @@
-import AllStudents from "@/pages/Admin/AllStudents/AllStudents";
+import { redirect } from "next/navigation";
 
-const page = () => {
-  return (
-    <div>
-      <AllStudents />
-    </div>
-  );
-};
+const AllStudentsPage = () => redirect("/dashboard/users?role=student");
 
-export default page;
+export default AllStudentsPage;

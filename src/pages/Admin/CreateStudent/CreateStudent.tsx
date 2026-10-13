@@ -139,7 +139,7 @@ const CreateStudent = () => {
   const [createStudent, { isLoading }] = useCreateStudentMutation();
   const [sameAsFatherPresentAddress, setSameAsFatherPresentAddress] =
     useState(false);
-  const { refetch } = useGetAllStudentsQuery({ page: "1" });
+  const { refetch } = useGetAllStudentsQuery({ page: 1 });
   const [sameAsFatherPermanentAddress, setSameAsFatherPermanentAddress] =
     useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);

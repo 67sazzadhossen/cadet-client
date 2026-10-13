@@ -1,4 +1,5 @@
 import { baseApi } from "@/redux/api/baseApi";
+import { toQueryString, ListQuery } from "@/lib/queryBuilder";
 const studentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createStudent: builder.mutation({
@@ -16,9 +17,9 @@ const studentApi = baseApi.injectEndpoints({
       }),
     }),
     getAllStudents: builder.query({
-      query: (payload) => ({
+      query: (payload: ListQuery = {}) => ({
         method: "GET",
-        url: `/students?page=${payload.page}&search=${payload.search}&class=${payload.class}&version=${payload.version}`,
+        url: `/students${toQueryString(payload)}`,
       }),
     }),
     getLastStudent: builder.query({

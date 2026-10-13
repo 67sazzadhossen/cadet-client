@@ -148,9 +148,9 @@ const SeatPlan = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 pb-10">
+    <div className="dashboard-page min-h-screen bg-transparent pb-10">
       {/* কন্ট্রোল প্যানেল - এই অংশটি প্রিন্টে আসবে না */}
-      <div className="no-print bg-white shadow-md border-b sticky top-0 z-30">
+      <div className="no-print dashboard-glass shadow-md border-b sticky top-0 z-30">
         <div className="px-4 py-4">
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">

@@ -42,6 +42,9 @@ const accountsApi = baseApi.injectEndpoints({
         body: payload, // This will add query parameters
       }),
     }),
+    createExpense: builder.mutation({
+      query: (payload) => ({ url: "/accounts/expenses", method: "POST", body: payload }),
+    }),
   }),
 });
 
@@ -52,4 +55,5 @@ export const {
   useGetCurrentMonthPaymentsMutation,
   useCreateSemesterFeeInfoMutation,
   useGetSemesterFeeInfoQuery, // নতুন কুয়েরি হুক
+  useCreateExpenseMutation,
 } = accountsApi;

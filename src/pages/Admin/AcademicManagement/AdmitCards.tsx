@@ -148,9 +148,9 @@ const AdmitCards = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="dashboard-page min-h-screen bg-transparent">
       {/* Header - Only visible on screen */}
-      <div className="bg-white shadow-md rounded-2xl border-b lg:fixed z-20 to lg:right-10 lg:mt-5 lg:h-screen w-2/10 print:hidden">
+      <div className="dashboard-glass shadow-md rounded-2xl border-b lg:fixed z-20 to lg:right-10 lg:mt-5 lg:h-screen w-2/10 print:hidden">
         <div className="px-4 py-4">
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-2">

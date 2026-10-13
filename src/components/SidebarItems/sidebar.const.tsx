@@ -99,6 +99,14 @@ export const teacherPaths: TSidebarItem[] = [
   },
 ];
 
+export const accountantPaths: TSidebarItem[] = [
+  { name: "Profile", link: "/dashboard/profile", icon: <IoPerson /> },
+  { name: "My Attendance", link: "/dashboard/my-attendance", icon: <BiCalendarCheck /> },
+  { name: "Collect Fee", link: "/dashboard/fee/reports", icon: <FaMoneyBillWave /> },
+  { name: "Daily Collections", link: "/dashboard/accounts/payment-history", icon: <BiSolidReport /> },
+  { name: "Add Expense", link: "/dashboard/accounts/expenses", icon: <IoCash /> },
+];
+
 export const adminPaths: TSidebarItem[] = [
   {
     name: "Overview",
@@ -155,44 +163,38 @@ export const adminPaths: TSidebarItem[] = [
         icon: <MdClass />,
       },
 
+    ],
+  },
+  {
+    name: "Manage Users",
+    icon: <FaUsers />,
+    children: [
       {
-        name: "Subjects",
-        link: "/dashboard/academic/subjects",
-        icon: <MdSubject />,
+        name: "Students",
+        link: "/dashboard/users?role=student",
+        icon: <FaUserGraduate />,
+      },
+      {
+        name: "Teachers",
+        link: "/dashboard/users?role=teacher",
+        icon: <FaChalkboardTeacher />,
+      },
+      {
+        name: "Admins",
+        link: "/dashboard/users?role=admin",
+        icon: <FaUserCog />,
+      },
+      {
+        name: "Accountants",
+        link: "/dashboard/users?role=accountant",
+        icon: <FaMoneyBillWave />,
       },
     ],
   },
   {
-    name: "Manage Students",
-    icon: <FaUsers />,
-    children: [
-      {
-        name: "All Students",
-        link: "/dashboard/manage-students/all-students",
-        icon: <IoPeople />,
-      },
-      {
-        name: "Add Student",
-        link: "/dashboard/manage-students/add-student",
-        icon: <FaUserGraduate />,
-      },
-    ],
-  },
-  {
-    name: "Manage Teachers",
-    icon: <FaUsers />,
-    children: [
-      {
-        name: "All Teachers",
-        link: "/dashboard/manage-teachers/all-teachers",
-        icon: <IoPeople />,
-      },
-      {
-        name: "Add Teacher",
-        link: "/dashboard/manage-teachers/add-teacher",
-        icon: <FaUserGraduate />,
-      },
-    ],
+    name: "Recycle Bin",
+    link: "/dashboard/recycle-bin",
+    icon: <FaExclamationTriangle />,
   },
   {
     name: "Attendance",
@@ -233,21 +235,21 @@ export const adminPaths: TSidebarItem[] = [
     ],
   },
   {
-    name: "Academic Management",
+    name: "Previous Exam System",
     icon: <IoSchool />,
     children: [
       {
-        name: "Create Subject",
+        name: "Create Subject Groups",
         link: "/dashboard/academic/create-subject",
         icon: <MdClass />,
       },
       {
-        name: "Add Subject",
+        name: "Manage Legacy Subjects",
         link: "/dashboard/academic-management",
         icon: <MdClass />,
       },
       {
-        name: "Subjects",
+        name: "Legacy Subject List",
         link: "/dashboard/academic/all-subjects",
         icon: <MdSubject />,
       },
@@ -267,19 +269,19 @@ export const adminPaths: TSidebarItem[] = [
         icon: <BiTime />,
       },
       {
-        name: "Add Mark",
+        name: "Legacy Mark Entry",
         link: "/dashboard/academic/add-mark",
         icon: <BiTime />,
       },
       {
-        name: "Result",
+        name: "Legacy Result",
         link: "/dashboard/academic/result",
         icon: <BiTime />,
       },
     ],
   },
   {
-    name: "Examination Management",
+    name: "Current Exam System",
     icon: <IoSchool />,
     children: [
       {
@@ -288,12 +290,12 @@ export const adminPaths: TSidebarItem[] = [
         icon: <BiTime />,
       },
       {
-        name: "Mark Entry",
+        name: "Exam Mark Entry",
         link: "/dashboard/academic/mark-entry",
         icon: <BiTime />,
       },
       {
-        name: "Result",
+        name: "Published Exam Results",
         link: "/dashboard/academic/dynamic-result",
         icon: <BiTime />,
       },

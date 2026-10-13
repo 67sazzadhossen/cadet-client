@@ -1,9 +1,9 @@
-import AllTeachersAttendance from "@/pages/Admin/TeachersAttendance/AllTeachersAttendance";
+import RoleAttendance from "@/pages/Admin/Attendance/RoleAttendance";
 
 const page = () => {
   return (
     <div>
-      <AllTeachersAttendance />
+      <RoleAttendance role="teacher" />
     </div>
   );
 };

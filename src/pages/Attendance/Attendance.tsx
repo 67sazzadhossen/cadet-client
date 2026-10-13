@@ -191,7 +191,7 @@ const Attendance = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="dashboard-page min-h-screen bg-transparent">
       <div className="p-3 max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-sm p-3 mb-3 flex items-center justify-between">

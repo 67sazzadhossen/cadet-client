@@ -18,14 +18,19 @@ interface PaymentInfo {
   month?: string;
   year?: string;
   breakdown?: {
-    baseMonthlyFee: number;
+    baseMonthlyFee?: number;
     waiver?: { percentage: number; amount: number };
-    monthlyFeeAfterWaiver: number;
-    itCharge: number;
-    electricityBill: number;
-    transportationFee: number;
-    othersFee: number;
-    total: number;
+    monthlyFeeAfterWaiver?: number;
+    itCharge?: number;
+    electricityBill?: number;
+    transportationFee?: number;
+    othersFee?: number;
+    total?: number;
+    sessionFee?: number;
+    admissionFee?: number;
+    totalAmount?: number;
+    paidNow?: number;
+    dueAmount?: number;
   };
 }
 
@@ -48,14 +53,19 @@ export const getInvoiceHTML = (
     month?: string;
     year?: string;
     breakdown?: {
-      baseMonthlyFee: number;
+      baseMonthlyFee?: number;
       waiver?: { percentage: number; amount: number };
-      monthlyFeeAfterWaiver: number;
-      itCharge: number;
-      electricityBill: number;
-      transportationFee: number;
-      othersFee: number;
-      total: number;
+      monthlyFeeAfterWaiver?: number;
+      itCharge?: number;
+      electricityBill?: number;
+      transportationFee?: number;
+      othersFee?: number;
+      total?: number;
+      sessionFee?: number;
+      admissionFee?: number;
+      totalAmount?: number;
+      paidNow?: number;
+      dueAmount?: number;
     };
   },
 ) => {
@@ -472,12 +482,20 @@ export const getInvoiceHTML = (
       </thead>
       <tbody>
         ${
-          breakdown
+          breakdown?.sessionFee !== undefined || breakdown?.admissionFee !== undefined
+            ? `
+          <tr><td>সেশন ফি</td><td class="text-right">${formatAmount(breakdown.sessionFee || 0)}</td></tr>
+          <tr><td>ভর্তি ফি</td><td class="text-right">${formatAmount(breakdown.admissionFee || 0)}</td></tr>
+          <tr><td>মোট নির্ধারিত ফি</td><td class="text-right">${formatAmount(breakdown.totalAmount || 0)}</td></tr>
+          <tr><td>এই রসিদে পরিশোধ</td><td class="text-right">${formatAmount(breakdown.paidNow ?? result.paidAmount)}</td></tr>
+          <tr><td>অবশিষ্ট বকেয়া</td><td class="text-right">${formatAmount(breakdown.dueAmount ?? result.due)}</td></tr>
+          `
+            : breakdown
             ? `
           <!-- Base Monthly Fee -->
           <tr>
             <td>মাসিক বেতন (${breakdown.baseMonthlyFee ? breakdown.baseMonthlyFee.toFixed(0) : 0} ৳)</td>
-            <td class="text-right">${formatAmount(breakdown.baseMonthlyFee)}</td>
+            <td class="text-right">${formatAmount(breakdown.baseMonthlyFee || 0)}</td>
           </tr>
           
           <!-- Waiver (if applicable) -->
@@ -490,7 +508,7 @@ export const getInvoiceHTML = (
           </tr>
           <tr>
             <td>ছাড়后的 মাসিক বেতন</td>
-            <td class="text-right">${formatAmount(breakdown.monthlyFeeAfterWaiver)}</td>
+            <td class="text-right">${formatAmount(breakdown.monthlyFeeAfterWaiver || 0)}</td>
           </tr>
           `
               : ""
@@ -498,11 +516,11 @@ export const getInvoiceHTML = (
           
           <!-- IT Charge -->
           ${
-            breakdown.itCharge > 0
+            (breakdown.itCharge || 0) > 0
               ? `
           <tr>
             <td>আইটি চার্জ</td>
-            <td class="text-right">${formatAmount(breakdown.itCharge)}</td>
+            <td class="text-right">${formatAmount(breakdown.itCharge || 0)}</td>
           </tr>
           `
               : ""
@@ -510,11 +528,11 @@ export const getInvoiceHTML = (
           
           <!-- Electricity Bill -->
           ${
-            breakdown.electricityBill > 0
+            (breakdown.electricityBill || 0) > 0
               ? `
           <tr>
             <td>বিদ্যুৎ বিল</td>
-            <td class="text-right">${formatAmount(breakdown.electricityBill)}</td>
+            <td class="text-right">${formatAmount(breakdown.electricityBill || 0)}</td>
           </tr>
           `
               : ""
@@ -522,11 +540,11 @@ export const getInvoiceHTML = (
           
           <!-- Transportation Fee -->
           ${
-            breakdown.transportationFee > 0
+            (breakdown.transportationFee || 0) > 0
               ? `
           <tr>
             <td>পরিবহন ফি</td>
-            <td class="text-right">${formatAmount(breakdown.transportationFee)}</td>
+            <td class="text-right">${formatAmount(breakdown.transportationFee || 0)}</td>
           </tr>
           `
               : ""
@@ -534,11 +552,11 @@ export const getInvoiceHTML = (
           
           <!-- Others Fee -->
           ${
-            breakdown.othersFee > 0
+            (breakdown.othersFee || 0) > 0
               ? `
           <tr>
             <td>অন্যান্য চার্জ</td>
-            <td class="text-right">${formatAmount(breakdown.othersFee)}</td>
+            <td class="text-right">${formatAmount(breakdown.othersFee || 0)}</td>
           </tr>
           `
               : ""

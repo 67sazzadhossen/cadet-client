@@ -506,8 +506,8 @@ const AllTeachers = () => {
                         <FiEye size={14} />
                         <span>বিস্তারিত</span>
                       </Link>
-                      <Link
-                        href={`/dashboard/edit-teacher/${teacher._id}`}
+                        <Link
+                          href={`/dashboard/edit-teacher/${teacher.id}`}
                         className="flex-1 py-2.5 bg-green-500 text-white rounded-lg text-sm font-medium flex items-center justify-center gap-1 active:bg-green-600"
                       >
                         <FiEdit size={14} />

@@ -138,7 +138,7 @@ export type TPaymentInfo = {
   _id?: Types.ObjectId;
 };
 
-export type TRole = "admin" | "student" | "superAdmin";
+export type TRole = "admin" | "student" | "teacher" | "accountant" | "superAdmin";
 export type TUserStatus = "active" | "blocked";
 export type TVersion = "bangla" | "english";
 export type TTransportation = "yes" | "no";
@@ -274,6 +274,9 @@ export interface Breakdown {
 
   sessionFee?: number;
   admissionFee?: number;
+  totalAmount?: number;
+  paidNow?: number;
+  dueAmount?: number;
 
   othersFee?: number;
 
@@ -319,6 +322,17 @@ export interface StudentDataType {
   sessionPaid: number;
   sessionDue: number;
   sessionStatus: string;
+  sessionPaymentHistory?: Array<{
+    invoiceNo?: string;
+    date?: string;
+    paidAmount: number;
+    due: number;
+    status: string;
+    sessionFee?: number;
+    admissionFee?: number;
+    totalAmount?: number;
+    year?: string;
+  }>;
 
   monthlyDue: number;
   totalDue: number;

@@ -452,10 +452,10 @@ const Result = () => {
   // console.log("Calculated Total Mark:", totalExamMarks);
 
   return (
-    <div className="p-4 md:p-8 bg-gray-100 min-h-screen">
+    <div className="dashboard-page p-2 md:p-4 bg-transparent min-h-screen">
       <div className="max-w-5xl mx-auto">
         {/* Filters Section */}
-        <div className="bg-white p-6 rounded-xl shadow-sm mb-8 print:hidden">
+        <div className="dashboard-glass p-4 rounded-xl shadow-sm mb-4 print:hidden">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
             <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
               <GraduationCap className="text-red-600" /> Academic Management

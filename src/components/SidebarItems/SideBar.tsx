@@ -4,9 +4,10 @@ import { useLogoutMutation } from "@/redux/features/auth/authApi";
 import { logout, selectCurrentUser } from "@/redux/features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
-import React, { useState, useEffect, JSX } from "react";
-import { adminPaths, studentPaths, teacherPaths } from "./sidebar.const";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { accountantPaths, adminPaths, studentPaths, teacherPaths } from "./sidebar.const";
+import type { TSidebarItem } from "./sidebar.const";
 import { BiSolidLogOutCircle } from "react-icons/bi";
 
 import { IoClose, IoChevronDown, IoChevronUp } from "react-icons/io5";
@@ -14,13 +15,6 @@ import Image from "next/image";
 import logo from "@/assets/logo.png";
 
 // Types
-interface TSidebarItem {
-  name: string;
-  link?: string;
-  icon: JSX.Element;
-  children?: TSidebarItem[];
-}
-
 // Mobile Detection Hook
 const useMobile = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -49,9 +43,12 @@ const SidebarItem = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const queryString = searchParams?.toString() || "";
+  const currentHref = `${pathname}${queryString ? `?${queryString}` : ""}`;
 
-  const isChildActive = item.children?.some(
-    (child) => child.link && pathname === child.link,
+  const isChildActive = item.children?.some((child) =>
+    child.link ? currentHref === child.link : child.children?.some((nested) => currentHref === nested.link),
   );
 
   useEffect(() => {
@@ -68,13 +65,13 @@ const SidebarItem = ({
             onClick={() => setIsOpen(!isOpen)}
             className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition-all duration-200 ${
               isOpen
-                ? "bg-blue-50 text-blue-600"
-                : "hover:bg-gray-100 text-gray-700"
+                ? "bg-white/15 text-white shadow-inner"
+                : "text-blue-100/80 hover:bg-white/10 hover:text-white"
             }`}
           >
             <div className="flex items-center gap-3 min-w-0">
               <span
-                className={`text-xl ${isOpen ? "text-blue-600" : "text-gray-500"}`}
+                className={`text-xl ${isOpen ? "text-cyan-200" : "text-blue-200/70"}`}
               >
                 {item.icon}
               </span>
@@ -90,23 +87,23 @@ const SidebarItem = ({
               isOpen ? "max-h-96 mt-1" : "max-h-0"
             }`}
           >
-            <ul className="ml-4 space-y-0.5 border-l-2 border-gray-200 pl-2">
-              {item.children.map((child, idx) => {
-                const isActive = child.link && pathname === child.link;
+            <ul className="ml-4 space-y-0.5 border-l border-blue-200/20 pl-2">
+              {item.children.map((child) => {
+                const isActive = child.link && currentHref === child.link;
 
                 return (
-                  <li key={idx}>
+                  <li key={child.link || child.name}>
                     <Link
                       href={child.link || "#"}
                       onClick={onClose}
                       className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
                         isActive
-                          ? "bg-blue-600 text-white"
-                          : "hover:bg-gray-100 text-gray-700"
+                          ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg"
+                          : "text-blue-100/75 hover:bg-white/10 hover:text-white"
                       }`}
                     >
                       <span
-                        className={`text-lg ${isActive ? "text-white" : "text-gray-500"}`}
+                          className={`text-lg ${isActive ? "text-white" : "text-blue-200/70"}`}
                       >
                         {child.icon}
                       </span>
@@ -131,12 +128,12 @@ const SidebarItem = ({
         onClick={onClose}
         className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${
           isActive
-            ? "bg-blue-600 text-white"
-            : "hover:bg-gray-100 text-gray-700"
+            ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg"
+            : "text-blue-100/80 hover:bg-white/10 hover:text-white"
         }`}
       >
         <span
-          className={`text-xl ${isActive ? "text-white" : "text-gray-500"}`}
+          className={`text-xl ${isActive ? "text-white" : "text-blue-200/70"}`}
         >
           {item.icon}
         </span>
@@ -171,12 +168,14 @@ const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
     ADMIN: "admin",
     TEACHER: "teacher",
     STUDENT: "student",
+    ACCOUNTANT: "accountant",
   };
 
   const sidebarItems: TSidebarItem[] =
     (role === userRole.STUDENT && studentPaths) ||
     (role === userRole.TEACHER && teacherPaths) ||
     (role === userRole.ADMIN && adminPaths) ||
+    (role === userRole.ACCOUNTANT && accountantPaths) ||
     [];
 
   const [loggingOut] = useLogoutMutation();
@@ -223,7 +222,7 @@ const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
       {/* Mobile Overlay */}
       {isMobile && isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40"
+          className="fixed inset-0 z-40 bg-slate-950/65 backdrop-blur-sm"
           onClick={closeSidebar}
         />
       )}
@@ -235,9 +234,9 @@ const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
           ${isMobile ? (isSidebarOpen ? "left-0" : "-left-64") : "left-0 w-64"}
         `}
       >
-        <div className="h-full w-64 flex flex-col bg-white shadow-xl">
+        <div className="m-2 flex h-[calc(100%_-_1rem)] w-64 flex-col rounded-2xl border border-blue-200/20 bg-blue-950/60 shadow-2xl backdrop-blur-2xl lg:ml-3">
           {/* Logo Section */}
-          <div className="p-4 border-b border-gray-200">
+          <div className="border-b border-blue-200/15 p-4">
             <div className="flex items-center justify-between">
               <Link href={"/"} className="block flex-1" onClick={closeSidebar}>
                 <div className="flex items-center gap-2">
@@ -248,7 +247,7 @@ const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
                     alt="logo"
                     className="rounded-lg"
                   />
-                  <span className="text-lg font-bold text-blue-600 truncate">
+                  <span className="truncate text-lg font-bold text-blue-50">
                     School MS
                   </span>
                 </div>
@@ -258,10 +257,10 @@ const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
               {isMobile && isSidebarOpen && (
                 <button
                   onClick={closeSidebar}
-                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="rounded-lg p-2 text-blue-100 transition-colors hover:bg-white/10"
                   aria-label="Close menu"
                 >
-                  <IoClose className="w-6 h-6 text-gray-600" />
+                  <IoClose className="h-6 w-6" />
                 </button>
               )}
             </div>
@@ -270,17 +269,17 @@ const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
           {/* Menu Items */}
           <div className="flex-1 overflow-y-auto py-4 px-3">
             <ul className="space-y-1">
-              {sidebarItems.map((item: TSidebarItem, idx) => (
-                <SidebarItem key={idx} item={item} onClose={closeSidebar} />
+              {sidebarItems.map((item: TSidebarItem) => (
+                <SidebarItem key={item.link || item.name} item={item} onClose={closeSidebar} />
               ))}
             </ul>
           </div>
 
           {/* Logout Section */}
-          <div className="p-3 border-t border-gray-200">
+          <div className="border-t border-blue-200/15 p-3">
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-2.5 w-full rounded-lg text-red-600 hover:bg-red-50 transition-all duration-200"
+              className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-red-200 transition-all duration-200 hover:bg-red-500/15 hover:text-red-100"
             >
               <span className="text-2xl">
                 <BiSolidLogOutCircle />

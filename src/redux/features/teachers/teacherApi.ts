@@ -14,11 +14,26 @@ const teacherApi = baseApi.injectEndpoints({
         url: "/teachers",
       }),
     }),
+    getDeletedTeachers: builder.query({
+      query: () => ({ method: "GET", url: "/teachers/recycle-bin" }),
+    }),
+    updateTeacher: builder.mutation({
+      query: ({ id, ...body }) => ({ method: "PATCH", url: `/teachers/${id}`, body }),
+    }),
     deleteTeacherById: builder.mutation({
       query: (id) => ({
         method: "DELETE",
         url: `/teachers/${id}`,
       }),
+    }),
+    restoreTeacher: builder.mutation({
+      query: (id) => ({ method: "PATCH", url: `/teachers/${id}/restore` }),
+    }),
+    permanentlyDeleteTeacher: builder.mutation({
+      query: (id) => ({ method: "DELETE", url: `/teachers/${id}/permanent` }),
+    }),
+    resetTeacherPassword: builder.mutation({
+      query: (id) => ({ method: "POST", url: `/teachers/${id}/reset-password` }),
     }),
     getSingleTeacherForPublic: builder.query({
       query: (id) => ({
@@ -32,6 +47,11 @@ const teacherApi = baseApi.injectEndpoints({
 export const {
   useCreateTeacherMutation,
   useGetTeachersQuery,
+  useGetDeletedTeachersQuery,
+  useUpdateTeacherMutation,
   useDeleteTeacherByIdMutation,
+  useRestoreTeacherMutation,
+  usePermanentlyDeleteTeacherMutation,
+  useResetTeacherPasswordMutation,
   useGetSingleTeacherForPublicQuery,
 } = teacherApi;
