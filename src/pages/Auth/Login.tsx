@@ -53,23 +53,36 @@ const Login = () => {
       if (res.success && res.data?.data?.accessToken) {
         const user = verifyToken(res.data.data.accessToken);
 
+        const refreshToken =
+          res.data?.data?.refreshToken || res.data?.refreshToken;
+
         dispatch(
           setUser({
             user: user,
             accessToken: res.data.data.accessToken,
+            refreshToken,
           }),
         );
 
         try {
-          if (typeof window !== "undefined" && "Notification" in window) {
+          if (
+            typeof window !== "undefined" &&
+            "Notification" in window &&
+            "serviceWorker" in navigator
+          ) {
             const permission = await Notification.requestPermission();
 
             if (permission === "granted") {
               const messaging = await getFirebaseMessaging();
 
               if (messaging) {
+                const registration = await navigator.serviceWorker.register(
+                  "/firebase-messaging-sw.js",
+                );
+
                 const currentToken = await getToken(messaging, {
                   vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+                  serviceWorkerRegistration: registration,
                 });
 
                 if (currentToken) {
@@ -83,16 +96,15 @@ const Login = () => {
             }
           }
         } catch (err: any) {
-          if (err?.name === "AbortError" || err?.code === "messaging/unsupported-browser") {
-            console.warn("Push service is unavailable; continuing without notifications.");
-          } else {
-            console.error("FCM Registration/Save failed:", err);
-          }
+          console.warn(
+            "FCM Registration/Save unavailable; continuing without push notifications:",
+            err,
+          );
         }
 
         // Set cookies for middleware
-        if (res.data.data.refreshToken) {
-          document.cookie = `refreshToken=${res.data.data.refreshToken}; path=/; max-age=604800`;
+        if (refreshToken) {
+          document.cookie = `refreshToken=${refreshToken}; path=/; max-age=31536000; SameSite=Lax`;
         }
         refetch();
 
